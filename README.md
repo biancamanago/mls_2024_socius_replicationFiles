@@ -19,7 +19,9 @@ Importantly, the data file from GSS was too large to upload. To start from the b
 use the [1972-2018 download from GSS](https://www.dropbox.com/scl/fi/gq5xi148dkrk1zykq1pqt/GSS7218_R1.DTA?rlkey=3eyv89m40digomzrk9wb9faq0&st=5p8wlfj7&dl=0). and place it in the /Data folder in the working directory.
 
 
-&nbsp;&nbsp;&nbsp; [work.zip](https://github.com/biancamanago/gss-2019-HA-ReplicationFiles/blob/067b192c8b725b6307091cd3d84a292602f64cd4/work.zip)
+&nbsp;&nbsp;&nbsp; [work.zip](https://github.com/biancamanago/mls_2024_socius_replicationFiles/blob/186f3a0149d6fc860f95a1fe4abbeac492aa8ce6/work_socius_2024_09.zip)
+
+Please note, there are minor discrepancies in the replication findings here and the paper. These discrepancies do not affect any of the conclusions of the manuscript. They were the result of an issue with the creation of the contact variables for 1996 and missing by design data (this is an error by Bianca). We reached out to the team at Sage regarding how to move forward on 2024-09-25 and are waiting to hear back (updated - 2024-10-09).
 
 <hr/> 
 
