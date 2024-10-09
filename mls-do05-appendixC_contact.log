@@ -1,0 +1,1387 @@
+------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStig
+> ma/work_socius_2024_09_corrected/mls-do05-appendixC_contact.log
+  log type:  text
+ opened on:  26 Sep 2024, 17:19:42
+
+.  
+.  
+. **********
+. /// #0 Setup    
+> **********      
+.  
+.  version 15.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+
+. 
+.  
+.  local pgm   mls-do05-appendixC_contact.do
+
+.  local dte   2023-12-26
+
+.  local who   bianca manago - trent mize
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+.  di "`tag'"
+mls-do05-appendixC_contact.do.do bianca manago - trent mize 2023-12-26
+
+.  
+. ****************************************************************
+. //#1 Load Data
+. **************************************************************** 
+.  
+.  use "Data/mls-data08-mice-contact_valence", clear      
+(MLS - GSS Data | Matching Labeling Stigma | Multiple Imputation CE | mls-data08
+> -)
+
+.  
+.  
+.  /* 
+> Using a different dataset because we didn't need all of these measures
+> in the main dataset and we'd need to re-do all the bootstrap analyses
+> which take hours.
+> */
+.  
+. ****************************************************************
+. //#4 Baseline effects of different forms of contact
+. ****************************************************************
+. 
+. // C1 Combined Table
+. 
+. local c_val "cntct_val4_DER_max cntct_val4_D_max"
+
+. local c_val "`c_val' cntct_val4_DER_avg cntct_val4_D_avg"       
+
+. 
+. foreach v in `c_val' {
+  2. // Table A3: Effects of Contact on Rates of Labeling // 
+. *valence of contact
+. mi est, post:   logit L_mentlillB i.`v'
+  3. est store   `v'
+  4. mimrgns         `v', predict(pr)
+  5. mimrgns         `v', predict(pr) pwcompare(pve)
+  6. 
+. mi est, post:   logit L_mentlillB i.`v'  ///
+>                                                 i.vigdrug i.vigalc i.vigschiz 
+> i.vigdep ///
+>                                                 age i.female i.race i.region i
+> .metro coninc i.degree 
+  7. 
+. mimrgns         `v', predict(pr)
+  8. mimrgns         `v', predict(pr) pwcompare(pve)
+  9. }
+
+Multiple-imputation estimates                   Imputations       =         20
+Logistic regression                             Number of obs     =      3,920
+                                                Average RVI       =     0.0688
+                                                Largest FMI       =     0.0874
+DF adjustment:   Large sample                   DF:     min       =   2,526.98
+                                                        avg       =   3,704.04
+                                                        max       =   5,045.01
+Model F test:       Equal FMI                   F(   3, 8329.0)   =      14.10
+Within VCE type:          OIM                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+  L_mentlillB | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_max |
+ Any Contact  |   .2059771   .0962383     2.14   0.032     .0172657    .3946884
+ Bad Contact  |   .5160704   .0956431     5.40   0.000     .3285236    .7036172
+Good Contact  |   .4635628   .0915541     5.06   0.000      .284077    .6430486
+              |
+        _cons |   .1592513   .0504709     3.16   0.002     .0603043    .2581983
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Adjusted predictions                            Number of obs     =      3,920
+                                                Average RVI       =     0.0687
+                                                Largest FMI       =     0.0710
+DF adjustment:   Large sample                   DF:     min       =   3,824.61
+                                                        avg       =   4,717.18
+Within VCE type: Delta-method                           max       =   6,180.51
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+-------------------------------------------------------------------------------
+              |     Margin   Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_max |
+  No Contact  |   .5397274   .0125374    43.05   0.000     .5151481    .5643068
+ Any Contact  |   .5902963   .0195672    30.17   0.000     .5519331    .6286595
+ Bad Contact  |   .6626821   .0177698    37.29   0.000      .627847    .6975172
+Good Contact  |   .6508461   .0174207    37.36   0.000     .6166924    .6849998
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Pairwise comparisons of adjusted predictions    Number of obs     =      3,920
+                                                Average RVI       =     0.0687
+                                                Largest FMI       =     0.0710
+DF adjustment:   Large sample                   DF:     min       =   3,824.61
+                                                        avg       =   4,717.18
+Within VCE type: Delta-method                           max       =   6,180.51
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+---------------------------------------------------------------------
+                             |   Contrast   Std. err.      t    P>|t|
+-----------------------------+---------------------------------------
+          cntct_val4_DER_max |
+  Any Contact vs No Contact  |   .0505689   .0234541     2.16   0.031
+  Bad Contact vs No Contact  |   .1229547   .0220992     5.56   0.000
+ Good Contact vs No Contact  |   .1111187   .0214063     5.19   0.000
+ Bad Contact vs Any Contact  |   .0723858    .026471     2.73   0.006
+Good Contact vs Any Contact  |   .0605498   .0263546     2.30   0.022
+Good Contact vs Bad Contact  |   -.011836   .0251614    -0.47   0.638
+---------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Logistic regression                             Number of obs     =      3,920
+                                                Average RVI       =     0.0485
+                                                Largest FMI       =     0.1025
+DF adjustment:   Large sample                   DF:     min       =   1,843.03
+                                                        avg       =  17,852.46
+                                                        max       =  39,317.09
+Model F test:       Equal FMI                   F(  25,212470.5)  =      27.48
+Within VCE type:          OIM                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+  L_mentlillB | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_max |
+ Any Contact  |   .2826589   .1112523     2.54   0.011     .0645033    .5008144
+ Bad Contact  |   .5749201   .1111904     5.17   0.000     .3568476    .7929925
+Good Contact  |   .4925947   .1062935     4.63   0.000     .2842097    .7009798
+              |
+      vigdrug |
+        Drug  |   .7919029   .1243735     6.37   0.000     .5481262     1.03568
+              |
+       vigalc |
+     Alcohol  |   1.298818   .1081717    12.01   0.000     1.086796    1.510841
+              |
+     vigschiz |
+Schizophre~a  |   3.446172   .1494459    23.06   0.000     3.153251    3.739093
+              |
+       vigdep |
+  Depression  |   2.051739   .1135791    18.06   0.000     1.829098     2.27438
+          age |   .0017044   .0022346     0.76   0.446    -.0026758    .0060847
+              |
+       female |
+      female  |   .0927379   .0770864     1.20   0.229    -.0583589    .2438347
+              |
+         race |
+       black  |   .4144655   .1133106     3.66   0.000     .1923703    .6365607
+  other race  |  -.0319766   .1422262    -0.22   0.822    -.3107666    .2468133
+              |
+       region |
+middle atl..  |   .0122753   .2106906     0.06   0.954    -.4007015    .4252522
+e. nor. ce..  |   .0462355   .2013222     0.23   0.818    -.3483686    .4408396
+w. nor. ce..  |   .0327687   .2364136     0.14   0.890    -.4306233    .4961606
+south atla..  |  -.0532778   .1982244    -0.27   0.788    -.4418054    .3352498
+e. sou. ce..  |  -.1903408   .2351978    -0.81   0.418    -.6514191    .2707375
+w. sou. ce..  |  -.1028708   .2140034    -0.48   0.631     -.522328    .3165863
+    mountain  |   .1153854   .2319937     0.50   0.619    -.3394058    .5701766
+     pacific  |  -.0122685   .2068525    -0.06   0.953    -.4177239    .3931869
+              |
+        metro |
+   MetroArea  |  -.1792162   .0950249    -1.89   0.059    -.3654789    .0070466
+       coninc |   .0007981   .0010924     0.73   0.465    -.0013444    .0029406
+              |
+       degree |
+ high school  |  -.1170698   .1211794    -0.97   0.334    -.3545866     .120447
+junior col..  |  -.1323922   .1738785    -0.76   0.446    -.4732175    .2084332
+    bachelor  |  -.2251709   .1466199    -1.54   0.125    -.5125506    .0622089
+    graduate  |  -.0863962   .1716106    -0.50   0.615    -.4227571    .2499648
+              |
+        _cons |  -1.372581   .2645795    -5.19   0.000    -1.891185   -.8539774
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Predictive margins                              Number of obs     =      3,920
+                                                Average RVI       =     0.0756
+                                                Largest FMI       =     0.0772
+DF adjustment:   Large sample                   DF:     min       =   3,238.58
+                                                        avg       =   3,871.80
+Within VCE type: Delta-method                           max       =   4,382.59
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+-------------------------------------------------------------------------------
+              |     Margin   Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_max |
+  No Contact  |   .5468517   .0111512    49.04   0.000     .5249877    .5687158
+ Any Contact  |   .6000345   .0172345    34.82   0.000     .5662463    .6338227
+ Bad Contact  |   .6534769   .0162572    40.20   0.000     .6216044    .6853495
+Good Contact  |   .6386445   .0160178    39.87   0.000     .6072397    .6700493
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Pairwise comparisons of predictive margins      Number of obs     =      3,920
+                                                Average RVI       =     0.0756
+                                                Largest FMI       =     0.0772
+DF adjustment:   Large sample                   DF:     min       =   3,238.58
+                                                        avg       =   3,871.80
+Within VCE type: Delta-method                           max       =   4,382.59
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+---------------------------------------------------------------------
+                             |   Contrast   Std. err.      t    P>|t|
+-----------------------------+---------------------------------------
+          cntct_val4_DER_max |
+  Any Contact vs No Contact  |   .0531828   .0208034     2.56   0.011
+  Bad Contact vs No Contact  |   .1066252   .0202531     5.26   0.000
+ Good Contact vs No Contact  |   .0917928   .0195343     4.70   0.000
+ Bad Contact vs Any Contact  |   .0534424   .0236756     2.26   0.024
+Good Contact vs Any Contact  |     .03861   .0237138     1.63   0.104
+Good Contact vs Bad Contact  |  -.0148324   .0231238    -0.64   0.521
+---------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Logistic regression                             Number of obs     =      3,920
+                                                Average RVI       =     0.0737
+                                                Largest FMI       =     0.1014
+DF adjustment:   Large sample                   DF:     min       =   1,883.49
+                                                        avg       =   3,492.14
+                                                        max       =   5,557.75
+Model F test:       Equal FMI                   F(   3, 7329.8)   =      14.26
+Within VCE type:          OIM                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+  L_mentlillB | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_max |
+ Any Contact  |   .1905889   .0968528     1.97   0.049     .0006389    .3805389
+ Bad Contact  |   .5609459   .0985881     5.69   0.000     .3676337    .7542581
+Good Contact  |   .4273477   .0897865     4.76   0.000     .2513121    .6033833
+              |
+        _cons |    .162806    .050355     3.23   0.001     .0640905    .2615215
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Adjusted predictions                            Number of obs     =      3,920
+                                                Average RVI       =     0.0737
+                                                Largest FMI       =     0.0878
+DF adjustment:   Large sample                   DF:     min       =   2,505.57
+                                                        avg       =   4,727.27
+Within VCE type: Delta-method                           max       =   7,765.88
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+-------------------------------------------------------------------------------
+              |     Margin   Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_max |
+  No Contact  |   .5406105   .0125052    43.23   0.000     .5160954    .5651255
+ Any Contact  |   .5874293   .0197282    29.78   0.000      .548744    .6261146
+ Bad Contact  |   .6734136   .0185167    36.37   0.000     .6371072    .7097201
+Good Contact  |   .6433925   .0168008    38.30   0.000     .6104585    .6763265
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Pairwise comparisons of adjusted predictions    Number of obs     =      3,920
+                                                Average RVI       =     0.0737
+                                                Largest FMI       =     0.0878
+DF adjustment:   Large sample                   DF:     min       =   2,505.57
+                                                        avg       =   4,727.27
+Within VCE type: Delta-method                           max       =   7,765.88
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+---------------------------------------------------------------------
+                             |   Contrast   Std. err.      t    P>|t|
+-----------------------------+---------------------------------------
+            cntct_val4_D_max |
+  Any Contact vs No Contact  |   .0468189   .0236326     1.98   0.048
+  Bad Contact vs No Contact  |   .1328032    .022462     5.91   0.000
+ Good Contact vs No Contact  |    .102782   .0211653     4.86   0.000
+ Bad Contact vs Any Contact  |   .0859843    .027526     3.12   0.002
+Good Contact vs Any Contact  |   .0559632   .0260239     2.15   0.032
+Good Contact vs Bad Contact  |  -.0300211   .0247041    -1.22   0.224
+---------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Logistic regression                             Number of obs     =      3,920
+                                                Average RVI       =     0.0491
+                                                Largest FMI       =     0.1081
+DF adjustment:   Large sample                   DF:     min       =   1,659.50
+                                                        avg       =  21,122.09
+                                                        max       =  54,118.41
+Model F test:       Equal FMI                   F(  25,207969.9)  =      27.49
+Within VCE type:          OIM                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+  L_mentlillB | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_max |
+ Any Contact  |   .2668727   .1122416     2.38   0.018     .0467227    .4870226
+ Bad Contact  |   .6216277   .1140094     5.45   0.000     .3980528    .8452025
+Good Contact  |   .4583468   .1056117     4.34   0.000     .2512336    .6654599
+              |
+      vigdrug |
+        Drug  |   .7919811   .1240725     6.38   0.000     .5487981    1.035164
+              |
+       vigalc |
+     Alcohol  |   1.298265   .1079772    12.02   0.000     1.086627    1.509904
+              |
+     vigschiz |
+Schizophre~a  |   3.446295   .1489992    23.13   0.000     3.154255    3.738336
+              |
+       vigdep |
+  Depression  |   2.052313   .1135867    18.07   0.000     1.829657    2.274968
+          age |    .001632   .0022355     0.73   0.465    -.0027501    .0060141
+              |
+       female |
+      female  |   .0908876   .0774768     1.17   0.241    -.0609812    .2427564
+              |
+         race |
+       black  |   .4162232   .1131921     3.68   0.000     .1943613    .6380851
+  other race  |  -.0337638   .1425264    -0.24   0.813    -.3131488    .2456211
+              |
+       region |
+middle atl..  |   .0097763   .2105094     0.05   0.963    -.4028422    .4223947
+e. nor. ce..  |   .0404242   .2012778     0.20   0.841    -.3540918    .4349403
+w. nor. ce..  |   .0255656   .2361933     0.11   0.914    -.4373914    .4885227
+south atla..  |  -.0604721    .198036    -0.31   0.760    -.4486286    .3276844
+e. sou. ce..  |  -.1936983    .235002    -0.82   0.410    -.6543892    .2669926
+w. sou. ce..  |   -.107517   .2136638    -0.50   0.615    -.5263049    .3112709
+    mountain  |   .1092551   .2312762     0.47   0.637     -.344111    .5626212
+     pacific  |  -.0177644   .2065189    -0.09   0.931    -.4225604    .3870315
+              |
+        metro |
+   MetroArea  |  -.1781597   .0949337    -1.88   0.061    -.3642421    .0079226
+       coninc |   .0007994   .0010912     0.73   0.464    -.0013407    .0029395
+              |
+       degree |
+ high school  |  -.1156175   .1210608    -0.96   0.340    -.3529004    .1216655
+junior col..  |  -.1266196    .173858    -0.73   0.466    -.4674032     .214164
+    bachelor  |  -.2221307   .1465511    -1.52   0.130     -.509375    .0651135
+    graduate  |  -.0865872   .1713523    -0.51   0.613    -.4224395    .2492651
+              |
+        _cons |  -1.361964   .2641967    -5.16   0.000    -1.879816   -.8441123
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Predictive margins                              Number of obs     =      3,920
+                                                Average RVI       =     0.0821
+                                                Largest FMI       =     0.0862
+DF adjustment:   Large sample                   DF:     min       =   2,600.05
+                                                        avg       =   3,352.02
+Within VCE type: Delta-method                           max       =   4,384.44
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+-------------------------------------------------------------------------------
+              |     Margin   Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_max |
+  No Contact  |   .5474601   .0111861    48.94   0.000     .5255265    .5693937
+ Any Contact  |   .5976891   .0173836    34.38   0.000      .563602    .6317763
+ Bad Contact  |   .6623672    .016872    39.26   0.000     .6292876    .6954469
+Good Contact  |    .633001   .0154824    40.89   0.000     .6026478    .6633543
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Pairwise comparisons of predictive margins      Number of obs     =      3,920
+                                                Average RVI       =     0.0821
+                                                Largest FMI       =     0.0862
+DF adjustment:   Large sample                   DF:     min       =   2,600.05
+                                                        avg       =   3,352.02
+Within VCE type: Delta-method                           max       =   4,384.44
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+---------------------------------------------------------------------
+                             |   Contrast   Std. err.      t    P>|t|
+-----------------------------+---------------------------------------
+            cntct_val4_D_max |
+  Any Contact vs No Contact  |    .050229   .0210063     2.39   0.017
+  Bad Contact vs No Contact  |   .1149071   .0206425     5.57   0.000
+ Good Contact vs No Contact  |   .0855409   .0194886     4.39   0.000
+ Bad Contact vs Any Contact  |   .0646781   .0244933     2.64   0.008
+Good Contact vs Any Contact  |   .0353119   .0234513     1.51   0.132
+Good Contact vs Bad Contact  |  -.0293662   .0225086    -1.30   0.192
+---------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Logistic regression                             Number of obs     =      3,920
+                                                Average RVI       =     0.0685
+                                                Largest FMI       =     0.1076
+DF adjustment:   Large sample                   DF:     min       =   1,673.85
+                                                        avg       =   3,095.58
+                                                        max       =   3,946.47
+Model F test:       Equal FMI                   F(   3, 8459.5)   =      13.91
+Within VCE type:          OIM                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+  L_mentlillB | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_avg |
+ Any Contact  |   .1839134   .0972449     1.89   0.059     -.006821    .3746478
+ Bad Contact  |   .5088024   .0971025     5.24   0.000     .3184265    .6991782
+Good Contact  |   .4657151   .0905502     5.14   0.000     .2881723    .6432578
+              |
+        _cons |   .1646433   .0507179     3.25   0.001     .0652044    .2640822
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Adjusted predictions                            Number of obs     =      3,920
+                                                Average RVI       =     0.0685
+                                                Largest FMI       =     0.0830
+DF adjustment:   Large sample                   DF:     min       =   2,799.32
+                                                        avg       =   5,393.95
+Within VCE type: Delta-method                           max       =   8,317.27
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+-------------------------------------------------------------------------------
+              |     Margin   Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_avg |
+  No Contact  |   .5410664   .0125933    42.96   0.000     .5163756    .5657571
+ Any Contact  |   .5862571   .0197158    29.74   0.000     .5475981    .6249162
+ Bad Contact  |   .6622627   .0183669    36.06   0.000     .6262579    .6982675
+Good Contact  |   .6525626   .0167225    39.02   0.000     .6197824    .6853427
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Pairwise comparisons of adjusted predictions    Number of obs     =      3,920
+                                                Average RVI       =     0.0685
+                                                Largest FMI       =     0.0830
+DF adjustment:   Large sample                   DF:     min       =   2,799.32
+                                                        avg       =   5,393.95
+Within VCE type: Delta-method                           max       =   8,317.27
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+---------------------------------------------------------------------
+                             |   Contrast   Std. err.      t    P>|t|
+-----------------------------+---------------------------------------
+          cntct_val4_DER_avg |
+  Any Contact vs No Contact  |   .0451907    .023745     1.90   0.057
+  Bad Contact vs No Contact  |   .1211963   .0224108     5.41   0.000
+ Good Contact vs No Contact  |   .1114962   .0211821     5.26   0.000
+ Bad Contact vs Any Contact  |   .0760056   .0271017     2.80   0.005
+Good Contact vs Any Contact  |   .0663055   .0257003     2.58   0.010
+Good Contact vs Bad Contact  |  -.0097001   .0248929    -0.39   0.697
+---------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Logistic regression                             Number of obs     =      3,920
+                                                Average RVI       =     0.0514
+                                                Largest FMI       =     0.1674
+DF adjustment:   Large sample                   DF:     min       =     697.58
+                                                        avg       =  17,647.78
+                                                        max       =  41,089.90
+Model F test:       Equal FMI                   F(  25,189602.6)  =      27.38
+Within VCE type:          OIM                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+  L_mentlillB | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_avg |
+ Any Contact  |   .2549682   .1161573     2.20   0.028     .0269084    .4830281
+ Bad Contact  |   .5623864   .1133586     4.96   0.000      .340093    .7846799
+Good Contact  |   .4987641   .1063336     4.69   0.000     .2902163     .707312
+              |
+      vigdrug |
+        Drug  |   .7965359   .1242317     6.41   0.000      .553039    1.040033
+              |
+       vigalc |
+     Alcohol  |   1.300429   .1082968    12.01   0.000      1.08816    1.512698
+              |
+     vigschiz |
+Schizophre~a  |   3.446483   .1493346    23.08   0.000     3.153782    3.739185
+              |
+       vigdep |
+  Depression  |   2.051818   .1136378    18.06   0.000      1.82906    2.274575
+          age |   .0016366    .002243     0.73   0.466    -.0027604    .0060336
+              |
+       female |
+      female  |   .0936362   .0771535     1.21   0.225    -.0575927    .2448651
+              |
+         race |
+       black  |   .4115916   .1134194     3.63   0.000     .1892808    .6339025
+  other race  |  -.0354564   .1424177    -0.25   0.803    -.3146261    .2437134
+              |
+       region |
+middle atl..  |   .0097262   .2106039     0.05   0.963      -.40308    .4225323
+e. nor. ce..  |   .0441433   .2012774     0.22   0.826    -.3503726    .4386592
+w. nor. ce..  |   .0322861   .2359684     0.14   0.891    -.4302272    .4947995
+south atla..  |  -.0578224   .1982161    -0.29   0.771    -.4463341    .3306893
+e. sou. ce..  |    -.19443   .2355655    -0.83   0.409    -.6562398    .2673797
+w. sou. ce..  |   -.107889   .2138898    -0.50   0.614     -.527123    .3113449
+    mountain  |    .111335   .2312364     0.48   0.630    -.3419535    .5646235
+     pacific  |  -.0143024   .2067192    -0.07   0.945    -.4194949    .3908902
+              |
+        metro |
+   MetroArea  |  -.1790758   .0948578    -1.89   0.059    -.3650084    .0068568
+       coninc |   .0007729   .0010915     0.71   0.479    -.0013677    .0029134
+              |
+       degree |
+ high school  |  -.1181283    .121336    -0.97   0.330    -.3559535     .119697
+junior col..  |  -.1316141   .1734963    -0.76   0.448    -.4716825    .2084543
+    bachelor  |  -.2248576   .1466775    -1.53   0.125    -.5123512    .0626359
+    graduate  |  -.0851596   .1716743    -0.50   0.620    -.4216458    .2513266
+              |
+        _cons |  -1.358903   .2653801    -5.12   0.000    -1.879093    -.838714
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Predictive margins                              Number of obs     =      3,920
+                                                Average RVI       =     0.0928
+                                                Largest FMI       =     0.1145
+DF adjustment:   Large sample                   DF:     min       =   1,481.06
+                                                        avg       =   3,792.65
+Within VCE type: Delta-method                           max       =   6,749.80
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+-------------------------------------------------------------------------------
+              |     Margin   Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_avg |
+  No Contact  |   .5481759   .0113703    48.21   0.000     .5258724    .5704794
+ Any Contact  |   .5961815   .0176982    33.69   0.000     .5614653    .6308978
+ Bad Contact  |   .6524982   .0167541    38.95   0.000     .6196549    .6853416
+Good Contact  |   .6410412   .0154045    41.61   0.000     .6108422    .6712402
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Pairwise comparisons of predictive margins      Number of obs     =      3,920
+                                                Average RVI       =     0.0928
+                                                Largest FMI       =     0.1145
+DF adjustment:   Large sample                   DF:     min       =   1,481.06
+                                                        avg       =   3,792.65
+Within VCE type: Delta-method                           max       =   6,749.80
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+---------------------------------------------------------------------
+                             |   Contrast   Std. err.      t    P>|t|
+-----------------------------+---------------------------------------
+          cntct_val4_DER_avg |
+  Any Contact vs No Contact  |   .0480056   .0217573     2.21   0.028
+  Bad Contact vs No Contact  |   .1043223   .0206466     5.05   0.000
+ Good Contact vs No Contact  |   .0928653   .0195308     4.75   0.000
+ Bad Contact vs Any Contact  |   .0563167   .0243447     2.31   0.021
+Good Contact vs Any Contact  |   .0448597   .0233376     1.92   0.055
+Good Contact vs Bad Contact  |   -.011457   .0227264    -0.50   0.614
+---------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Logistic regression                             Number of obs     =      3,920
+                                                Average RVI       =     0.0692
+                                                Largest FMI       =     0.1106
+DF adjustment:   Large sample                   DF:     min       =   1,584.57
+                                                        avg       =   3,518.67
+                                                        max       =   4,559.18
+Model F test:       Equal FMI                   F(   3, 8261.1)   =      14.17
+Within VCE type:          OIM                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+  L_mentlillB | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_avg |
+ Any Contact  |   .1913555   .0950527     2.01   0.044      .005006    .3777049
+ Bad Contact  |    .568158   .1028303     5.53   0.000     .3664603    .7698557
+Good Contact  |   .4220269    .087805     4.81   0.000      .249885    .5941688
+              |
+        _cons |   .1640499   .0507808     3.23   0.001     .0644872    .2636127
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Adjusted predictions                            Number of obs     =      3,920
+                                                Average RVI       =     0.0693
+                                                Largest FMI       =     0.0772
+DF adjustment:   Large sample                   DF:     min       =   3,233.09
+                                                        avg       =   5,142.63
+Within VCE type: Delta-method                           max       =   8,901.11
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+-------------------------------------------------------------------------------
+              |     Margin   Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_avg |
+  No Contact  |    .540919   .0126098    42.90   0.000     .5161958    .5656422
+ Any Contact  |   .5879201    .019477    30.19   0.000     .5497364    .6261038
+ Bad Contact  |   .6752693   .0191266    35.31   0.000     .6377679    .7127707
+Good Contact  |   .6424576   .0163188    39.37   0.000     .6104691    .6744462
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Pairwise comparisons of adjusted predictions    Number of obs     =      3,920
+                                                Average RVI       =     0.0693
+                                                Largest FMI       =     0.0772
+DF adjustment:   Large sample                   DF:     min       =   3,233.09
+                                                        avg       =   5,142.63
+Within VCE type: Delta-method                           max       =   8,901.11
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+---------------------------------------------------------------------
+                             |   Contrast   Std. err.      t    P>|t|
+-----------------------------+---------------------------------------
+            cntct_val4_D_avg |
+  Any Contact vs No Contact  |    .047001   .0231926     2.03   0.043
+  Bad Contact vs No Contact  |   .1343503   .0233623     5.75   0.000
+ Good Contact vs No Contact  |   .1015386   .0207392     4.90   0.000
+ Bad Contact vs Any Contact  |   .0873492   .0277425     3.15   0.002
+Good Contact vs Any Contact  |   .0545376   .0255939     2.13   0.033
+Good Contact vs Bad Contact  |  -.0328117   .0250239    -1.31   0.190
+---------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Logistic regression                             Number of obs     =      3,920
+                                                Average RVI       =     0.0469
+                                                Largest FMI       =     0.0986
+DF adjustment:   Large sample                   DF:     min       =   1,989.50
+                                                        avg       =  21,944.80
+                                                        max       =  50,661.59
+Model F test:       Equal FMI                   F(  25,226944.3)  =      27.53
+Within VCE type:          OIM                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+  L_mentlillB | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_avg |
+ Any Contact  |   .2695494   .1101437     2.45   0.014     .0536026    .4854963
+ Bad Contact  |   .6272447   .1173875     5.34   0.000      .397037    .8574524
+Good Contact  |   .4539666   .1017483     4.46   0.000     .2544938    .6534394
+              |
+      vigdrug |
+        Drug  |   .7919736   .1240507     6.38   0.000     .5488329    1.035114
+              |
+       vigalc |
+     Alcohol  |   1.297637   .1081305    12.00   0.000     1.085696    1.509578
+              |
+     vigschiz |
+Schizophre~a  |   3.445877   .1492478    23.09   0.000     3.153346    3.738407
+              |
+       vigdep |
+  Depression  |   2.052312   .1136587    18.06   0.000     1.829513     2.27511
+          age |   .0016806   .0022288     0.75   0.451    -.0026883    .0060494
+              |
+       female |
+      female  |   .0904311   .0771912     1.17   0.241    -.0608721    .2417344
+              |
+         race |
+       black  |   .4166222   .1130735     3.68   0.000     .1949938    .6382505
+  other race  |  -.0314929   .1422289    -0.22   0.825    -.3102884    .2473027
+              |
+       region |
+middle atl..  |   .0061599   .2100849     0.03   0.977    -.4056221    .4179418
+e. nor. ce..  |   .0419381   .2012407     0.21   0.835    -.3525068    .4363829
+w. nor. ce..  |   .0288658   .2358407     0.12   0.903     -.433396    .4911277
+south atla..  |  -.0615569   .1977162    -0.31   0.756    -.4490845    .3259707
+e. sou. ce..  |  -.1928015   .2347453    -0.82   0.411    -.6529866    .2673837
+w. sou. ce..  |  -.1077751   .2136474    -0.50   0.614    -.5265323    .3109821
+    mountain  |   .1061522   .2309595     0.46   0.646    -.3465892    .5588936
+     pacific  |  -.0184561   .2060045    -0.09   0.929    -.4222386    .3853264
+              |
+        metro |
+   MetroArea  |  -.1768438   .0949606    -1.86   0.063    -.3629797    .0092921
+       coninc |   .0007941    .001091     0.73   0.467    -.0013456    .0029337
+              |
+       degree |
+ high school  |  -.1127345   .1210524    -0.93   0.352    -.3500005    .1245315
+junior col..  |  -.1225725   .1741991    -0.70   0.482    -.4640293    .2188844
+    bachelor  |  -.2206375   .1463069    -1.51   0.132    -.5074008    .0661258
+    graduate  |  -.0814369   .1715735    -0.47   0.635     -.417724    .2548503
+              |
+        _cons |  -1.364789    .263399    -5.18   0.000    -1.881066    -.848513
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Predictive margins                              Number of obs     =      3,920
+                                                Average RVI       =     0.0695
+                                                Largest FMI       =     0.0754
+DF adjustment:   Large sample                   DF:     min       =   3,390.56
+                                                        avg       =   4,952.24
+Within VCE type: Delta-method                           max       =   8,575.26
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+-------------------------------------------------------------------------------
+              |     Margin   Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_avg |
+  No Contact  |   .5477126   .0111102    49.30   0.000     .5259305    .5694946
+ Any Contact  |    .598442   .0172947    34.60   0.000      .564533    .6323511
+ Bad Contact  |      .6636   .0174793    37.96   0.000     .6293301    .6978699
+Good Contact  |   .6324496   .0148862    42.49   0.000     .6032691      .66163
+-------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Pairwise comparisons of predictive margins      Number of obs     =      3,920
+                                                Average RVI       =     0.0695
+                                                Largest FMI       =     0.0754
+DF adjustment:   Large sample                   DF:     min       =   3,390.56
+                                                        avg       =   4,952.24
+Within VCE type: Delta-method                           max       =   8,575.26
+
+Expression   : Pr(L_mentlillB), predict(pr)
+
+---------------------------------------------------------------------
+                             |   Contrast   Std. err.      t    P>|t|
+-----------------------------+---------------------------------------
+            cntct_val4_D_avg |
+  Any Contact vs No Contact  |   .0507295   .0206146     2.46   0.014
+  Bad Contact vs No Contact  |   .1158874   .0211895     5.47   0.000
+ Good Contact vs No Contact  |    .084737   .0187814     4.51   0.000
+ Bad Contact vs Any Contact  |    .065158   .0250843     2.60   0.009
+Good Contact vs Any Contact  |   .0340075   .0230519     1.48   0.140
+Good Contact vs Bad Contact  |  -.0311504   .0227636    -1.37   0.171
+---------------------------------------------------------------------
+
+. 
+. *Coefs (note Table C1 shows the MEs from above)
+. esttab cntct_val4_DER_max cntct_val4_D_max cntct_val4_DER_avg cntct_val4_D_avg
+>  ///
+>         using "Tables/c1_labeling_by_contact.rtf", replace /// 
+>                 b(3) se(3) label ///
+>                 keep(1.cntct_val4_DER_max 2.cntct_val4_DER_max 3.cntct_val4_DE
+> R_max       ///
+>                          1.cntct_val4_D_max   2.cntct_val4_D_max   3.cntct_val
+> 4_D_max   ///
+>                      1.cntct_val4_DER_avg 2.cntct_val4_DER_avg 3.cntct_val4_DE
+> R_avg       ///
+>                          1.cntct_val4_D_avg   2.cntct_val4_D_avg   3.cntct_val
+> 4_D_avg)   ///
+>                 star(+ 0.10 * 0.05 ** 0.01 *** 0.001) ///
+> title("Table #: Effects of contact on stigma, with different measures of conta
+> ct (N = 3,920)")
+(output written to Tables/c1_labeling_by_contact.rtf)
+
+.                 
+. // C2 combined table
+.                         
+. local c_val "cntct_val4_DER_max cntct_val4_D_max"
+
+. local c_val "`c_val' cntct_val4_DER_avg cntct_val4_D_avg"                     
+>   
+
+.                         
+. foreach v in `c_val' {          
+  2. *separate out by valence of contact
+. mi est (diff: _b[1.`v'] - _b[2.`v']): ///
+>                 reg socdistSS   i.`v' i.year
+  3. mi testtransform diff
+  4.         
+. mi est (diff: _b[1.`v'] - _b[2.`v']), post: ///
+>                 reg socdistSS   i.`v' i.L_mentlillB i.year  ///
+>                                                 i.vigdrug i.vigalc i.vigschiz 
+> i.vigdep ///
+>                                                 age i.female i.race i.region i
+> .metro coninc i.degree    
+  5. est store s`v'
+  6. mi testtransform diff
+  7. }       
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0276
+                                                Largest FMI       =     0.0869
+                                                Complete DF       =       3914
+DF adjustment:   Small sample                   DF:     min       =   1,492.21
+                                                        avg       =   2,920.48
+                                                        max       =   3,675.09
+Model F test:       Equal FMI                   F(   5, 3740.5)   =      13.17
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_max |
+ Any Contact  |  -.0708506   .0373297    -1.90   0.058    -.1440446    .0023434
+ Bad Contact  |  -.1293826    .035286    -3.67   0.000    -.1985981   -.0601672
+Good Contact  |    -.15464   .0337048    -4.59   0.000     -.220732   -.0885481
+              |
+         year |
+        2006  |  -.1031556   .0356832    -2.89   0.004    -.1731193   -.0331919
+        2018  |  -.1019078   .0350645    -2.91   0.004    -.1706563   -.0331592
+              |
+        _cons |   2.578651   .0257602   100.10   0.000     2.528145    2.629157
+-------------------------------------------------------------------------------
+
+Transformations                                 Average RVI       =     0.0713
+                                                Largest FMI       =     0.0670
+                                                Complete DF       =       3914
+DF adjustment:   Small sample                   DF:     min       =   1,973.34
+                                                        avg       =   1,973.34
+Within VCE type:          OLS                           max       =   1,973.34
+
+         diff: _b[1.cntct_val4_DER_max] - _b[2.cntct_val4_DER_max]
+
+------------------------------------------------------------------------------
+   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        diff |    .058532   .0495007     1.18   0.237    -.0385471    .1556112
+------------------------------------------------------------------------------
+note: assuming equal fractions of missing information.
+
+         diff: _b[1.cntct_val4_DER_max] - _b[2.cntct_val4_DER_max]
+
+ ( 1)  diff = 0
+
+       F(  1,1973.3) =    1.40
+            Prob > F =    0.2372
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0112
+                                                Largest FMI       =     0.1079
+                                                Complete DF       =       3891
+DF adjustment:   Small sample                   DF:     min       =   1,125.58
+                                                        avg       =   3,580.26
+                                                        max       =   3,887.83
+Model F test:       Equal FMI                   F(  28, 3885.2)   =      37.48
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_max |
+ Any Contact  |   -.056547   .0336302    -1.68   0.093     -.122486     .009392
+ Bad Contact  |  -.1247616   .0321325    -3.88   0.000    -.1877835   -.0617398
+Good Contact  |  -.1284814    .030724    -4.18   0.000    -.1887281   -.0682346
+              |
+  L_mentlillB |
+Lab MntlIl..  |   .0696289   .0242538     2.87   0.004     .0220729    .1171848
+              |
+         year |
+        2006  |    .004528   .0328635     0.14   0.890    -.0599049    .0689608
+        2018  |  -.1190952   .0319285    -3.73   0.000    -.1816944   -.0564961
+              |
+      vigdrug |
+        Drug  |   .8972367   .0377355    23.78   0.000     .8232534      .97122
+              |
+       vigalc |
+     Alcohol  |   .6654661   .0322304    20.65   0.000     .6022758    .7286564
+              |
+     vigschiz |
+Schizophre~a  |   .5620497   .0352775    15.93   0.000     .4928848    .6312145
+              |
+       vigdep |
+  Depression  |   .1976735   .0330428     5.98   0.000     .1328904    .2624567
+          age |   .0030479    .000608     5.01   0.000      .001856    .0042398
+              |
+       female |
+      female  |  -.0121593   .0209105    -0.58   0.561    -.0531559    .0288373
+              |
+         race |
+       black  |   .0303947   .0307094     0.99   0.322    -.0298136    .0906029
+  other race  |  -.0184817   .0387641    -0.48   0.634    -.0944817    .0575182
+              |
+       region |
+middle atl..  |   .0915656   .0564707     1.62   0.105    -.0191495    .2022806
+e. nor. ce..  |   .0245211   .0540304     0.45   0.650    -.0814096    .1304518
+w. nor. ce..  |  -.0560382    .063406    -0.88   0.377    -.1803503     .068274
+south atla..  |   .0012538   .0533872     0.02   0.981    -.1034157    .1059234
+e. sou. ce..  |  -.0193934   .0626924    -0.31   0.757    -.1423065    .1035197
+w. sou. ce..  |   .0746255   .0577243     1.29   0.196    -.0385472    .1877982
+    mountain  |  -.0494991   .0613134    -0.81   0.420    -.1697086    .0707105
+     pacific  |   -.005521   .0553487    -0.10   0.921    -.1140361    .1029942
+              |
+        metro |
+   MetroArea  |   .0546733   .0258359     2.12   0.034     .0040201    .1053266
+       coninc |   .0007508   .0003031     2.48   0.013     .0001561    .0013454
+              |
+       degree |
+ high school  |   -.029928   .0330256    -0.91   0.365    -.0946773    .0348212
+junior col..  |  -.1063926   .0472138    -2.25   0.024    -.1989589   -.0138264
+    bachelor  |  -.0598991   .0403458    -1.48   0.138    -.1390008    .0192027
+    graduate  |  -.0894192   .0471075    -1.90   0.058    -.1817779    .0029396
+              |
+        _cons |   1.909894   .0722601    26.43   0.000     1.768222    2.051566
+-------------------------------------------------------------------------------
+
+Transformations                                 Average RVI       =     0.0498
+                                                Largest FMI       =     0.0477
+                                                Complete DF       =       3891
+DF adjustment:   Small sample                   DF:     min       =   2,574.07
+                                                        avg       =   2,574.07
+Within VCE type:          OLS                           max       =   2,574.07
+
+         diff: _b[1.cntct_val4_DER_max] - _b[2.cntct_val4_DER_max]
+
+------------------------------------------------------------------------------
+   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        diff |   .0682147   .0440905     1.55   0.122    -.0182417    .1546711
+------------------------------------------------------------------------------
+note: assuming equal fractions of missing information.
+
+         diff: _b[1.cntct_val4_DER_max] - _b[2.cntct_val4_DER_max]
+
+ ( 1)  diff = 0
+
+       F(  1,2574.1) =    2.39
+            Prob > F =    0.1219
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0364
+                                                Largest FMI       =     0.0786
+                                                Complete DF       =       3914
+DF adjustment:   Small sample                   DF:     min       =   1,674.98
+                                                        avg       =   2,289.95
+                                                        max       =   2,982.91
+Model F test:       Equal FMI                   F(   5, 3627.6)   =      12.92
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_max |
+ Any Contact  |  -.0683894   .0381322    -1.79   0.073    -.1431807    .0064018
+ Bad Contact  |  -.1364464   .0358815    -3.80   0.000    -.2068238   -.0660691
+Good Contact  |  -.1474537   .0334826    -4.40   0.000    -.2131198   -.0817877
+              |
+         year |
+        2006  |  -.1014379   .0360711    -2.81   0.005    -.1721694   -.0307064
+        2018  |  -.1013272    .035412    -2.86   0.004    -.1707622   -.0318923
+              |
+        _cons |   2.577491   .0260575    98.92   0.000     2.526398    2.628583
+-------------------------------------------------------------------------------
+
+Transformations                                 Average RVI       =     0.0990
+                                                Largest FMI       =     0.0909
+                                                Complete DF       =       3914
+DF adjustment:   Small sample                   DF:     min       =   1,412.58
+                                                        avg       =   1,412.58
+Within VCE type:          OLS                           max       =   1,412.58
+
+         diff: _b[1.cntct_val4_D_max] - _b[2.cntct_val4_D_max]
+
+------------------------------------------------------------------------------
+   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        diff |    .068057   .0506481     1.34   0.179    -.0312967    .1674106
+------------------------------------------------------------------------------
+note: assuming equal fractions of missing information.
+
+         diff: _b[1.cntct_val4_D_max] - _b[2.cntct_val4_D_max]
+
+ ( 1)  diff = 0
+
+       F(  1,1412.6) =    1.81
+            Prob > F =    0.1793
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0134
+                                                Largest FMI       =     0.1099
+                                                Complete DF       =       3891
+DF adjustment:   Small sample                   DF:     min       =   1,097.86
+                                                        avg       =   3,468.08
+                                                        max       =   3,887.09
+Model F test:       Equal FMI                   F(  28, 3883.6)   =      37.39
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_max |
+ Any Contact  |  -.0554353   .0344767    -1.61   0.108    -.1230589    .0121884
+ Bad Contact  |  -.1319653   .0328313    -4.02   0.000    -.1963584   -.0675722
+Good Contact  |  -.1215682   .0302882    -4.01   0.000    -.1809618   -.0621747
+              |
+  L_mentlillB |
+Lab MntlIl..  |   .0697411   .0243324     2.87   0.004     .0220293     .117453
+              |
+         year |
+        2006  |   .0050697   .0331942     0.15   0.879    -.0600163    .0701558
+        2018  |  -.1189816   .0322368    -3.69   0.000    -.1821891   -.0557741
+              |
+      vigdrug |
+        Drug  |   .8975366   .0377452    23.78   0.000     .8235342    .9715389
+              |
+       vigalc |
+     Alcohol  |   .6655933   .0322256    20.65   0.000     .6024126     .728774
+              |
+     vigschiz |
+Schizophre~a  |   .5618957   .0352593    15.94   0.000     .4927667    .6310248
+              |
+       vigdep |
+  Depression  |   .1975436   .0330336     5.98   0.000     .1327786    .2623087
+          age |   .0030571   .0006079     5.03   0.000     .0018653     .004249
+              |
+       female |
+      female  |  -.0118358   .0209241    -0.57   0.572    -.0528591    .0291876
+              |
+         race |
+       black  |   .0298656   .0307027     0.97   0.331    -.0303294    .0900606
+  other race  |  -.0184657   .0387836    -0.48   0.634    -.0945038    .0575724
+              |
+       region |
+middle atl..  |   .0918406   .0564725     1.63   0.104    -.0188779     .202559
+e. nor. ce..  |   .0253374   .0540385     0.47   0.639    -.0806092     .131284
+w. nor. ce..  |  -.0550122   .0634149    -0.87   0.386    -.1793418    .0693174
+south atla..  |   .0021775   .0533839     0.04   0.967    -.1024857    .1068407
+e. sou. ce..  |  -.0188701   .0627048    -0.30   0.763    -.1418076    .1040674
+w. sou. ce..  |   .0751751   .0577235     1.30   0.193    -.0379962    .1883463
+    mountain  |  -.0485699   .0613194    -0.79   0.428    -.1687911    .0716513
+     pacific  |   -.004609   .0553599    -0.08   0.934    -.1131462    .1039282
+              |
+        metro |
+   MetroArea  |   .0546606   .0258408     2.12   0.034     .0039976    .1053235
+       coninc |   .0007505   .0003034     2.47   0.014     .0001552    .0013458
+              |
+       degree |
+ high school  |  -.0301247   .0330416    -0.91   0.362    -.0949052    .0346558
+junior col..  |   -.107328   .0472471    -2.27   0.023    -.1999597   -.0146964
+    bachelor  |  -.0604042   .0403677    -1.50   0.135    -.1395489    .0187405
+    graduate  |  -.0894284   .0471314    -1.90   0.058    -.1818341    .0029774
+              |
+        _cons |   1.908273    .072386    26.36   0.000     1.766354    2.050192
+-------------------------------------------------------------------------------
+
+Transformations                                 Average RVI       =     0.0850
+                                                Largest FMI       =     0.0790
+                                                Complete DF       =       3891
+DF adjustment:   Small sample                   DF:     min       =   1,660.80
+                                                        avg       =   1,660.80
+Within VCE type:          OLS                           max       =   1,660.80
+
+         diff: _b[1.cntct_val4_D_max] - _b[2.cntct_val4_D_max]
+
+------------------------------------------------------------------------------
+   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        diff |     .07653   .0452761     1.69   0.091    -.0122743    .1653343
+------------------------------------------------------------------------------
+note: assuming equal fractions of missing information.
+
+         diff: _b[1.cntct_val4_D_max] - _b[2.cntct_val4_D_max]
+
+ ( 1)  diff = 0
+
+       F(  1,1660.8) =    2.86
+            Prob > F =    0.0912
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0348
+                                                Largest FMI       =     0.0843
+                                                Complete DF       =       3914
+DF adjustment:   Small sample                   DF:     min       =   1,545.51
+                                                        avg       =   2,613.33
+                                                        max       =   3,387.60
+Model F test:       Equal FMI                   F(   5, 3649.9)   =      13.22
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_avg |
+ Any Contact  |  -.0686267   .0383195    -1.79   0.074    -.1437905     .006537
+ Bad Contact  |   -.130088   .0350952    -3.71   0.000    -.1988979   -.0612781
+Good Contact  |  -.1572355   .0336581    -4.67   0.000    -.2232534   -.0912177
+              |
+         year |
+        2006  |   -.101085   .0358418    -2.82   0.005    -.1713608   -.0308092
+        2018  |  -.0987786   .0353591    -2.79   0.005    -.1681074   -.0294497
+              |
+        _cons |    2.57762   .0261296    98.65   0.000     2.526385    2.628856
+-------------------------------------------------------------------------------
+
+Transformations                                 Average RVI       =     0.0588
+                                                Largest FMI       =     0.0559
+                                                Complete DF       =       3914
+DF adjustment:   Small sample                   DF:     min       =   2,308.26
+                                                        avg       =   2,308.26
+Within VCE type:          OLS                           max       =   2,308.26
+
+         diff: _b[1.cntct_val4_DER_avg] - _b[2.cntct_val4_DER_avg]
+
+------------------------------------------------------------------------------
+   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        diff |   .0614613    .049983     1.23   0.219     -.036555    .1594775
+------------------------------------------------------------------------------
+note: assuming equal fractions of missing information.
+
+         diff: _b[1.cntct_val4_DER_avg] - _b[2.cntct_val4_DER_avg]
+
+ ( 1)  diff = 0
+
+       F(  1,2308.3) =    1.51
+            Prob > F =    0.2190
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0153
+                                                Largest FMI       =     0.1188
+                                                Complete DF       =       3891
+DF adjustment:   Small sample                   DF:     min       =     982.85
+                                                        avg       =   3,421.77
+                                                        max       =   3,887.62
+Model F test:       Equal FMI                   F(  28, 3882.0)   =      37.35
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~R_avg |
+ Any Contact  |   -.054589   .0350338    -1.56   0.119    -.1233277    .0141497
+ Bad Contact  |  -.1237214   .0323504    -3.82   0.000    -.1871533   -.0602896
+Good Contact  |  -.1312394    .030806    -4.26   0.000    -.1916665   -.0708122
+              |
+  L_mentlillB |
+Lab MntlIl..  |   .0694981   .0242612     2.86   0.004     .0219272    .1170689
+              |
+         year |
+        2006  |   .0059736   .0335245     0.18   0.859    -.0597657    .0717128
+        2018  |  -.1172036   .0325806    -3.60   0.000    -.1810905   -.0533166
+              |
+      vigdrug |
+        Drug  |   .8969845   .0377289    23.77   0.000     .8230142    .9709548
+              |
+       vigalc |
+     Alcohol  |   .6651093   .0322141    20.65   0.000     .6019511    .7282674
+              |
+     vigschiz |
+Schizophre~a  |   .5620986   .0352463    15.95   0.000     .4929951     .631202
+              |
+       vigdep |
+  Depression  |   .1977705   .0330369     5.99   0.000     .1329989     .262542
+          age |   .0030525   .0006078     5.02   0.000      .001861    .0042441
+              |
+       female |
+      female  |  -.0122283   .0209151    -0.58   0.559    -.0532341    .0287774
+              |
+         race |
+       black  |   .0305119   .0307027     0.99   0.320     -.029683    .0907069
+  other race  |  -.0186624   .0387691    -0.48   0.630    -.0946721    .0573472
+              |
+       region |
+middle atl..  |    .091037   .0564729     1.61   0.107    -.0196823    .2017563
+e. nor. ce..  |    .024274   .0540307     0.45   0.653    -.0816572    .1302051
+w. nor. ce..  |  -.0563397   .0634072    -0.89   0.374    -.1806543    .0679749
+south atla..  |   .0011277   .0533886     0.02   0.983    -.1035445    .1057999
+e. sou. ce..  |  -.0191793   .0626997    -0.31   0.760    -.1421068    .1037482
+w. sou. ce..  |   .0747296   .0577149     1.29   0.195    -.0384249     .187884
+    mountain  |  -.0495495   .0613054    -0.81   0.419    -.1697434    .0706444
+     pacific  |  -.0057573   .0553469    -0.10   0.917    -.1142691    .1027544
+              |
+        metro |
+   MetroArea  |   .0548823   .0258279     2.12   0.034     .0042448    .1055198
+       coninc |   .0007535   .0003048     2.47   0.014     .0001552    .0013517
+              |
+       degree |
+ high school  |  -.0297142   .0330599    -0.90   0.369    -.0945307    .0351023
+junior col..  |  -.1063282   .0472369    -2.25   0.024    -.1989399   -.0137164
+    bachelor  |  -.0599641   .0404205    -1.48   0.138    -.1392127    .0192845
+    graduate  |  -.0894063   .0471818    -1.89   0.058    -.1819114    .0030987
+              |
+        _cons |   1.908801    .072489    26.33   0.000      1.76668    2.050923
+-------------------------------------------------------------------------------
+
+Transformations                                 Average RVI       =     0.1038
+                                                Largest FMI       =     0.0949
+                                                Complete DF       =       3891
+DF adjustment:   Small sample                   DF:     min       =   1,334.85
+                                                        avg       =   1,334.85
+Within VCE type:          OLS                           max       =   1,334.85
+
+         diff: _b[1.cntct_val4_DER_avg] - _b[2.cntct_val4_DER_avg]
+
+------------------------------------------------------------------------------
+   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        diff |   .0691324   .0459312     1.51   0.133    -.0209727    .1592376
+------------------------------------------------------------------------------
+note: assuming equal fractions of missing information.
+
+         diff: _b[1.cntct_val4_DER_avg] - _b[2.cntct_val4_DER_avg]
+
+ ( 1)  diff = 0
+
+       F(  1,1334.8) =    2.27
+            Prob > F =    0.1325
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0335
+                                                Largest FMI       =     0.0795
+                                                Complete DF       =       3914
+DF adjustment:   Small sample                   DF:     min       =   1,654.45
+                                                        avg       =   2,522.47
+                                                        max       =   3,116.50
+Model F test:       Equal FMI                   F(   5, 3666.5)   =      12.95
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_avg |
+ Any Contact  |  -.0705371   .0382226    -1.85   0.065    -.1455069    .0044328
+ Bad Contact  |  -.1317203   .0365244    -3.61   0.000    -.2033494   -.0600913
+Good Contact  |  -.1482257   .0324739    -4.56   0.000    -.2119023   -.0845492
+              |
+         year |
+        2006  |  -.1037677   .0360204    -2.88   0.004    -.1743985   -.0331369
+        2018  |  -.1026392   .0353831    -2.90   0.004    -.1720168   -.0332617
+              |
+        _cons |   2.578654    .026033    99.05   0.000     2.527611    2.629698
+-------------------------------------------------------------------------------
+
+Transformations                                 Average RVI       =     0.1113
+                                                Largest FMI       =     0.1012
+                                                Complete DF       =       3914
+DF adjustment:   Small sample                   DF:     min       =   1,231.04
+                                                        avg       =   1,231.04
+Within VCE type:          OLS                           max       =   1,231.04
+
+         diff: _b[1.cntct_val4_D_avg] - _b[2.cntct_val4_D_avg]
+
+------------------------------------------------------------------------------
+   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        diff |   .0611833   .0516506     1.18   0.236    -.0401498    .1625163
+------------------------------------------------------------------------------
+note: assuming equal fractions of missing information.
+
+         diff: _b[1.cntct_val4_D_avg] - _b[2.cntct_val4_D_avg]
+
+ ( 1)  diff = 0
+
+       F(  1,1231.0) =    1.40
+            Prob > F =    0.2364
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0136
+                                                Largest FMI       =     0.1086
+                                                Complete DF       =       3891
+DF adjustment:   Small sample                   DF:     min       =   1,116.78
+                                                        avg       =   3,464.94
+                                                        max       =   3,887.63
+Model F test:       Equal FMI                   F(  28, 3883.4)   =      37.38
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+cntct_v~D_avg |
+ Any Contact  |  -.0554839   .0346459    -1.60   0.109    -.1234438    .0124761
+ Bad Contact  |  -.1292293   .0332919    -3.88   0.000    -.1945142   -.0639443
+Good Contact  |  -.1244166   .0297389    -4.18   0.000    -.1827326   -.0661005
+              |
+  L_mentlillB |
+Lab MntlIl..  |   .0695351   .0242877     2.86   0.004     .0219118    .1171583
+              |
+         year |
+        2006  |    .005015   .0334227     0.15   0.881    -.0605238    .0705538
+        2018  |  -.1191861   .0324039    -3.68   0.000    -.1827241   -.0556481
+              |
+      vigdrug |
+        Drug  |   .8976914   .0377346    23.79   0.000     .8237099    .9716729
+              |
+       vigalc |
+     Alcohol  |   .6656568   .0322102    20.67   0.000     .6025063    .7288073
+              |
+     vigschiz |
+Schizophre~a  |    .562105   .0352426    15.95   0.000     .4930089    .6312011
+              |
+       vigdep |
+  Depression  |   .1976604   .0330223     5.99   0.000     .1329176    .2624032
+          age |   .0030524   .0006078     5.02   0.000     .0018608    .0042439
+              |
+       female |
+      female  |   -.012159   .0209176    -0.58   0.561    -.0531696    .0288516
+              |
+         race |
+       black  |   .0299215   .0307126     0.97   0.330    -.0302928    .0901358
+  other race  |  -.0186381   .0387617    -0.48   0.631    -.0946333    .0573571
+              |
+       region |
+middle atl..  |   .0917406   .0564796     1.62   0.104    -.0189918     .202473
+e. nor. ce..  |    .024627   .0540376     0.46   0.649    -.0813177    .1305717
+w. nor. ce..  |  -.0559983   .0634179    -0.88   0.377    -.1803338    .0683372
+south atla..  |    .001726   .0533903     0.03   0.974    -.1029496    .1064016
+e. sou. ce..  |  -.0192614   .0627055    -0.31   0.759    -.1422002    .1036774
+w. sou. ce..  |   .0748215   .0577264     1.30   0.195    -.0383553    .1879983
+    mountain  |  -.0488869   .0613279    -0.80   0.425    -.1691248    .0713509
+     pacific  |  -.0050744   .0553613    -0.09   0.927    -.1136145    .1034656
+              |
+        metro |
+   MetroArea  |   .0546562   .0258298     2.12   0.034     .0040149    .1052976
+       coninc |   .0007502   .0003031     2.47   0.013     .0001554     .001345
+              |
+       degree |
+ high school  |  -.0300543   .0330361    -0.91   0.363    -.0948241    .0347155
+junior col..  |  -.1068878   .0472405    -2.26   0.024    -.1995065   -.0142692
+    bachelor  |  -.0601797   .0403674    -1.49   0.136    -.1393237    .0189644
+    graduate  |  -.0893674   .0471287    -1.90   0.058    -.1817677    .0030329
+              |
+        _cons |   1.909252   .0724541    26.35   0.000     1.767199    2.051305
+-------------------------------------------------------------------------------
+
+Transformations                                 Average RVI       =     0.1142
+                                                Largest FMI       =     0.1035
+                                                Complete DF       =       3891
+DF adjustment:   Small sample                   DF:     min       =   1,191.23
+                                                        avg       =   1,191.23
+Within VCE type:          OLS                           max       =   1,191.23
+
+         diff: _b[1.cntct_val4_D_avg] - _b[2.cntct_val4_D_avg]
+
+------------------------------------------------------------------------------
+   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        diff |   .0737454   .0465371     1.58   0.113    -.0175585    .1650493
+------------------------------------------------------------------------------
+note: assuming equal fractions of missing information.
+
+         diff: _b[1.cntct_val4_D_avg] - _b[2.cntct_val4_D_avg]
+
+ ( 1)  diff = 0
+
+       F(  1,1191.2) =    2.51
+            Prob > F =    0.1133
+
+.         
+. *Table C2       
+. esttab scntct_val4_DER_max scntct_val4_D_max scntct_val4_DER_avg scntct_val4_D
+> _avg ///
+>         using "Tables/C2_stigma_by_contact.rtf", replace ///
+>                 b(3) se(3) label nogaps ///
+>                 keep(1.cntct_val4_DER_max 2.cntct_val4_DER_max 3.cntct_val4_DE
+> R_max       ///
+>                          1.cntct_val4_D_max   2.cntct_val4_D_max   3.cntct_val
+> 4_D_max   ///
+>                      1.cntct_val4_DER_avg 2.cntct_val4_DER_avg 3.cntct_val4_DE
+> R_avg       ///
+>                          1.cntct_val4_D_avg   2.cntct_val4_D_avg   3.cntct_val
+> 4_D_avg)   ///
+>                 star(+ 0.10 * 0.05 ** 0.01 *** 0.001) ///
+> title("Table #: Effects of contact on stigma, with different measures of conta
+> ct (N = 3,920)")
+(output written to Tables/C2_stigma_by_contact.rtf)
+
+.                 
+.         
+.         
+. // close out
+. log close
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/ML
+> S_MatchingLabelingStigma/work_socius_2024_09_corrected/mls-do05-appendixC_cont
+> act.log
+  log type:  text
+ closed on:  26 Sep 2024, 17:21:21
+--------------------------------------------------------------------------------

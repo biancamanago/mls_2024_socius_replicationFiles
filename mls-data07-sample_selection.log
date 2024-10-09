@@ -1,0 +1,1998 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/ML
+> S_MatchingLabelingStigma/work_socius_2024_09_other_imputed/mls-data07-sample_s
+> election.log
+  log type:  text
+ opened on:  26 Sep 2024, 10:36:56
+
+.  
+.  
+. **********
+. /// #0 Setup    
+> **********      
+.  
+.  version 15.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+
+. 
+.  
+.  local pgm   mls-data07-sample_selection.do
+
+.  local dte   2021-01-22
+
+.  local who   trent mize
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+.  di "`tag'"
+mls-data07-sample_selection.do.do trent mize 2021-01-22
+
+.  
+. ****************************************************************
+.  // #1 Load Data; Examine # of missing
+. **************************************************************** 
+. use "Data/mls-data06-scales", clear
+
+. 
+. count
+  4,054
+
+.  
+. local cond   "vigdrug vigalc vigschiz vigdep"
+
+. local att    "a_imbalnceR a_geneticsR a_stressesR a_wayraiseR a_charactrR a_go
+> dswillR"
+
+. local demog  "age ageQ female race white south region region4 metro"
+
+. local demog  "`demog' anychild childs xnorcsiz coninc conincQ educ degree"
+
+. 
+. sum     socdistSS L_mentlillB violent_oth cntct_tot ///
+>                 `cond' `att' `demog'
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+   socdistSS |      3,921    2.444313    .7199534          1          4
+ L_mentlillB |      3,855    .5955901    .4908411          0          1
+ violent_oth |      3,775    2.500132    .8843798          1          4
+   cntct_tot |      3,803     .566395    .4956373          0          1
+     vigdrug |      4,054    .1280217    .3341552          0          1
+-------------+---------------------------------------------------------
+      vigalc |      4,054    .2168229    .4121318          0          1
+    vigschiz |      4,054    .2168229    .4121318          0          1
+      vigdep |      4,054     .228663    .4200235          0          1
+ a_imbalnceR |      3,794    .7092778    .4541554          0          1
+ a_geneticsR |      3,831    .5766119    .4941603          0          1
+-------------+---------------------------------------------------------
+ a_stressesR |      3,908    .8874104    .3161309          0          1
+ a_wayraiseR |      3,858    .5031104    .5000551          0          1
+ a_charactrR |      3,889     .438416    .4962567          0          1
+ a_godswillR |      3,864    .1387164     .345695          0          1
+         age |      4,048    46.76581    17.45356         18         89
+-------------+---------------------------------------------------------
+        ageQ |      4,048     2.47752    1.131567          1          4
+      female |      4,054    .5451406    .4980196          0          1
+        race |      4,054    1.322891    .6244338          1          3
+       white |      4,054    .7627035     .425478          0          1
+       south |      4,054    .2733103    .4457138          0          1
+-------------+---------------------------------------------------------
+      region |      4,054    5.121115    2.463628          1          9
+     region4 |      4,054    2.645782    1.004719          1          4
+       metro |      4,054    .2239763    .4169578          0          1
+    anychild |      4,043    .7044274    .4563562          0          1
+      childs |      4,043    1.817957    1.695237          0          8
+-------------+---------------------------------------------------------
+    xnorcsiz |      4,054    4.131475     2.71106          1         10
+      coninc |      3,587    49.50704    40.32436      .3505    178.266
+     conincQ |      3,587    2.506551    1.118046          1          4
+        educ |      4,047    13.60094    2.913166          0         20
+      degree |      4,049    1.606076    1.200985          0          4
+
+.                 
+. misstable patterns      socdistSS L_mentlillB violent_oth cntct_tot ///
+>                 `cond' `att' `demog'
+
+                        Missing-value patterns
+                          (1 means complete)
+
+              |   Pattern
+    Percent   |  1  2  3  4    5  6  7  8    9 10 11 12   13 14 15 16
+  ------------+-------------------------------------------------------
+       73%    |  1  1  1  1    1  1  1  1    1  1  1  1    1  1  1  1
+              |  1  1
+              |
+        8     |  1  1  1  1    1  1  1  1    1  1  1  1    1  1  1  1
+              |  0  0
+              |
+        4     |  1  1  1  1    1  1  1  1    1  1  1  1    1  0  1  1
+              |  1  1
+              |
+        2     |  1  1  1  1    1  1  1  1    1  1  1  1    1  1  1  0
+              |  1  1
+              |
+        1     |  1  1  1  1    1  1  1  1    1  1  1  1    1  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  0  0    0  0  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    1  0  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  0  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    1  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  0  0    0  0  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  0  0    0  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    1  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    0  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  0  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    0  0  1  1    1  1  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    1  0  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    1  1  0  1
+              |  1  1
+              |
+       <1     |  0  1  1  1    1  1  1  1    1  1  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  0    1  1  1  1    1  1  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  0  0  0    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  1    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    1  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    1  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    0  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    1  0  1  0
+              |  1  1
+              |
+       <1     |  1  0  0  1    1  1  1  1    1  1  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  0  0    0  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    1  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  0  0  1    0  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  0  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  0    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    0  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    0  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  0  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    0  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    0  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    1  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    1  0  0  1
+              |  1  1
+              |
+       <1     |  0  1  1  0    1  1  0  0    0  0  0  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  0  1  1  1    1  1  1  1    1  0  1  0    1  1  0  1
+              |  1  1
+              |
+       <1     |  1  0  0  1    0  0  1  1    1  1  1  1    1  1  1  1
+              |  0  0
+              |
+       <1     |  1  0  0  1    1  1  0  1    0  0  1  1    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  0  0  1    1  1  0  1    1  1  1  1    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  0  0  1    1  1  1  1    1  0  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  0    0  0  0  1    1  1  1  1    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  0    1  1  1  1    1  1  1  1    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  0    1  1  1  1    1  1  1  1    1  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    0  0  0  0    1  0  1  0    0  0  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    0  0  0  1    0  0  1  0    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    0  0  1  1    0  1  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    0  0  1  1    1  0  1  1    1  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    0  0  1  1    1  1  1  1    1  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  0  0    0  0  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  0  0    0  0  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  0  1    0  0  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  0  1    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  0  1    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  1  0    0  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  1  0  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  1  0  1    0  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  1  0  1    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    1  0  0  0    0  0  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    1  0  0  1    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    1  0  1  0    0  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    1  0  1  0    0  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    1  0  1  1    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    1  1  0  1    0  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    1  1  0  1    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    1  1  1  0    0  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  1    0  0  1  1    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    0  1  0  0    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    0  1  1  1    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    0  1  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  0  0  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  0  0  0    0  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  0  0  1    0  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  0  1  1    0  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  0  1  1    1  0  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  0  1  1    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  0  1    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  0  1    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  0    1  0  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  0    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    0  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    0  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    1  0  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  0  0  0    0  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  0  0  1    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  0  1  0    1  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  1  0  0    0  0  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  1  0  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  1  0  0    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  1  0  1    0  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  1  1  1    0  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  1  1  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  0  0  0    0  0  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  0  0  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  0  0  1    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  0  0  1    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  0  1  0    0  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  0  1  1    1  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  0  0    0  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  0  0    1  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  0  0    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  0  1    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  0  1    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  0  1    1  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  0    0  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  0    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  0    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  1    0  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  1    1  0  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  1    1  0  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  1    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  0  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  0  0    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  0  1    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  0  1    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  1  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  1  0    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  1  1    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  1  1    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  1  1    1  0  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  0    0  0  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  0    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  0    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  1    0  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  1    0  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  1    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  1    1  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  1    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  1    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  0    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  0    1  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  0    1  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  0    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    1  0  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    1  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  0  0    0  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  0  0    1  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  0    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  0    1  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  0    1  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  0  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  0    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  0    0  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  0    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  0    1  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    0  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    0  1  1  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    0  1  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    1  0  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  1    1  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    0  0  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    0  0  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    0  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    0  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    0  1  0  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    0  1  1  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    0  1  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    1  0  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    1  0  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    1  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  0    1  1  0  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    0  0  1  1
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    0  0  1  1
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    0  1  0  0
+              |  0  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    0  1  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    1  0  0  0
+              |  1  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  1  1    1  0  1  0
+              |  0  0
+              |
+  ------------+-------------------------------------------------------
+      100%    |
+
+  Variables are
+      Row 1:   (1) degree  (2) age  (3) ageQ  (4) educ  (5) anychild
+               (6) childs  (7) socdistSS  (8) a_stressesR  (9) a_charactrR
+               (10) a_godswillR  (11) a_wayraiseR  (12) L_mentlillB
+               (13) a_geneticsR  (14) cntct_tot  (15) a_imbalnceR
+               (16) violent_oth
+      Row 2:   (1) coninc  (2) conincQ
+
+.                 
+.                 
+. ****************************************************************
+.  // #2 Create a listwise deletion dataset
+. **************************************************************** 
+. ******
+. // Drop for missing on DV
+. ******
+. count
+  4,054
+
+. local N `r(N)'
+
+. drop if missing(socdistSS)
+(133 observations deleted)
+
+. local ndrop `r(N_drop)'
+
+. di `ndrop'
+133
+
+. di `ndrop'/`N' // 3.28% of sampled dropped
+.0328071
+
+. 
+. ******
+. // Drop for missing on income (by far most missing data)
+. ******
+. count
+  3,921
+
+. local N `r(N)'
+
+. drop if missing(coninc, conincQ)
+(428 observations deleted)
+
+. local ndrop `r(N_drop)'
+
+. di `ndrop'
+428
+
+. di `ndrop'/`N'  // ~10.91% of sample dropped
+.10915583
+
+. 
+. ******
+. // Drop for missing on other model vars
+. ******
+. count
+  3,493
+
+. local N `r(N)'
+
+. drop if missing(L_mentlillB, cntct_tot, vigdrug, vigalc, vigschiz, ///
+>                                 vigdep, age, ageQ, female, race, region, metro
+> , coninc, degree)
+(248 observations deleted)
+
+. local ndrop `r(N_drop)' 
+
+. di `ndrop'                      
+248
+
+. di `ndrop'/`N'  // 6.33% of sample dropped
+.07099914
+
+. 
+. count
+  3,245
+
+. ** Label and save data **
+. compress
+  variable cond was float now byte
+  variable cond06 was float now byte
+  variable cond18 was float now byte
+  variable cond96 was float now byte
+  variable vig_female was float now byte
+  variable vig_gths was float now byte
+  variable vig_white was float now byte
+  variable vig_y06 was float now byte
+  variable vig_y18 was float now byte
+  variable vig_y96 was float now byte
+  variable a_breakdwnR was float now byte
+  variable a_breakdwnRV was float now byte
+  variable a_charactrR was float now byte
+  variable a_charactrRV was float now byte
+  variable a_geneticsR was float now byte
+  variable a_geneticsRV was float now byte
+  variable a_godswillR was float now byte
+  variable a_godswillRV was float now byte
+  variable a_imbalnceR was float now byte
+  variable a_imbalnceRV was float now byte
+  variable a_physillR was float now byte
+  variable a_physillRV was float now byte
+  variable a_stressesR was float now byte
+  variable a_stressesRV was float now byte
+  variable a_upsdownsR was float now byte
+  variable a_upsdownsRV was float now byte
+  variable a_wayraiseR was float now byte
+  variable a_wayraiseRV was float now byte
+  variable anychild was float now byte
+  variable cntct_any06 was float now byte
+  variable cntct_any18 was float now byte
+  variable cntct_any96 was float now byte
+  variable cntct_oth06 was float now byte
+  variable cntct_oth18 was float now byte
+  variable cntct_oth96 was float now byte
+  variable cntct_slf06 was float now byte
+  variable cntct_slf18 was float now byte
+  variable cntct_slf96 was float now byte
+  variable cntct_so06 was float now byte
+  variable cntct_so18 was float now byte
+  variable cntct_so3 was float now byte
+  variable cntct_so4 was float now byte
+  variable cntct_so96 was float now byte
+  variable cntct_tot was float now byte
+  variable cntct_val3 was float now byte
+  variable cntct_val4 was float now byte
+  variable metro was float now byte
+  variable numchild was float now byte
+  variable region4 was float now byte
+  variable shld_dangroth was float now byte
+  variable shld_dangrothR was float now byte
+  variable shld_dangrslf was float now byte
+  variable shld_dangrslfR was float now byte
+  variable shld_meddoc was float now byte
+  variable shld_meddocR was float now byte
+  variable shld_mentldoc was float now byte
+  variable shld_mentldocR was float now byte
+  variable shld_mentlhos was float now byte
+  variable shld_mentlhosR was float now byte
+  variable shld_otcmed was float now byte
+  variable shld_otcmedR was float now byte
+  variable shld_rxmed was float now byte
+  variable shld_rxmedR was float now byte
+  variable shld_selfhelp was float now byte
+  variable shld_selfhelpR was float now byte
+  variable violent_othR was float now byte
+  variable violent_selfR was float now byte
+  variable age10 was float now byte
+  variable cohort10 was float now byte
+  variable ed_gths was float now byte
+  variable white was float now byte
+  variable SD_miss was float now byte
+  variable s_nextdoorDK0 was float now byte
+  variable s_socialDK0 was float now byte
+  variable s_friendsDK0 was float now byte
+  variable s_workDK0 was float now byte
+  variable s_marryDK0 was float now byte
+  variable s_grphomeDK0 was float now byte
+  variable s_nextdoorDK1 was float now byte
+  variable s_socialDK1 was float now byte
+  variable s_friendsDK1 was float now byte
+  variable s_workDK1 was float now byte
+  variable s_marryDK1 was float now byte
+  variable s_grphomeDK1 was float now byte
+  variable s_nextdoorDK2 was float now byte
+  variable s_socialDK2 was float now byte
+  variable s_friendsDK2 was float now byte
+  variable s_workDK2 was float now byte
+  variable s_marryDK2 was float now byte
+  variable s_grphomeDK2 was float now byte
+  variable s_nextdoorDK3 was float now byte
+  variable s_socialDK3 was float now byte
+  variable s_friendsDK3 was float now byte
+  variable s_workDK3 was float now byte
+  variable s_marryDK3 was float now byte
+  variable s_grphomeDK3 was float now byte
+  variable s_nextdoorDK4 was float now byte
+  variable s_socialDK4 was float now byte
+  variable s_friendsDK4 was float now byte
+  variable s_workDK4 was float now byte
+  variable s_marryDK4 was float now byte
+  variable s_grphomeDK4 was float now byte
+  variable socdist_tot was float now byte
+  variable formwt was double now byte
+  variable oversamp was double now byte
+  (1,048,135 bytes saved)
+
+. label data "MLS - GSS Data | Matching Labeling Stigma | Listwise Deletion | `t
+> ag'"
+note: label truncated to 80 characters
+
+. datasignature set, reset
+  3245:222(53830):2354051239:707476518       (data signature set)
+
+. save     "Data/mls-data07-listwise",  replace   
+file Data/mls-data07-listwise.dta saved
+
+.  
+.  
+. ****************************************************************
+.  // #3A Create a multiple imputation dataset.
+.  //     - Continuous age and income
+. **************************************************************** 
+. use "Data/mls-data06-scales", clear
+
+. 
+. ******
+. // Drop for missing on DV
+. ******
+. count
+  4,054
+
+. local N `r(N)'
+
+. drop if missing(socdistSS)
+(133 observations deleted)
+
+. local ndrop `r(N_drop)'
+
+. di `ndrop'
+133
+
+. di              `ndrop'/`N' // 3.28% of sampled dropped
+.0328071
+
+. 
+. 
+. ******
+. // Imputation
+. ******
+. 
+. local mvs "L_mentlillB cntct_tot cntct_so4 cntct_val4 cntct_so3 cntct_val3"
+
+. local mvs "`mvs' vigdrug vigalc vigschiz vigdep"
+
+. local mvs "`mvs' age ageQ female race region metro coninc conincQ degree year"
+
+. local mvs "`mvs' a_imbalnceR a_geneticsR a_stressesR a_wayraiseR a_charactrR a
+> _godswillR"
+
+. misstable summarize `mvs'
+                                                               Obs<.
+                                                +------------------------------
+               |                                | Unique
+      Variable |     Obs=.     Obs>.     Obs<.  | values        Min         Max
+  -------------+--------------------------------+------------------------------
+   L_mentlillB |                 105     3,816  |      2          0           1
+     cntct_tot |       194               3,727  |      2          0           1
+     cntct_so4 |       194               3,727  |      4          0           3
+    cntct_val4 |       194               3,727  |      4          0           3
+     cntct_so3 |       194               3,727  |      3          0           2
+    cntct_val3 |       194               3,727  |      3          0           2
+           age |                   4     3,917  |     72         18          89
+          ageQ |         4               3,917  |      4          1           4
+        coninc |       428               3,493  |     72      .3505     178.266
+       conincQ |       428               3,493  |      4          1           4
+        degree |                   4     3,917  |      5          0           4
+   a_imbalnceR |                 164     3,757  |      2          0           1
+   a_geneticsR |                 120     3,801  |      2          0           1
+   a_stressesR |                  51     3,870  |      2          0           1
+   a_wayraiseR |                  99     3,822  |      2          0           1
+   a_charactrR |                  73     3,848  |      2          0           1
+   a_godswillR |                  92     3,829  |      2          0           1
+  -----------------------------------------------------------------------------
+
+. misstable patterns      `mvs'
+
+                        Missing-value patterns
+                          (1 means complete)
+
+              |   Pattern
+    Percent   |  1  2  3  4    5  6  7  8    9 10 11 12   13 14 15 16
+  ------------+-------------------------------------------------------
+       77%    |  1  1  1  1    1  1  1  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+        8     |  1  1  1  1    1  1  1  1    1  1  1  1    1  1  1  0
+              |  0
+              |
+        4     |  1  1  1  1    1  1  1  1    1  1  0  0    0  0  0  1
+              |  1
+              |
+        1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  0  1  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  1  0  0    0  0  0  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  1  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  0  1  1    1  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  1  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    1  1  0  0    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  1  1    1  1  0  0    0  0  0  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  1  1    1  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  0  1  1    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  0  1    1  1  1  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    0  0  0  0    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  1  1    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  0  1  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  1  1    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    1  0  0  0    0  0  0  1
+              |  1
+              |
+       <1     |  0  0  1  1    1  1  1  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    0  0  0  1    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    1  1  0  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  1  0    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  0  0  0    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  0  0  1    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  0  1    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    0  1  0  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  1  0    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  1  1    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    0  1  1  1    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  0  1  1    1  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  0  1  1    1  1  0  0    0  0  0  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  0  1    0  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  0  0  0    0  0  0  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  0  0  1  1    1  0  1  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  0  0  1  1    1  1  1  1    1  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  0  1    1  0  1  0    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    0  0  0  0    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    0  0  0  1    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    0  0  1  0    1  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    0  1  0  0    0  0  0  0    0  0  0  1
+              |  1
+              |
+       <1     |  1  1  1  0    0  1  0  0    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    0  1  0  0    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    0  1  0  1    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    0  1  1  1    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    0  1  1  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  0  0  0    0  0  0  0    0  0  0  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  0  0  0    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  0  0  1    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  0  0  1    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  0  1  0    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    1  0  1  1    1  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    1  1  0  0    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  0  0    1  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    1  1  0  0    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  0  1    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  0  1    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  0  1    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  1  0    0  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    1  1  1  0    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  1  0    1  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    1  1  1  1    0  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  0    1  1  1  1    1  0  0  0    0  0  0  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  1  1    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  0    1  1  1  1    1  1  0  0    0  0  0  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  0  1  0    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  0  1  0    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  0  1  1    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  0  1  1    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  0  1  1    1  1  0  0    0  0  0  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  0  0    0  0  0  0    0  0  0  0
+              |  0
+              |
+       <1     |  1  1  1  1    0  1  0  0    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  0  0    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  0  1    1  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    0  1  0  1    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  1  0    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  1  0    1  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    0  1  1  1    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    0  1  1  1    1  1  0  0    0  0  0  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  0  0  0    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  0  0  0    1  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  0  1  0    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  0  1  0    1  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  0  1  0    1  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  0  1  1    0  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  0  1  1    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  0  1  1    1  1  0  0    0  0  0  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  1  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  0  0    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  0  0    1  0  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  0  1    1  1  0  0    0  0  0  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    0  1  1  1    1  1  1  1
+              |  1
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  0  0  0    0  0  0  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  1  0    1  1  0  0    0  0  0  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  0  1  1    1  1  1  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  0    0  0  0  0
+              |  0
+              |
+       <1     |  1  1  1  1    1  1  1  1    0  1  0  0    0  0  0  1
+              |  1
+              |
+  ------------+-------------------------------------------------------
+      100%    |
+
+  Variables are
+      Row 1:   (1) age  (2) ageQ  (3) degree  (4) a_stressesR  (5) a_charactrR
+               (6) a_godswillR  (7) a_wayraiseR  (8) L_mentlillB
+               (9) a_geneticsR  (10) a_imbalnceR  (11) cntct_so3
+               (12) cntct_so4  (13) cntct_tot  (14) cntct_val3
+               (15) cntct_val4  (16) coninc
+      Row 2:   (1) conincQ
+
+. 
+. *MI impute won't impute the "soft missings" that are >.
+. local miss "age degree L_mentlillB cntct_tot cntct_so4 cntct_val4 cntct_so3 cn
+> tct_val3"
+
+. local miss "`miss' a_imbalnceR a_geneticsR a_stressesR a_wayraiseR a_charactrR
+>  a_godswillR"
+
+. local miss "`miss' cntct_so96 cntct_slf96 cntct_oth96 cntct_so06 cntct_slf06 c
+> ntct_oth06"
+
+. local miss "`miss' cntct_so18 cntct_slf18 cntct_oth18"
+
+. foreach v in `miss' {
+  2.         replace `v' = . if `v' >= .
+  3.         }
+(4 real changes made, 4 to missing)
+(4 real changes made, 4 to missing)
+(105 real changes made, 105 to missing)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(164 real changes made, 164 to missing)
+(120 real changes made, 120 to missing)
+(51 real changes made, 51 to missing)
+(99 real changes made, 99 to missing)
+(73 real changes made, 73 to missing)
+(92 real changes made, 92 to missing)
+(3,212 real changes made, 3,212 to missing)
+(2,520 real changes made, 2,520 to missing)
+(3,218 real changes made, 3,218 to missing)
+(3,921 real changes made, 3,921 to missing)
+(3,921 real changes made, 3,921 to missing)
+(2,539 real changes made, 2,539 to missing)
+(2,812 real changes made, 2,812 to missing)
+(2,803 real changes made, 2,803 to missing)
+(2,806 real changes made, 2,806 to missing)
+
+.         
+. mi      set wide
+
+. mi  register imputed    age degree L_mentlillB cntct_tot cntct_so4 cntct_val4 
+> ///
+>                                                 cntct_so3 cntct_val3 coninc a_
+> imbalnceR 
+
+. *                                               a_geneticsR a_stressesR a_wayr
+> aiseR a_charactrR a_godswillR
+. mi      register regular        female race region srcbelt wrkstat
+
+. 
+. *Trial run to see all is OK and how many imputations to make
+. 
+. *       (logit) a_imbalnceR a_geneticsR a_stressesR a_wayraiseR a_charactrR a_
+> godswillR ///
+> 
+. set seed 912663
+
+. mi      impute chained ///
+>         (pmm, knn(5)) age coninc ///    
+>         (ologit) L_mentlillB degree ///
+>         (logit, omit(i.cntct_so3 i.cntct_so4 i.cntct_val3 i.cntct_val4)) cntct
+> _tot ///
+>         (mlogit, omit(i.cntct_tot i.cntct_val3 i.cntct_val4 i.cntct_so3)) cntc
+> t_so4 ///
+>         (mlogit, omit(i.cntct_tot i.cntct_so3 i.cntct_so4 i.cntct_val3)) cntct
+> _val4 ///
+>         (mlogit, omit(i.cntct_tot i.cntct_val3 i.cntct_val4 i.cntct_so4)) cntc
+> t_so3 ///
+>         (mlogit, omit(i.cntct_tot i.cntct_so3 i.cntct_so4 i.cntct_val4)) cntct
+> _val3 /// 
+>         = female i.race i.region i.srcbelt i.wrkstat, ///
+>         add(20) force augment dots rseed(912663)
+
+Conditional models:
+               age: pmm age i.degree i.L_mentlillB i.cntct_tot i.cntct_so4
+                     i.cntct_val4 i.cntct_so3 i.cntct_val3 coninc female
+                     i.race i.region i.srcbelt i.wrkstat , knn(5)
+            degree: ologit degree age i.L_mentlillB i.cntct_tot i.cntct_so4
+                     i.cntct_val4 i.cntct_so3 i.cntct_val3 coninc female
+                     i.race i.region i.srcbelt i.wrkstat , augment
+       L_mentlillB: ologit L_mentlillB age i.degree i.cntct_tot i.cntct_so4
+                     i.cntct_val4 i.cntct_so3 i.cntct_val3 coninc female
+                     i.race i.region i.srcbelt i.wrkstat , augment
+         cntct_tot: logit cntct_tot age i.degree i.L_mentlillB coninc female
+                     i.race i.region i.srcbelt i.wrkstat , augment
+         cntct_so4: mlogit cntct_so4 age i.degree i.L_mentlillB coninc female
+                     i.race i.region i.srcbelt i.wrkstat , augment
+        cntct_val4: mlogit cntct_val4 age i.degree i.L_mentlillB coninc female
+                     i.race i.region i.srcbelt i.wrkstat , augment
+         cntct_so3: mlogit cntct_so3 age i.degree i.L_mentlillB coninc female
+                     i.race i.region i.srcbelt i.wrkstat , augment
+        cntct_val3: mlogit cntct_val3 age i.degree i.L_mentlillB coninc female
+                     i.race i.region i.srcbelt i.wrkstat , augment
+            coninc: pmm coninc age i.degree i.L_mentlillB i.cntct_tot
+                     i.cntct_so4 i.cntct_val4 i.cntct_so3 i.cntct_val3 female
+                     i.race i.region i.srcbelt i.wrkstat , knn(5)
+
+Performing chained iterations:
+  imputing m=1 through m=20 xxxxxxxxxxxxxxxxxxxx done
+
+Multivariate imputation                     Imputations =       20
+Chained equations                                 added =       20
+Imputed: m=1 through m=20                       updated =        0
+
+Initialization: monotone                     Iterations =      200
+                                                burn-in =       10
+
+               age: predictive mean matching
+            coninc: predictive mean matching
+       L_mentlillB: ordered logistic regression
+            degree: ordered logistic regression
+         cntct_tot: logistic regression
+         cntct_so4: multinomial logistic regression
+        cntct_val4: multinomial logistic regression
+         cntct_so3: multinomial logistic regression
+        cntct_val3: multinomial logistic regression
+
+------------------------------------------------------------------
+                   |               Observations per m             
+                   |----------------------------------------------
+          Variable |   Complete   Incomplete   Imputed |     Total
+-------------------+-----------------------------------+----------
+               age |       3917            4         3 |      3921
+            coninc |       3493          428       427 |      3921
+       L_mentlillB |       3816          105       105 |      3921
+            degree |       3917            4         4 |      3921
+         cntct_tot |       3727          194       194 |      3921
+         cntct_so4 |       3727          194       194 |      3921
+        cntct_val4 |       3727          194       194 |      3921
+         cntct_so3 |       3727          194       194 |      3921
+        cntct_val3 |       3727          194       194 |      3921
+------------------------------------------------------------------
+(Complete + Incomplete = Total; Imputed is the minimum across m
+ of the number of filled-in observations.)
+
+Note: Right-hand-side variables (or weights) have missing values;
+      model parameters estimated using listwise deletion.
+
+. 
+. *Examine imputations (all look reasonable)
+. foreach imp of numlist 1 20 {
+  2.         fre     _`imp'_L_mentlillB              if L_mentlillB == .     
+  3.         fre     _`imp'_degree                   if degree == .  
+  4. *       fre     _`imp'_a_imbalnceR              if a_imbalnceR == .
+.         fre     _`imp'_cntct_tot                if cntct_tot == .       
+  5.         fre     _`imp'_cntct_so4                if cntct_so4 == .       
+  6.         fre     _`imp'_cntct_val4               if cntct_val4 == .      
+  7.         sum     _`imp'_age                              if age == ., d
+  8.         sum     _`imp'_coninc                   if coninc == ., d
+  9.         }
+
+_1_L_mentlillB
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |         32      30.48      30.48      30.48
+        1     |         73      69.52      69.52     100.00
+        Total |        105     100.00     100.00           
+-----------------------------------------------------------
+
+_1_degree
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |          3      75.00      75.00      75.00
+        3     |          1      25.00      25.00     100.00
+        Total |          4     100.00     100.00           
+-----------------------------------------------------------
+
+_1_cntct_tot
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |         82      42.27      42.27      42.27
+        1     |        112      57.73      57.73     100.00
+        Total |        194     100.00     100.00           
+-----------------------------------------------------------
+
+_1_cntct_so4
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |         74      38.14      38.14      38.14
+        1     |        104      53.61      53.61      91.75
+        2     |          3       1.55       1.55      93.30
+        3     |         13       6.70       6.70     100.00
+        Total |        194     100.00     100.00           
+-----------------------------------------------------------
+
+_1_cntct_val4
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |         85      43.81      43.81      43.81
+        1     |         67      34.54      34.54      78.35
+        2     |         24      12.37      12.37      90.72
+        3     |         18       9.28       9.28     100.00
+        Total |        194     100.00     100.00           
+-----------------------------------------------------------
+
+                           _1_age
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%           23             23
+ 5%           23             26
+10%           23             27       Obs                   3
+25%           23              .       Sum of wgt.           3
+
+50%           26                      Mean           25.33333
+                        Largest       Std. dev.      2.081666
+75%           27              .
+90%           27             23       Variance       4.333333
+95%           27             26       Skewness       -.528005
+99%           27             27       Kurtosis            1.5
+
+                          _1_coninc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%         .441          .3505
+ 5%        3.969          .3505
+10%      7.88625          .3505       Obs                 427
+25%        15.43          .3505       Sum of wgt.         427
+
+50%       36.472                      Mean           44.68854
+                        Largest       Std. dev.      38.37258
+75%       61.721        178.266
+90%        98.14        178.266       Variance       1472.455
+95%      121.461        178.266       Skewness       1.378271
+99%      178.266        178.266       Kurtosis       4.723361
+
+_20_L_mentlillB
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |         44      41.90      41.90      41.90
+        1     |         61      58.10      58.10     100.00
+        Total |        105     100.00     100.00           
+-----------------------------------------------------------
+
+_20_degree
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |          1      25.00      25.00      25.00
+        1     |          1      25.00      25.00      50.00
+        2     |          2      50.00      50.00     100.00
+        Total |          4     100.00     100.00           
+-----------------------------------------------------------
+
+_20_cntct_tot
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |         90      46.39      46.39      46.39
+        1     |        104      53.61      53.61     100.00
+        Total |        194     100.00     100.00           
+-----------------------------------------------------------
+
+_20_cntct_so4
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |         79      40.72      40.72      40.72
+        1     |        100      51.55      51.55      92.27
+        2     |          3       1.55       1.55      93.81
+        3     |         12       6.19       6.19     100.00
+        Total |        194     100.00     100.00           
+-----------------------------------------------------------
+
+_20_cntct_val4
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |         88      45.36      45.36      45.36
+        1     |         58      29.90      29.90      75.26
+        2     |         19       9.79       9.79      85.05
+        3     |         29      14.95      14.95     100.00
+        Total |        194     100.00     100.00           
+-----------------------------------------------------------
+
+                           _20_age
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%           32             32
+ 5%           32             39
+10%           32             52       Obs                   3
+25%           32              .       Sum of wgt.           3
+
+50%           39                      Mean                 41
+                        Largest       Std. dev.      10.14889
+75%           52              .
+90%           52             32       Variance            103
+95%           52             39       Skewness       .3479736
+99%           52             52       Kurtosis            1.5
+
+                         _20_coninc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%        1.402          .3505
+ 5%        5.734           .441
+10%      7.88625           .561       Obs                 427
+25%       16.539           .561       Sum of wgt.         427
+
+50%       33.079                      Mean           43.14563
+                        Largest       Std. dev.      35.98222
+75%       59.542       158.2018
+90%       88.211        178.266       Variance        1294.72
+95%      121.461        178.266       Skewness       1.449613
+99%     158.2018        178.266       Kurtosis       5.092357
+
+. 
+. list year id if _1_age >= .
+
+      +------------+
+      | year    id |
+      |------------|
+2683. | 2006   231 |
+      +------------+
+
+. drop if year == 2006 & id == 231        
+(1 observation deleted)
+
+.         
+. *How many imputations? (based on von Hippel 2018)
+. *       Need to first estimate model
+. mi est: reg socdistSS   i.L_mentlillB i.year i.cntct_tot ///
+>                                                 i.vigdrug i.vigalc i.vigschiz 
+> i.vigdep ///
+>                                                 age i.female i.race i.region i
+> .metro coninc i.degree
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0064
+                                                Largest FMI       =     0.0954
+                                                Complete DF       =       3893
+DF adjustment:   Small sample                   DF:     min       =   1,325.62
+                                                        avg       =   3,740.32
+                                                        max       =   3,888.70
+Model F test:       Equal FMI                   F(  26, 3889.6)   =      40.48
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |   .0701458   .0241675     2.90   0.004     .0227605    .1175311
+              |
+         year |
+        2006  |  -.0313427   .0256678    -1.22   0.222    -.0816662    .0189809
+        2018  |  -.1508203   .0262395    -5.75   0.000    -.2022647   -.0993758
+              |
+    cntct_tot |
+contact wi..  |  -.1017695   .0215944    -4.71   0.000    -.1441082   -.0594307
+              |
+      vigdrug |
+        Drug  |   .8973905   .0377372    23.78   0.000     .8234038    .9713772
+              |
+       vigalc |
+     Alcohol  |   .6650258   .0322102    20.65   0.000     .6018752    .7281765
+              |
+     vigschiz |
+Schizophre~a  |   .5609937   .0352256    15.93   0.000     .4919308    .6300566
+              |
+       vigdep |
+  Depression  |    .196796   .0330375     5.96   0.000     .1320232    .2615687
+          age |   .0030538   .0006079     5.02   0.000     .0018619    .0042457
+              |
+       female |
+      female  |  -.0126567   .0208689    -0.61   0.544    -.0535717    .0282584
+              |
+         race |
+       black  |   .0307431   .0306761     1.00   0.316    -.0293998     .090886
+  other race  |  -.0152055   .0387223    -0.39   0.695    -.0911234    .0607124
+              |
+       region |
+middle atl..  |    .091994   .0564768     1.63   0.103    -.0187329    .2027209
+e. nor. ce..  |   .0254792    .054043     0.47   0.637    -.0804761    .1314345
+w. nor. ce..  |   -.055127   .0634104    -0.87   0.385    -.1794478    .0691938
+south atla..  |   .0034318   .0533887     0.06   0.949    -.1012407    .1081043
+e. sou. ce..  |  -.0187079   .0627098    -0.30   0.765    -.1416552    .1042394
+w. sou. ce..  |   .0760051   .0577353     1.32   0.188    -.0371892    .1891994
+    mountain  |  -.0486405   .0613183    -0.79   0.428    -.1688596    .0715785
+     pacific  |  -.0048603   .0553504    -0.09   0.930    -.1133789    .1036582
+              |
+        metro |
+   MetroArea  |   .0547731   .0258243     2.12   0.034     .0041426    .1054036
+       coninc |   .0007736   .0003007     2.57   0.010     .0001836    .0013636
+              |
+       degree |
+ high school  |  -.0307639   .0330056    -0.93   0.351     -.095474    .0339461
+junior col..  |  -.1079268   .0471421    -2.29   0.022    -.2003525   -.0155011
+    bachelor  |  -.0633269   .0402731    -1.57   0.116    -.1422857    .0156319
+    graduate  |  -.0915051   .0470511    -1.94   0.052     -.183753    .0007429
+              |
+        _cons |   1.928671   .0713149    27.04   0.000     1.788853     2.06849
+-------------------------------------------------------------------------------
+
+. how_many_imputations
+Fraction of missing information (95% CI):  0.10 (0.05, 0.16)
+Imputations in pilot:                      20
+Imputations needed:                        7
+Imputations to add:                        0
+
+. 
+. * Set sample weights *
+. mi svyset sampcode [pw = wtssnr]
+
+Sampling weights: wtssnr
+             VCE: linearized
+     Single unit: missing
+        Strata 1: <one>
+ Sampling unit 1: sampcode
+           FPC 1: <zero>
+
+.         
+. ** Label and save data **
+. compress
+  variable cond was float now byte
+  variable cond06 was float now byte
+  variable cond18 was float now byte
+  variable cond96 was float now byte
+  variable vig_female was float now byte
+  variable vig_gths was float now byte
+  variable vig_white was float now byte
+  variable vig_y06 was float now byte
+  variable vig_y18 was float now byte
+  variable vig_y96 was float now byte
+  variable a_breakdwnR was float now byte
+  variable a_breakdwnRV was float now byte
+  variable a_charactrR was float now byte
+  variable a_charactrRV was float now byte
+  variable a_geneticsR was float now byte
+  variable a_geneticsRV was float now byte
+  variable a_godswillR was float now byte
+  variable a_godswillRV was float now byte
+  variable a_imbalnceR was float now byte
+  variable a_imbalnceRV was float now byte
+  variable a_physillR was float now byte
+  variable a_physillRV was float now byte
+  variable a_stressesR was float now byte
+  variable a_stressesRV was float now byte
+  variable a_upsdownsR was float now byte
+  variable a_upsdownsRV was float now byte
+  variable a_wayraiseR was float now byte
+  variable a_wayraiseRV was float now byte
+  variable anychild was float now byte
+  variable cntct_any06 was float now byte
+  variable cntct_any18 was float now byte
+  variable cntct_any96 was float now byte
+  variable cntct_oth06 was float now byte
+  variable cntct_oth18 was float now byte
+  variable cntct_oth96 was float now byte
+  variable cntct_slf06 was float now byte
+  variable cntct_slf18 was float now byte
+  variable cntct_slf96 was float now byte
+  variable cntct_so06 was float now byte
+  variable cntct_so18 was float now byte
+  variable cntct_so96 was float now byte
+  variable metro was float now byte
+  variable numchild was float now byte
+  variable region4 was float now byte
+  variable shld_dangroth was float now byte
+  variable shld_dangrothR was float now byte
+  variable shld_dangrslf was float now byte
+  variable shld_dangrslfR was float now byte
+  variable shld_meddoc was float now byte
+  variable shld_meddocR was float now byte
+  variable shld_mentldoc was float now byte
+  variable shld_mentldocR was float now byte
+  variable shld_mentlhos was float now byte
+  variable shld_mentlhosR was float now byte
+  variable shld_otcmed was float now byte
+  variable shld_otcmedR was float now byte
+  variable shld_rxmed was float now byte
+  variable shld_rxmedR was float now byte
+  variable shld_selfhelp was float now byte
+  variable shld_selfhelpR was float now byte
+  variable violent_othR was float now byte
+  variable violent_selfR was float now byte
+  variable age10 was float now byte
+  variable cohort10 was float now byte
+  variable ed_gths was float now byte
+  variable white was float now byte
+  variable SD_miss was float now byte
+  variable s_nextdoorDK0 was float now byte
+  variable s_socialDK0 was float now byte
+  variable s_friendsDK0 was float now byte
+  variable s_workDK0 was float now byte
+  variable s_marryDK0 was float now byte
+  variable s_grphomeDK0 was float now byte
+  variable s_nextdoorDK1 was float now byte
+  variable s_socialDK1 was float now byte
+  variable s_friendsDK1 was float now byte
+  variable s_workDK1 was float now byte
+  variable s_marryDK1 was float now byte
+  variable s_grphomeDK1 was float now byte
+  variable s_nextdoorDK2 was float now byte
+  variable s_socialDK2 was float now byte
+  variable s_friendsDK2 was float now byte
+  variable s_workDK2 was float now byte
+  variable s_marryDK2 was float now byte
+  variable s_grphomeDK2 was float now byte
+  variable s_nextdoorDK3 was float now byte
+  variable s_socialDK3 was float now byte
+  variable s_friendsDK3 was float now byte
+  variable s_workDK3 was float now byte
+  variable s_marryDK3 was float now byte
+  variable s_grphomeDK3 was float now byte
+  variable s_nextdoorDK4 was float now byte
+  variable s_socialDK4 was float now byte
+  variable s_friendsDK4 was float now byte
+  variable s_workDK4 was float now byte
+  variable s_marryDK4 was float now byte
+  variable s_grphomeDK4 was float now byte
+  variable socdist_tot was float now byte
+  variable _1_a_imbalnceR was float now byte
+  variable _2_a_imbalnceR was float now byte
+  variable _3_a_imbalnceR was float now byte
+  variable _4_a_imbalnceR was float now byte
+  variable _5_a_imbalnceR was float now byte
+  variable _6_a_imbalnceR was float now byte
+  variable _7_a_imbalnceR was float now byte
+  variable _8_a_imbalnceR was float now byte
+  variable _9_a_imbalnceR was float now byte
+  variable _10_a_imbalnceR was float now byte
+  variable _11_a_imbalnceR was float now byte
+  variable _12_a_imbalnceR was float now byte
+  variable _13_a_imbalnceR was float now byte
+  variable _14_a_imbalnceR was float now byte
+  variable _15_a_imbalnceR was float now byte
+  variable _16_a_imbalnceR was float now byte
+  variable _17_a_imbalnceR was float now byte
+  variable _18_a_imbalnceR was float now byte
+  variable _19_a_imbalnceR was float now byte
+  variable _20_a_imbalnceR was float now byte
+  variable formwt was double now byte
+  variable oversamp was double now byte
+  (1,442,560 bytes saved)
+
+. label data "MLS - GSS Data | Matching Labeling Stigma | Multiple Imputation CE
+>  | `tag'"
+note: label truncated to 80 characters
+
+. datasignature set, reset
+  3920:422(54661):3826757686:529714804       (data signature set)
+
+. save     "Data/mls-data07-mice-cont",  replace  
+file Data/mls-data07-mice-cont.dta saved
+
+. 
+. 
+. /* 
+> ****************************************************************
+>  // #3A Create a multiple imputation dataset.
+>  //     - Quartile (ordinal) age and income
+> **************************************************************** 
+> use "Data/mls-data06-scales", clear
+> 
+> *Drop for missing on DV
+> drop if missing(socdistSS)
+> di              66/3958         // ~1.67% of sampled dropped
+> 
+> local mvs "L_mentlillB cntct_tot vigdrug vigalc vigschiz vigdep"
+> local mvs "`mvs' age ageQ female race region metro coninc conincQ degree year"
+> misstable summarize `mvs'
+> misstable patterns      `mvs'
+> 
+> *MI impute won't impute the "soft missings" that are >.
+> local miss "age degree L_mentlillB cntct_tot"
+> foreach v in `miss' {
+>         replace `v' = . if `v' >= .
+>         }
+>         
+> mi      set wide
+> mi  register imputed ageQ degree L_mentlillB cntct_tot conincQ
+> mi      register regular female race region srcbelt wrkstat
+> 
+> *Trial run to see all is OK and how many imputations to make
+> mi      impute chained ///
+>         (ologit) ageQ conincQ L_mentlillB degree ///
+>         (logit) cntct_tot ///
+>         = female i.race i.region i.srcbelt i.wrkstat, ///
+>         add(5) force augment dots rseed(912663)
+> 
+> *Examine imputations (all look reasonable)
+> fre     *L_mentlillB    if L_mentlillB == .     
+> fre     *degree                 if degree == .  
+> fre     *cntct_tot              if cntct_tot == .       
+> fre     *ageQ                   if ageQ == .
+> fre     *conincQ                if conincQ == .
+> 
+> 
+> *How many imputations? (based on von Hippel 2018)
+> *       Need to first estimate model
+> mi est: reg socdistSS   i.L_mentlillB i.year i.cntct_tot ///
+>                                                 i.vigdrug i.vigalc i.vigschiz 
+> i.vigdep ///
+>                                                 i.ageQ i.female i.race i.regio
+> n i.metro i.conincQ i.degree
+> how_many_imputations
+> 
+> *Adding 15 as larger # required across two imputations
+> mi      impute chained ///
+>         (ologit) ageQ conincQ L_mentlillB degree ///
+>         (logit) cntct_tot ///
+>         = female i.race i.region i.srcbelt i.wrkstat, ///
+>         add(15) force augment dots rseed(912663)
+>         
+> 
+> * Set sample weights *
+> mi svyset sampcode [pw = wtssnr]
+>         
+> ** Label and save data **
+> compress
+> label data "MLS - GSS Data | Matching Labeling Stigma | Multiple Imputation CE
+>  | `tag'"
+> datasignature set, reset
+> save     "Data/mls-data07-mice-ordinal",  replace       
+> */
+. 
+. 
+. ************* 
+. log close
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/ML
+> S_MatchingLabelingStigma/work_socius_2024_09_other_imputed/mls-data07-sample_s
+> election.log
+  log type:  text
+ closed on:  26 Sep 2024, 10:42:59
+--------------------------------------------------------------------------------

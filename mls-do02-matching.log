@@ -1,0 +1,3629 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/ML
+> S_MatchingLabelingStigma/work_socius_2024_09_other_imputed/mls-do02-matching.l
+> og
+  log type:  text
+ opened on:  26 Sep 2024, 10:57:58
+
+.  
+.  
+. **********
+. /// #0 Setup    
+> **********      
+. 
+. // MLS - Matching: Labeling & Stigma 
+. // Key causal matching analyses - multiple imputation data
+. 
+.  version 15.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 10000, perm
+(set matsize preference recorded)
+
+. 
+.  
+.  local pgm   mls-do03-matching-analyses-mice.do
+
+.  local dte   2021-01-22
+
+.  local who   bianca manago - trent mize
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+.  di "`tag'"
+mls-do03-matching-analyses-mice.do.do bianca manago - trent mize 2021-01-22
+
+.  
+.  
+. ****************************************************************
+.  // #1 - Load Data; descriptives
+. **************************************************************** 
+. use "Data/mls-data07-mice-cont", clear  
+(MLS - GSS Data | Matching Labeling Stigma | Multiple Imputation CE | mls-data07
+> -)
+
+. 
+. /*
+> local dv "socdistSS" 
+> local iv "i.L_mentlillB" 
+> local cvs "i.cntct_tot c.age i.female i.race i.region i.metro coninc i.degree"
+> local evs "i.vigdrug i.vigalc i.vigschiz i.vigdep i.year"
+> mi est:                 mean    `dv' `iv' `cvs' `evs'
+> mi est: svy:    mean    `dv' `iv' `cvs' `evs'
+> */
+. tabstat         L_mentlillB, by(cond)
+
+Summary for variables: L_mentlillB
+Group variable: cond (Vig: Illness (all years))
+
+            cond |      Mean
+-----------------+----------
+  Daily Troubles |   .260274
+      Depression |  .7344111
+   Schizophrenia |  .9169675
+Alcohol Addictio |  .5586457
+  Drug Addiction |  .4139344
+-----------------+----------
+           Total |  .5952818
+----------------------------
+
+. 
+. *Check random assignment balance (balanced on all vars)
+. qui mlogit      cond i.cntct_tot age i.female i.race i.region i.metro ///
+>                         coninc i.degree i.year
+
+. mlogtest                        
+
+Wald tests for independent variables (N=3320)
+
+  Ho: All coefficients associated with given variable(s) are 0
+
+                 |      chi2    df   P>chi2
+-----------------+-------------------------
+     1.cntct_tot |     5.439     4    0.245
+             age |     0.705     4    0.951
+        1.female |     1.802     4    0.772
+          2.race |     0.713     4    0.950
+          3.race |     1.835     4    0.766
+        2.region |     4.675     4    0.322
+        3.region |     2.870     4    0.580
+        4.region |     4.413     4    0.353
+        5.region |     3.740     4    0.442
+        6.region |     1.742     4    0.783
+        7.region |     2.267     4    0.687
+        8.region |     2.355     4    0.671
+        9.region |     4.920     4    0.296
+         1.metro |     8.279     4    0.082
+          coninc |     4.471     4    0.346
+        1.degree |     2.404     4    0.662
+        2.degree |     4.265     4    0.371
+        3.degree |     2.692     4    0.611
+        4.degree |     0.172     4    0.997
+       2006.year |     0.575     4    0.966
+       2018.year |     0.550     4    0.968
+
+.                         
+.                         
+. *******************************************************************
+. // #2 - Nearest neighbor matching with exact matching on only
+. *               vignette and year
+. *******************************************************************           
+>   
+. local dv "socdistSS" 
+
+. local iv "L_mentlillB" 
+
+. local con "c.age##c.age coninc"         // Separate out continuous controls
+
+. local cvs "i.cntct_tot i.female i.metro i.race i.region i.degree"
+
+. local evs "i.vigdrug i.vigalc i.vigschiz i.vigdep i.year"
+
+. 
+. *This is not for interpreting; just need to get the descriptives for the plot
+. qui teffects nnmatch (`dv' `evs' `cvs' `con') (`iv'), ///
+>                                                 metric(mahalanobis) ///
+>                                                 biasadj(`con')  
+
+. tebalance       summarize
+(refitting the model using the generate() option)
+
+Covariate balance summary
+
+                         Raw      Matched
+-----------------------------------------
+Number of obs =        3,245        6,490
+Treated obs   =        1,944        3,245
+Control obs   =        1,301        3,245
+-----------------------------------------
+
+-----------------------------------------------------------------
+                |Standardized differences          Variance ratio
+                |        Raw     Matched           Raw    Matched
+----------------+------------------------------------------------
+        vigdrug |
+          Drug  |  -.2926771   -.0345545      .5166604   .9242797
+                |
+         vigalc |
+       Alcohol  |  -.0821921   -.0962341      .8969458   .8914048
+                |
+       vigschiz |
+ Schizophrenia  |   .8185309    .4196481        5.7198   2.206297
+                |
+         vigdep |
+    Depression  |   .3307297    .0425995      1.597034   1.053385
+                |
+           year |
+          2006  |   .1012564      .00572      1.059473   1.002892
+          2018  |   .0687182    .0709812      1.058359    1.06976
+                |
+      cntct_tot |
+contact with~s  |    .214781    .0960266      .9377851   .9647029
+                |
+         female |
+        female  |   .0422297   -.0142246      .9936181   1.002414
+                |
+          metro |
+     MetroArea  |  -.0230426    .0031626       .968043   1.005098
+                |
+           race |
+         black  |    .090966    .0443887       1.20382   1.100457
+    other race  |  -.0336086    .0136677      .9051559   1.043419
+                |
+         region |
+middle atlan~c  |  -.0049688   -.0028764      .9880151   .9931652
+e. nor. cent~l  |   .0132456   -.0008078      1.022609   .9986316
+w. nor. cent~l  |   .0430542           0      1.166501          1
+south atlantic  |  -.0102622   -.0015344      .9844764   .9977263
+e. sou. cent~l  |  -.0283166           0      .9038386          1
+w. sou. cent~l  |  -.0260155    .0010028      .9358779   1.002578
+      mountain  |   .0330908     .001163      1.111716    1.00373
+       pacific  |  -.0148979    .0034626      .9710047   1.006857
+                |
+         degree |
+   high school  |  -.0134941   -.0247365      1.000539   1.004125
+junior college  |   .0030104   -.0011147      1.008641    .996645
+      bachelor  |  -.0066735    .0145653      .9891735   1.025105
+      graduate  |   .0072966    .0179373      1.019576   1.051142
+                |
+            age |  -.0036472    .0101582      .9445227   .9847334
+                |
+            age#|
+            age |  -.0128368    .0067451      .9281165   .9854925
+                |
+         coninc |  -.0088445    .0261844      .9908627   1.019427
+-----------------------------------------------------------------
+
+. mat                     balance = r(table)
+
+. 
+. *First, check the matching model before interpreting ATEs
+. * NOTE: Can't do this with the MICE data
+. qui teffects nnmatch (`dv' `cvs' `con') (`iv'), ///
+>                                                 ematch(`evs') metric(mahalanob
+> is) ///
+>                                                 biasadj(`con')  
+
+. tebalance       summarize
+(refitting the model using the generate() option)
+
+Covariate balance summary
+
+                         Raw      Matched
+-----------------------------------------
+Number of obs =        3,245        6,490
+Treated obs   =        1,944        3,245
+Control obs   =        1,301        3,245
+-----------------------------------------
+
+-----------------------------------------------------------------
+                |Standardized differences          Variance ratio
+                |        Raw     Matched           Raw    Matched
+----------------+------------------------------------------------
+      cntct_tot |
+contact with~s  |    .214781    .1807077      .9377851   .9484655
+                |
+         female |
+        female  |   .0422297    .0419759      .9936181   .9954228
+                |
+          metro |
+     MetroArea  |  -.0230426   -.0120351       .968043   .9801277
+                |
+           race |
+         black  |    .090966    .0171916       1.20382   1.037667
+    other race  |  -.0336086    .0060216      .9051559   1.020431
+                |
+         region |
+middle atlan~c  |  -.0049688    .0583009      .9880151   1.157665
+e. nor. cent~l  |   .0132456   -.0559058      1.022609   .9119179
+w. nor. cent~l  |   .0430542     .008876      1.166501   1.032446
+south atlantic  |  -.0102622   -.0835534      .9844764   .8980879
+e. sou. cent~l  |  -.0283166    .0141769      .9038386   1.053482
+w. sou. cent~l  |  -.0260155   -.0173895      .9358779    .954953
+      mountain  |   .0330908    .0361718      1.111716   1.129557
+       pacific  |  -.0148979    .0688811      .9710047   1.152097
+                |
+         degree |
+   high school  |  -.0134941   -.0637343      1.000539   1.021216
+junior college  |   .0030104    .0318035      1.008641   1.115369
+      bachelor  |  -.0066735    .0223628      .9891735   1.040992
+      graduate  |   .0072966    .0291069      1.019576   1.092379
+                |
+            age |  -.0036472    .0237619      .9445227   .9187399
+                |
+            age#|
+            age |  -.0128368    .0077385      .9281165   .9167581
+                |
+         coninc |  -.0088445    .0144262      .9908627   .9695449
+-----------------------------------------------------------------
+
+. mat                     balance2 = r(table)
+
+. matlist         balance
+
+             | std_diff             | ratio                
+             |       Raw    Matched |       Raw    Matched 
+-------------+----------------------+----------------------
+   1.vigdrug | -.2926771  -.0345545 |  .5166604   .9242797 
+    1.vigalc | -.0821921  -.0962341 |  .8969458   .8914048 
+  1.vigschiz |  .8185309   .4196481 |    5.7198   2.206297 
+    1.vigdep |  .3307297   .0425995 |  1.597034   1.053385 
+   2006.year |  .1012564     .00572 |  1.059473   1.002892 
+   2018.year |  .0687182   .0709812 |  1.058359    1.06976 
+ 1.cntct_tot |   .214781   .0960266 |  .9377851   .9647029 
+    1.female |  .0422297  -.0142246 |  .9936181   1.002414 
+     1.metro | -.0230426   .0031626 |   .968043   1.005098 
+      2.race |   .090966   .0443887 |   1.20382   1.100457 
+      3.race | -.0336086   .0136677 |  .9051559   1.043419 
+    2.region | -.0049688  -.0028764 |  .9880151   .9931652 
+    3.region |  .0132456  -.0008078 |  1.022609   .9986316 
+    4.region |  .0430542          0 |  1.166501          1 
+    5.region | -.0102622  -.0015344 |  .9844764   .9977263 
+    6.region | -.0283166          0 |  .9038386          1 
+    7.region | -.0260155   .0010028 |  .9358779   1.002578 
+    8.region |  .0330908    .001163 |  1.111716    1.00373 
+    9.region | -.0148979   .0034626 |  .9710047   1.006857 
+    1.degree | -.0134941  -.0247365 |  1.000539   1.004125 
+    2.degree |  .0030104  -.0011147 |  1.008641    .996645 
+    3.degree | -.0066735   .0145653 |  .9891735   1.025105 
+    4.degree |  .0072966   .0179373 |  1.019576   1.051142 
+         age | -.0036472   .0101582 |  .9445227   .9847334 
+ c.age#c.age | -.0128368   .0067451 |  .9281165   .9854925 
+      coninc | -.0088445   .0261844 |  .9908627   1.019427 
+
+. matlist         balance2
+
+             | std_diff             | ratio                
+             |       Raw    Matched |       Raw    Matched 
+-------------+----------------------+----------------------
+ 1.cntct_tot |   .214781   .1807077 |  .9377851   .9484655 
+    1.female |  .0422297   .0419759 |  .9936181   .9954228 
+     1.metro | -.0230426  -.0120351 |   .968043   .9801277 
+      2.race |   .090966   .0171916 |   1.20382   1.037667 
+      3.race | -.0336086   .0060216 |  .9051559   1.020431 
+    2.region | -.0049688   .0583009 |  .9880151   1.157665 
+    3.region |  .0132456  -.0559058 |  1.022609   .9119179 
+    4.region |  .0430542    .008876 |  1.166501   1.032446 
+    5.region | -.0102622  -.0835534 |  .9844764   .8980879 
+    6.region | -.0283166   .0141769 |  .9038386   1.053482 
+    7.region | -.0260155  -.0173895 |  .9358779    .954953 
+    8.region |  .0330908   .0361718 |  1.111716   1.129557 
+    9.region | -.0148979   .0688811 |  .9710047   1.152097 
+    1.degree | -.0134941  -.0637343 |  1.000539   1.021216 
+    2.degree |  .0030104   .0318035 |  1.008641   1.115369 
+    3.degree | -.0066735   .0223628 |  .9891735   1.040992 
+    4.degree |  .0072966   .0291069 |  1.019576   1.092379 
+         age | -.0036472   .0237619 |  .9445227   .9187399 
+ c.age#c.age | -.0128368   .0077385 |  .9281165   .9167581 
+      coninc | -.0088445   .0144262 |  .9908627   .9695449 
+
+. 
+. *Replace exact matched std diffs with zeroes
+. forvalues i = 1/6 {
+  2.         mat balance[`i',2] = 0
+  3.         }
+
+. matlist         balance
+
+             | std_diff             | ratio                
+             |       Raw    Matched |       Raw    Matched 
+-------------+----------------------+----------------------
+   1.vigdrug | -.2926771          0 |  .5166604   .9242797 
+    1.vigalc | -.0821921          0 |  .8969458   .8914048 
+  1.vigschiz |  .8185309          0 |    5.7198   2.206297 
+    1.vigdep |  .3307297          0 |  1.597034   1.053385 
+   2006.year |  .1012564          0 |  1.059473   1.002892 
+   2018.year |  .0687182          0 |  1.058359    1.06976 
+ 1.cntct_tot |   .214781   .0960266 |  .9377851   .9647029 
+    1.female |  .0422297  -.0142246 |  .9936181   1.002414 
+     1.metro | -.0230426   .0031626 |   .968043   1.005098 
+      2.race |   .090966   .0443887 |   1.20382   1.100457 
+      3.race | -.0336086   .0136677 |  .9051559   1.043419 
+    2.region | -.0049688  -.0028764 |  .9880151   .9931652 
+    3.region |  .0132456  -.0008078 |  1.022609   .9986316 
+    4.region |  .0430542          0 |  1.166501          1 
+    5.region | -.0102622  -.0015344 |  .9844764   .9977263 
+    6.region | -.0283166          0 |  .9038386          1 
+    7.region | -.0260155   .0010028 |  .9358779   1.002578 
+    8.region |  .0330908    .001163 |  1.111716    1.00373 
+    9.region | -.0148979   .0034626 |  .9710047   1.006857 
+    1.degree | -.0134941  -.0247365 |  1.000539   1.004125 
+    2.degree |  .0030104  -.0011147 |  1.008641    .996645 
+    3.degree | -.0066735   .0145653 |  .9891735   1.025105 
+    4.degree |  .0072966   .0179373 |  1.019576   1.051142 
+         age | -.0036472   .0101582 |  .9445227   .9847334 
+ c.age#c.age | -.0128368   .0067451 |  .9281165   .9854925 
+      coninc | -.0088445   .0261844 |  .9908627   1.019427 
+
+. *Replace mahalanobis distance matches vars with correct std diff in this model
+. local row2 = 1
+
+. forvalues i = 7/26 {
+  2.         mat balance[`i',2] = balance2[`row2',2]
+  3.         local ++row2
+  4.         }
+
+.         
+. *Figure A1
+. matlist balance
+
+             | std_diff             | ratio                
+             |       Raw    Matched |       Raw    Matched 
+-------------+----------------------+----------------------
+   1.vigdrug | -.2926771          0 |  .5166604   .9242797 
+    1.vigalc | -.0821921          0 |  .8969458   .8914048 
+  1.vigschiz |  .8185309          0 |    5.7198   2.206297 
+    1.vigdep |  .3307297          0 |  1.597034   1.053385 
+   2006.year |  .1012564          0 |  1.059473   1.002892 
+   2018.year |  .0687182          0 |  1.058359    1.06976 
+ 1.cntct_tot |   .214781   .1807077 |  .9377851   .9647029 
+    1.female |  .0422297   .0419759 |  .9936181   1.002414 
+     1.metro | -.0230426  -.0120351 |   .968043   1.005098 
+      2.race |   .090966   .0171916 |   1.20382   1.100457 
+      3.race | -.0336086   .0060216 |  .9051559   1.043419 
+    2.region | -.0049688   .0583009 |  .9880151   .9931652 
+    3.region |  .0132456  -.0559058 |  1.022609   .9986316 
+    4.region |  .0430542    .008876 |  1.166501          1 
+    5.region | -.0102622  -.0835534 |  .9844764   .9977263 
+    6.region | -.0283166   .0141769 |  .9038386          1 
+    7.region | -.0260155  -.0173895 |  .9358779   1.002578 
+    8.region |  .0330908   .0361718 |  1.111716    1.00373 
+    9.region | -.0148979   .0688811 |  .9710047   1.006857 
+    1.degree | -.0134941  -.0637343 |  1.000539   1.004125 
+    2.degree |  .0030104   .0318035 |  1.008641    .996645 
+    3.degree | -.0066735   .0223628 |  .9891735   1.025105 
+    4.degree |  .0072966   .0291069 |  1.019576   1.051142 
+         age | -.0036472   .0237619 |  .9445227   .9847334 
+ c.age#c.age | -.0128368   .0077385 |  .9281165   .9854925 
+      coninc | -.0088445   .0144262 |  .9908627   1.019427 
+
+. 
+. coefplot (matrix(balance[,1])) (matrix(balance[,2])), ///
+>         xline(0)  xtitle("Standardized Difference") ylab(,labsize(vsmall)) ///
+>         xlab(-.80(.20).80) legend(order(2 "Raw (unmatched)" 4 "Matched"))  ///
+>         headings(1.vigdrug = "{bf:Vignettes}" 1.cntct_tot = "{bf:Binary IVs}" 
+> ///
+>                 age = "{bf:Continuous IVs}"  2.race = "{bf:Race}" 2.region = "
+> {bf:Region}" ///
+>                 1.degree = "{bf:Education}" 2006.year = "{bf:Survey Year}") //
+> /
+>         title("") subtitle("") ///
+>         note("NOTES: (1) Ommitted reference categories are: normal ups and dow
+> ns vignette, 1996, no contact, male," ///
+>                  "not a metro, white, New England, and < high school.", span) 
+>   
+(balance: could not determine CI1)
+(balance: could not determine CI1)
+
+. 
+.         graph export "Graphs/mls-do02-01-nn_match-balanceplot.png", replace   
+>                   
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_Match
+    > ingLabelingStigma/work_socius_2024_09_other_imputed/Graphs/mls-do02-01-n
+    > n_match-balanceplot.png saved as PNG format
+
+.         
+.         
+.         
+. /////////////////////////
+> // Table 2 (top panel) //       
+. /////////////////////////
+>         
+. local dv "socdistSS" 
+
+. local iv "L_mentlillB" 
+
+. local con "c.age##c.age coninc"         // Separate out continuous controls
+
+. local cvs "i.female i.metro i.race i.region i.degree i.cntct_tot"
+
+. local evs "i.vigdrug i.vigalc i.vigschiz i.vigdep i.year"
+
+.         
+.         
+. *Nearest neighbor matching with exact match on year and vignettes
+. *Pooling over all four vignettes
+. mi est, cmdok: teffects nnmatch (`dv' `cvs' `con') (`iv'), ///
+>                                                 ematch(`evs') metric(mahalanob
+> is) ///
+>                                                 biasadj(`con')  
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =      3,920
+                                                Average RVI       =     0.0456
+                                                Largest FMI       =     0.0438
+DF adjustment:   Large sample                   DF:     min       =  10,000.88
+                                                        avg       =  10,000.88
+Within VCE type:    AI robust                           max       =  10,000.88
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |   .0644232   .0323384     1.99   0.046     .0010334     .127813
+-------------------------------------------------------------------------------
+
+.                                         
+.                                                 
+. *Separately for each vignette
+. foreach v of varlist vignorm vigdrug vigalc vigschiz vigdep {
+  2.         di _newline(1)
+  3.         di in red "Vignette is: `v'"
+  4.         mi est, cmdok: teffects nnmatch (`dv' `cvs' `con') (`iv') ///
+>                                                         if `v', ///
+>                                                         ematch(`evs') metric(m
+> ahalanobis) ///
+>                                                         biasadj(`con')  
+  5.         }       
+
+
+Vignette is: vignorm
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        815
+                                                Average RVI       =     0.0310
+                                                Largest FMI       =     0.0302
+DF adjustment:   Large sample                   DF:     min       =  20,972.53
+                                                        avg       =  20,972.53
+Within VCE type:    AI robust                           max       =  20,972.53
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |   .1770741   .0579968     3.05   0.002      .063396    .2907523
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigdrug
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        505
+                                                Average RVI       =     0.0520
+                                                Largest FMI       =     0.0496
+DF adjustment:   Large sample                   DF:     min       =   7,785.41
+                                                        avg       =   7,785.41
+Within VCE type:    AI robust                           max       =   7,785.41
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |  -.0274679   .0746517    -0.37   0.713    -.1738053    .1188694
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigalc
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        859
+                                                Average RVI       =     0.0789
+                                                Largest FMI       =     0.0737
+DF adjustment:   Large sample                   DF:     min       =   3,551.56
+                                                        avg       =   3,551.56
+Within VCE type:    AI robust                           max       =   3,551.56
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |   .0196286   .0554413     0.35   0.723    -.0890713    .1283286
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigschiz
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        843
+                                                Average RVI       =     0.1002
+                                                Largest FMI       =     0.0918
+DF adjustment:   Large sample                   DF:     min       =   2,291.72
+                                                        avg       =   2,291.72
+Within VCE type:    AI robust                           max       =   2,291.72
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |   .1439212   .1044494     1.38   0.168    -.0609041    .3487466
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigdep
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        898
+                                                Average RVI       =     0.0594
+                                                Largest FMI       =     0.0564
+DF adjustment:   Large sample                   DF:     min       =   6,048.68
+                                                        avg       =   6,048.68
+Within VCE type:    AI robust                           max       =   6,048.68
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |  -.0263653   .0577458    -0.46   0.648    -.1395675     .086837
+-------------------------------------------------------------------------------
+
+.         
+.         
+.         
+. *******************************************************************
+. // #3 - Nearest neighbor matching with exact matching on 
+. *               vignette, year, and contact
+. *******************************************************************           
+>   
+.         
+. // Also exact match on contact //
+. *       NOTE: Not enough overlap in data for exact matching on any additional 
+> vars
+. local dv "socdistSS" 
+
+. local iv "L_mentlillB" 
+
+. local con "c.age##c.age coninc"         // Separate out continuous controls
+
+. local cvs "i.female i.metro i.race i.region i.degree"
+
+. local evs "i.vigdrug i.vigalc i.vigschiz i.vigdep i.year i.cntct_tot"
+
+. 
+. *First, check the matching model before interpreting ATEs
+. * NOTE: Can't do this with the MICE data
+. qui teffects nnmatch (`dv' `cvs' `con') (`iv'), ///
+>                                                 ematch(`evs') metric(mahalanob
+> is) ///
+>                                                 biasadj(`con')
+
+. tebalance       summarize
+(refitting the model using the generate() option)
+
+Covariate balance summary
+
+                         Raw      Matched
+-----------------------------------------
+Number of obs =        3,245        6,490
+Treated obs   =        1,944        3,245
+Control obs   =        1,301        3,245
+-----------------------------------------
+
+-----------------------------------------------------------------
+                |Standardized differences          Variance ratio
+                |        Raw     Matched           Raw    Matched
+----------------+------------------------------------------------
+         female |
+        female  |   .0422297    .0327188      .9936181    .996249
+                |
+          metro |
+     MetroArea  |  -.0230426   -.0184542       .968043   .9696883
+                |
+           race |
+         black  |    .090966    .0332567       1.20382   1.073212
+    other race  |  -.0336086    .0156883      .9051559   1.054272
+                |
+         region |
+middle atlan~c  |  -.0049688    .0782846      .9880151   1.218652
+e. nor. cent~l  |   .0132456   -.0664083      1.022609   .8958123
+w. nor. cent~l  |   .0430542    .0250295      1.166501    1.09929
+south atlantic  |  -.0102622   -.0523063      .9844764   .9367975
+e. sou. cent~l  |  -.0283166    .0038755      .9038386   1.014386
+w. sou. cent~l  |  -.0260155   -.0214525      .9358779   .9448319
+      mountain  |   .0330908    .0169469      1.111716   1.059005
+       pacific  |  -.0148979    .0305784      .9710047   1.063413
+                |
+         degree |
+   high school  |  -.0134941    -.087686      1.000539   1.031415
+junior college  |   .0030104    .0401741      1.008641    1.15358
+      bachelor  |  -.0066735    .0282779      .9891735   1.052612
+      graduate  |   .0072966    .0232156      1.019576    1.07164
+                |
+            age |  -.0036472    .0426076      .9445227   .9088588
+                |
+            age#|
+            age |  -.0128368    .0231127      .9281165   .9242806
+                |
+         coninc |  -.0088445    .0372471      .9908627   .9686022
+-----------------------------------------------------------------
+
+. mat                     balance3 = r(table)
+
+. matlist         balance
+
+             | std_diff             | ratio                
+             |       Raw    Matched |       Raw    Matched 
+-------------+----------------------+----------------------
+   1.vigdrug | -.2926771          0 |  .5166604   .9242797 
+    1.vigalc | -.0821921          0 |  .8969458   .8914048 
+  1.vigschiz |  .8185309          0 |    5.7198   2.206297 
+    1.vigdep |  .3307297          0 |  1.597034   1.053385 
+   2006.year |  .1012564          0 |  1.059473   1.002892 
+   2018.year |  .0687182          0 |  1.058359    1.06976 
+ 1.cntct_tot |   .214781   .1807077 |  .9377851   .9647029 
+    1.female |  .0422297   .0419759 |  .9936181   1.002414 
+     1.metro | -.0230426  -.0120351 |   .968043   1.005098 
+      2.race |   .090966   .0171916 |   1.20382   1.100457 
+      3.race | -.0336086   .0060216 |  .9051559   1.043419 
+    2.region | -.0049688   .0583009 |  .9880151   .9931652 
+    3.region |  .0132456  -.0559058 |  1.022609   .9986316 
+    4.region |  .0430542    .008876 |  1.166501          1 
+    5.region | -.0102622  -.0835534 |  .9844764   .9977263 
+    6.region | -.0283166   .0141769 |  .9038386          1 
+    7.region | -.0260155  -.0173895 |  .9358779   1.002578 
+    8.region |  .0330908   .0361718 |  1.111716    1.00373 
+    9.region | -.0148979   .0688811 |  .9710047   1.006857 
+    1.degree | -.0134941  -.0637343 |  1.000539   1.004125 
+    2.degree |  .0030104   .0318035 |  1.008641    .996645 
+    3.degree | -.0066735   .0223628 |  .9891735   1.025105 
+    4.degree |  .0072966   .0291069 |  1.019576   1.051142 
+         age | -.0036472   .0237619 |  .9445227   .9847334 
+ c.age#c.age | -.0128368   .0077385 |  .9281165   .9854925 
+      coninc | -.0088445   .0144262 |  .9908627   1.019427 
+
+. matlist         balance3
+
+             | std_diff             | ratio                
+             |       Raw    Matched |       Raw    Matched 
+-------------+----------------------+----------------------
+    1.female |  .0422297   .0327188 |  .9936181    .996249 
+     1.metro | -.0230426  -.0184542 |   .968043   .9696883 
+      2.race |   .090966   .0332567 |   1.20382   1.073212 
+      3.race | -.0336086   .0156883 |  .9051559   1.054272 
+    2.region | -.0049688   .0782846 |  .9880151   1.218652 
+    3.region |  .0132456  -.0664083 |  1.022609   .8958123 
+    4.region |  .0430542   .0250295 |  1.166501    1.09929 
+    5.region | -.0102622  -.0523063 |  .9844764   .9367975 
+    6.region | -.0283166   .0038755 |  .9038386   1.014386 
+    7.region | -.0260155  -.0214525 |  .9358779   .9448319 
+    8.region |  .0330908   .0169469 |  1.111716   1.059005 
+    9.region | -.0148979   .0305784 |  .9710047   1.063413 
+    1.degree | -.0134941   -.087686 |  1.000539   1.031415 
+    2.degree |  .0030104   .0401741 |  1.008641    1.15358 
+    3.degree | -.0066735   .0282779 |  .9891735   1.052612 
+    4.degree |  .0072966   .0232156 |  1.019576    1.07164 
+         age | -.0036472   .0426076 |  .9445227   .9088588 
+ c.age#c.age | -.0128368   .0231127 |  .9281165   .9242806 
+      coninc | -.0088445   .0372471 |  .9908627   .9686022 
+
+. 
+. *Replace exact matched std diffs with zeroes
+. mat             balance[7,2] = 0
+
+. matlist         balance
+
+             | std_diff             | ratio                
+             |       Raw    Matched |       Raw    Matched 
+-------------+----------------------+----------------------
+   1.vigdrug | -.2926771          0 |  .5166604   .9242797 
+    1.vigalc | -.0821921          0 |  .8969458   .8914048 
+  1.vigschiz |  .8185309          0 |    5.7198   2.206297 
+    1.vigdep |  .3307297          0 |  1.597034   1.053385 
+   2006.year |  .1012564          0 |  1.059473   1.002892 
+   2018.year |  .0687182          0 |  1.058359    1.06976 
+ 1.cntct_tot |   .214781          0 |  .9377851   .9647029 
+    1.female |  .0422297   .0419759 |  .9936181   1.002414 
+     1.metro | -.0230426  -.0120351 |   .968043   1.005098 
+      2.race |   .090966   .0171916 |   1.20382   1.100457 
+      3.race | -.0336086   .0060216 |  .9051559   1.043419 
+    2.region | -.0049688   .0583009 |  .9880151   .9931652 
+    3.region |  .0132456  -.0559058 |  1.022609   .9986316 
+    4.region |  .0430542    .008876 |  1.166501          1 
+    5.region | -.0102622  -.0835534 |  .9844764   .9977263 
+    6.region | -.0283166   .0141769 |  .9038386          1 
+    7.region | -.0260155  -.0173895 |  .9358779   1.002578 
+    8.region |  .0330908   .0361718 |  1.111716    1.00373 
+    9.region | -.0148979   .0688811 |  .9710047   1.006857 
+    1.degree | -.0134941  -.0637343 |  1.000539   1.004125 
+    2.degree |  .0030104   .0318035 |  1.008641    .996645 
+    3.degree | -.0066735   .0223628 |  .9891735   1.025105 
+    4.degree |  .0072966   .0291069 |  1.019576   1.051142 
+         age | -.0036472   .0237619 |  .9445227   .9847334 
+ c.age#c.age | -.0128368   .0077385 |  .9281165   .9854925 
+      coninc | -.0088445   .0144262 |  .9908627   1.019427 
+
+. *Replace mahalanobis distance matches vars with correct std diff in this model
+. local row2 = 1
+
+. forvalues i = 8/26 {
+  2.         mat balance[`i',2] = balance3[`row2',2]
+  3.         local ++row2
+  4.         }
+
+.         
+. *Figure A2      
+. matlist balance
+
+             | std_diff             | ratio                
+             |       Raw    Matched |       Raw    Matched 
+-------------+----------------------+----------------------
+   1.vigdrug | -.2926771          0 |  .5166604   .9242797 
+    1.vigalc | -.0821921          0 |  .8969458   .8914048 
+  1.vigschiz |  .8185309          0 |    5.7198   2.206297 
+    1.vigdep |  .3307297          0 |  1.597034   1.053385 
+   2006.year |  .1012564          0 |  1.059473   1.002892 
+   2018.year |  .0687182          0 |  1.058359    1.06976 
+ 1.cntct_tot |   .214781          0 |  .9377851   .9647029 
+    1.female |  .0422297   .0327188 |  .9936181   1.002414 
+     1.metro | -.0230426  -.0184542 |   .968043   1.005098 
+      2.race |   .090966   .0332567 |   1.20382   1.100457 
+      3.race | -.0336086   .0156883 |  .9051559   1.043419 
+    2.region | -.0049688   .0782846 |  .9880151   .9931652 
+    3.region |  .0132456  -.0664083 |  1.022609   .9986316 
+    4.region |  .0430542   .0250295 |  1.166501          1 
+    5.region | -.0102622  -.0523063 |  .9844764   .9977263 
+    6.region | -.0283166   .0038755 |  .9038386          1 
+    7.region | -.0260155  -.0214525 |  .9358779   1.002578 
+    8.region |  .0330908   .0169469 |  1.111716    1.00373 
+    9.region | -.0148979   .0305784 |  .9710047   1.006857 
+    1.degree | -.0134941   -.087686 |  1.000539   1.004125 
+    2.degree |  .0030104   .0401741 |  1.008641    .996645 
+    3.degree | -.0066735   .0282779 |  .9891735   1.025105 
+    4.degree |  .0072966   .0232156 |  1.019576   1.051142 
+         age | -.0036472   .0426076 |  .9445227   .9847334 
+ c.age#c.age | -.0128368   .0231127 |  .9281165   .9854925 
+      coninc | -.0088445   .0372471 |  .9908627   1.019427 
+
+. 
+. coefplot (matrix(balance[,1])) (matrix(balance[,2])), ///
+>         xline(0)  xtitle("Standardized Difference") ylab(,labsize(vsmall)) ///
+>         xlab(-.80(.20).80) legend(order(2 "Raw (unmatched)" 4 "Matched"))  ///
+>         headings(1.vigdrug = "{bf:Vignettes}" 1.cntct_tot = "{bf:Binary IVs}" 
+> ///
+>                 age = "{bf:Continuous IVs}"  2.race = "{bf:Race}" 2.region = "
+> {bf:Region}" ///
+>                 1.degree = "{bf:Education}" 2006.year = "{bf:Survey Year}") //
+> /
+>         title("") subtitle("") ///
+>         note("NOTES: (1) Ommitted reference categories are: normal ups and dow
+> ns vignette, 1996, no contact, male," ///
+>                  "not a metro, white, New England, and < high school.", span) 
+>   
+(balance: could not determine CI1)
+(balance: could not determine CI1)
+
+. 
+.         graph export "Graphs/mls-do02-02-nn_match-balanceplot.png", replace   
+>   
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_Match
+    > ingLabelingStigma/work_socius_2024_09_other_imputed/Graphs/mls-do02-02-n
+    > n_match-balanceplot.png saved as PNG format
+
+.         
+.         
+. /////////////////////////
+> // Table 2 (bottom panel) //    
+. /////////////////////////
+> 
+. local dv "socdistSS" 
+
+. local iv "L_mentlillB" 
+
+. local con "c.age##c.age coninc"         // Separate out continuous controls
+
+. local cvs "i.female i.metro i.race i.region i.degree"
+
+. local evs "i.vigdrug i.vigalc i.vigschiz i.vigdep i.year i.cntct_tot"
+
+. 
+. *Pooling over all four vignettes
+. mi est, cmdok: teffects nnmatch (`dv' `cvs' `con') (`iv'), ///
+>                                                 ematch(`evs') metric(mahalanob
+> is) ///
+>                                                 biasadj(`con')
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =      3,920
+                                                Average RVI       =     0.0798
+                                                Largest FMI       =     0.0744
+DF adjustment:   Large sample                   DF:     min       =   3,478.32
+                                                        avg       =   3,478.32
+Within VCE type:    AI robust                           max       =   3,478.32
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |   .0874744   .0297957     2.94   0.003     .0290556    .1458931
+-------------------------------------------------------------------------------
+
+.                                                 
+. *Separately for each vignette
+. foreach v of varlist vignorm vigdrug vigalc vigschiz vigdep {
+  2.         di _newline(1)
+  3.         di in red "Vignette is: `v'"
+  4.         mi est, cmdok: teffects nnmatch (`dv' `cvs' `con') (`iv') ///
+>                                                         if `v', ///
+>                                                         ematch(year cntct_tot)
+>  metric(mahalanobis) ///
+>                                                         biasadj(`con')
+  5.         }                                               
+
+
+Vignette is: vignorm
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        815
+                                                Average RVI       =     0.0461
+                                                Largest FMI       =     0.0442
+DF adjustment:   Large sample                   DF:     min       =   9,796.74
+                                                        avg       =   9,796.74
+Within VCE type:    AI robust                           max       =   9,796.74
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |   .1810107   .0555211     3.26   0.001     .0721779    .2898435
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigdrug
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        505
+                                                Average RVI       =     0.1197
+                                                Largest FMI       =     0.1079
+DF adjustment:   Large sample                   DF:     min       =   1,663.35
+                                                        avg       =   1,663.35
+Within VCE type:    AI robust                           max       =   1,663.35
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |  -.0620155   .0733654    -0.85   0.398    -.2059138    .0818827
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigalc
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        859
+                                                Average RVI       =     0.1131
+                                                Largest FMI       =     0.1026
+DF adjustment:   Large sample                   DF:     min       =   1,841.48
+                                                        avg       =   1,841.48
+Within VCE type:    AI robust                           max       =   1,841.48
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |   .0345928   .0564223     0.61   0.540    -.0760657    .1452512
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigschiz
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        843
+                                                Average RVI       =     0.1896
+                                                Largest FMI       =     0.1616
+DF adjustment:   Large sample                   DF:     min       =     748.03
+                                                        avg       =     748.03
+Within VCE type:    AI robust                           max       =     748.03
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |   .2215543   .0844939     2.62   0.009     .0556809    .3874276
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigdep
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        898
+                                                Average RVI       =     0.0655
+                                                Largest FMI       =     0.0619
+DF adjustment:   Large sample                   DF:     min       =   5,021.69
+                                                        avg       =   5,021.69
+Within VCE type:    AI robust                           max       =   5,021.69
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+(Lab MntlI..  |
+          vs  |
+NoLab Mnt..)  |  -.0126373   .0601194    -0.21   0.834    -.1304976    .1052231
+-------------------------------------------------------------------------------
+
+.                 
+.                 
+. *Bootstrap the cross-model difference in the schizophrenia vignette
+. capture program drop bs_crossmod
+
+. program define bs_crossmod, rclass
+  1.     
+.         mi est, cmdok: teffects nnmatch (socdistSS ///
+>                                         i.female i.race i.region i.metro i.deg
+> ree ///
+>                                         c.age##c.age coninc) (L_mentlillB) ///
+>                                                         if vigschiz, ///
+>                                                         ematch(year) metric(ma
+> halanobis) ///
+>                                                         biasadj(c.age##c.age c
+> oninc)    
+  2.         mat     temp1 = r(table)
+  3.         scalar  ate_mod1 =  temp1[1,1]
+  4.         
+.         mi est, cmdok: teffects nnmatch (socdistSS ///
+>                                         i.female i.race i.region i.metro i.deg
+> ree ///
+>                                         c.age##c.age coninc) (L_mentlillB) ///
+>                                                         if vigschiz, ///
+>                                                         ematch(year cntct_tot)
+>  metric(mahalanobis) ///
+>                                                         biasadj(c.age##c.age c
+> oninc)
+  5.         mat     temp2 = r(table)
+  6.         scalar  ate_mod2 =  temp2[1,1]
+  7.         
+.         scalar  diff = temp1[1,1] - temp2[1,1] 
+  8.         noisily di "Difference = " diff
+  9.         
+.         exit
+ 10. end
+
+. 
+. *Need to only keep schizophrenia vignette for the bootstrap command
+. drop if vigschiz != 1
+(3,077 observations deleted)
+
+. 
+. bootstrap ate_mod1 = ate_mod1 ate_mod2 = ate_mod2 diff = diff, ///
+>         saving(bs_ests-01-vigschiz-contact, replace) ///
+>         reps(1000) seed(962077) cformat(%6.4f): bs_crossmod
+(running bs_crossmod on estimation sample)
+
+warning: bs_crossmod does not set e(sample), so no observations will be
+         excluded from the resampling because of missing values or other
+         reasons. To exclude observations, press Break, save the data, drop
+         any observations that are to be excluded, and rerun bootstrap.
+
+Bootstrap replications (1,000)
+----+--- 1 ---+--- 2 ---+--- 3 ---+--- 4 ---+--- 5 
+.........x.x.......x.xx...x......xx.xx......xxx.x.    50
+x.x...x...x..x..xxx.x..........x............x..x..   100
+..xx..x.......x.....x...................x.......x.   150
+...x..x......x.............x...x........x....x....   200
+........x..............x....xx..........x.x.......   250
+.........xx.......x......x...x.xxxx..x.x.x........   300
+..x................x..x...x.xxx.xx...x.xx.........   350
+.x.........x......x...........x..xx......x.......x   400
+...xx...........x.....x.x..........xx.x.x....x...x   450
+......xx............x......x........x....x........   500
+x..x..x..x...xxx.x..x...x...........x.x......x..xx   550
+..........x................xxx..x........xxx.x....   600
+.xx.x..xx..............x...x...x.x.....x.xx.x.....   650
+......x.x...x..x.x..x..x.xxx..x........x.xxx.x...x   700
+....x.......x...xx.....x....xx......x...........xx   750
+.x..x.....x....x...x.....x..x.......xx..x.......x.   800
+..x.x.........x..x..x......x...x.....x.x..x...x...   850
+x........x..x.x.x.............x......xx..x.x...xx.   900
+..xx.......x........x..x.....x..x.x........x.x..x.   950
+.....x.....x..........xx....x.......x...x........x 1,000
+
+Bootstrap results                                          Number of obs = 843
+                                                           Replications  = 788
+
+      Command: bs_crossmod
+     ate_mod1: ate_mod1
+     ate_mod2: ate_mod2
+         diff: diff
+
+------------------------------------------------------------------------------
+             |   Observed   Bootstrap                         Normal-based
+             | coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+    ate_mod1 |     0.1172     0.0853     1.37   0.169      -0.0499      0.2843
+    ate_mod2 |     0.2216     0.0727     3.05   0.002       0.0791      0.3640
+        diff |    -0.1044     0.0503    -2.07   0.038      -0.2030     -0.0057
+------------------------------------------------------------------------------
+Note: One or more parameters could not be estimated in 212 bootstrap
+      replicates; standard-error estimates include only complete replications.
+
+.         
+. 
+.         
+. *Bootstrap the schizophrenia vs other illnesses ATE (H4)
+. use "Data/mls-data07-mice-cont", clear  
+(MLS - GSS Data | Matching Labeling Stigma | Multiple Imputation CE | mls-data07-)
+
+. 
+. capture program drop bs_crossmod
+
+. program define bs_crossmod, rclass
+  1.     
+.         mi est, cmdok: teffects nnmatch (socdistSS ///
+>                                         i.female i.race i.region i.metro i.degree ///
+>                                         c.age##c.age coninc) (L_mentlillB) ///
+>                                                         if vigdrug, ///
+>                                                         ematch(year cntct_tot) metric(mahalanobis) /
+> //
+>                                                         biasadj(c.age##c.age coninc)
+  2.         mat     tempdrug = r(table)
+  3.         scalar  ate_drug =  tempdrug[1,1]
+  4. 
+.         mi est, cmdok: teffects nnmatch (socdistSS ///
+>                                         i.female i.race i.region i.metro i.degree ///
+>                                         c.age##c.age coninc) (L_mentlillB) ///
+>                                                         if vigalc, ///
+>                                                         ematch(year cntct_tot) metric(mahalanobis) /
+> //
+>                                                         biasadj(c.age##c.age coninc)
+  5.         mat     tempalc = r(table)
+  6.         scalar  ate_alc =  tempalc[1,1]
+  7.         
+.         mi est, cmdok: teffects nnmatch (socdistSS ///
+>                                         i.female i.race i.region i.metro i.degree ///
+>                                         c.age##c.age coninc) (L_mentlillB) ///
+>                                                         if vigdep, ///
+>                                                         ematch(year cntct_tot) metric(mahalanobis) /
+> //
+>                                                         biasadj(c.age##c.age coninc)
+  8.         mat     tempdep = r(table)
+  9.         scalar  ate_dep =  tempdep[1,1]
+ 10.         
+.         mi est, cmdok: teffects nnmatch (socdistSS ///
+>                                         i.female i.race i.region i.metro i.degree ///
+>                                         c.age##c.age coninc) (L_mentlillB) ///
+>                                                         if vigschiz, ///
+>                                                         ematch(year cntct_tot) metric(mahalanobis) /
+> //
+>                                                         biasadj(c.age##c.age coninc)
+ 11.         mat     tempschiz = r(table)
+ 12.         scalar  ate_schiz =  tempschiz[1,1]
+ 13.         
+.         scalar  sch_v_drug = tempschiz[1,1] - tempdrug[1,1] 
+ 14.         scalar  sch_v_alc = tempschiz[1,1] - tempalc[1,1] 
+ 15.         scalar  sch_v_dep = tempschiz[1,1] - tempdep[1,1] 
+ 16.         
+.         exit
+ 17. end
+
+. 
+. *Briefly drop unincluded vignette for this analysis
+. drop if vignorm
+(815 observations deleted)
+
+. 
+. bootstrap ate_drug = ate_drug ate_alc = ate_alc ate_dep = ate_dep ///
+>         ate_schiz = ate_schiz sch_v_drug = sch_v_drug sch_v_alc = sch_v_alc ///
+>         sch_v_dep = sch_v_dep, ///
+>         saving(bs_ests-01-vigschiz_vs_others, replace) ///
+>         reps(1000) seed(962077) cformat(%6.4f): bs_crossmod
+(running bs_crossmod on estimation sample)
+
+warning: bs_crossmod does not set e(sample), so no observations will be excluded from the resampling
+         because of missing values or other reasons. To exclude observations, press Break, save the
+         data, drop any observations that are to be excluded, and rerun bootstrap.
+
+Bootstrap replications (1,000)
+----+--- 1 ---+--- 2 ---+--- 3 ---+--- 4 ---+--- 5 
+x....x........x....x.......x.xx.........x...x....x    50
+x...........x..xx...........xx.x....x..x..........   100
+x....x...xx.....x...x.........................x.xx   150
+.........x.....x...xx..x..x....x.........x......x.   200
+..............x.......xx.........x.....x..........   250
+..x....x..........................x....x....x....x   300
+x.......x.....x.........x..x.x.x..xx.x.......x....   350
+...x.................x................x...........   400
+.x...x..............x........x.xx....xx......x....   450
+x..x....x......x...x...x.........x....x...........   500
+xx.....x...xx..xx.x......xx...x.x...x.x..x......x.   550
+xx...x.....x..................x.........x...x...x.   600
+x....xxxx...x...x.......x...x........x....xxxx....   650
+...............x.xx...................x......x..x.   700
+..x..x.xx...x....x...x..x.................x.....x.   750
+....x..x....x.....x............x..x..x.........x.x   800
+x..xx.x.x......x.....xx............xx.......x.x.x.   850
+....x....x.x.x..xx..x.x...x........x.x............   900
+...xx.x..x..x..x........x..x....x.x.....x......x..   950
+x.xx....x........xx.............x...x.x...xx..x... 1,000
+
+Bootstrap results                                        Number of obs = 3,105
+                                                         Replications  =   810
+
+      Command: bs_crossmod
+     ate_drug: ate_drug
+      ate_alc: ate_alc
+      ate_dep: ate_dep
+    ate_schiz: ate_schiz
+   sch_v_drug: sch_v_drug
+    sch_v_alc: sch_v_alc
+    sch_v_dep: sch_v_dep
+
+------------------------------------------------------------------------------
+             |   Observed   Bootstrap                         Normal-based
+             | coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+    ate_drug |    -0.0620     0.0634    -0.98   0.328      -0.1863      0.0623
+     ate_alc |     0.0346     0.0454     0.76   0.446      -0.0543      0.1235
+     ate_dep |    -0.0126     0.0521    -0.24   0.808      -0.1147      0.0894
+   ate_schiz |     0.2216     0.0696     3.18   0.001       0.0851      0.3580
+  sch_v_drug |     0.2836     0.0933     3.04   0.002       0.1006      0.4665
+   sch_v_alc |     0.1870     0.0817     2.29   0.022       0.0269      0.3470
+   sch_v_dep |     0.2342     0.0872     2.69   0.007       0.0634      0.4050
+------------------------------------------------------------------------------
+Note: One or more parameters could not be estimated in 190 bootstrap
+      replicates; standard-error estimates include only complete replications.
+
+.         
+.                 
+.                 
+. *******************************************************************
+. // #4a - Sensitivity analyses with AIPW
+. *******************************************************************             
+. use "Data/mls-data07-mice-cont", clear  
+(MLS - GSS Data | Matching Labeling Stigma | Multiple Imputation CE | mls-data07-)
+
+.         
+. local dv "socdistSS" 
+
+. local iv "L_mentlillB" 
+
+. local cvs "i.cntct_tot i.female i.metro i.race i.region i.degree c.age##c.age coninc"
+
+. local evs "i.vigdrug i.vigalc i.vigschiz i.vigdep i.year"       
+
+. *Check the propensity score model
+. qui teffects aipw (`dv') (`iv' `evs' `cvs')
+
+. *tebalance overid // doesn't converge
+.                 
+. teffects overlap, legend(order(1 "Did not label" 2 "Did label")) ///
+>         title("{bf:AIPW} Overlap plots -- Propensity score distributions by label (or not)") ///
+>         xtitle("Propensity score")
+
+.         
+.         graph export "Graphs/mls-AIPW-overlap.png", replace
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-AIPW-overlap.png saved as PNG format
+
+.         
+. tebalance summarize
+
+Covariate balance summary
+
+                         Raw     Weighted
+-----------------------------------------
+Number of obs =        3,245      3,245.0
+Treated obs   =        1,944      1,629.8
+Control obs   =        1,301      1,615.2
+-----------------------------------------
+
+-----------------------------------------------------------------
+                |Standardized differences          Variance ratio
+                |        Raw    Weighted           Raw   Weighted
+----------------+------------------------------------------------
+        vigdrug |
+          Drug  |  -.2926771    .0052402      .5166604   1.011797
+                |
+         vigalc |
+       Alcohol  |  -.0821921   -.0029945      .8969458   .9959875
+                |
+       vigschiz |
+ Schizophrenia  |   .8185309    .0141827        5.7198   1.019829
+                |
+         vigdep |
+    Depression  |   .3307297   -.0039862      1.597034   .9949242
+                |
+           year |
+          2006  |   .1012564    .0067792      1.059473   1.003756
+          2018  |   .0687182    .0215334      1.058359   1.018608
+                |
+      cntct_tot |
+contact with~s  |    .214781    .0461047      .9377851   .9880263
+                |
+         female |
+        female  |   .0422297    .0280055      .9936181   .9970748
+                |
+          metro |
+     MetroArea  |  -.0230426    .0112008       .968043   1.016398
+                |
+           race |
+         black  |    .090966   -.0422251       1.20382   .9243331
+    other race  |  -.0336086   -.0035906      .9051559   .9893899
+                |
+         region |
+middle atlan~c  |  -.0049688    .0471343      .9880151   1.120599
+e. nor. cent~l  |   .0132456   -.0039048      1.022609   .9930944
+w. nor. cent~l  |   .0430542   -.0106036      1.166501   .9644343
+south atlantic  |  -.0102622   -.0341268      .9844764   .9523301
+e. sou. cent~l  |  -.0283166   -.0123743      .9038386   .9575725
+w. sou. cent~l  |  -.0260155   -.0274506      .9358779   .9333207
+      mountain  |   .0330908   -.0029844      1.111716   .9905903
+       pacific  |  -.0148979     .032794      .9710047   1.068974
+                |
+         degree |
+   high school  |  -.0134941   -.0333065      1.000539   1.003901
+junior college  |   .0030104    .0349771      1.008641   1.118486
+      bachelor  |  -.0066735    .0446327      .9891735   1.079956
+      graduate  |   .0072966    .0257058      1.019576   1.073925
+                |
+            age |  -.0036472   -.0273479      .9445227   .9320888
+                |
+            age#|
+            age |  -.0128368   -.0367887      .9281165   .9090336
+                |
+         coninc |  -.0088445    .0294087      .9908627   .9593802
+-----------------------------------------------------------------
+
+. mat     balance = r(table)
+
+.         
+. *Figure A3
+. matlist balance
+
+             | std_diff             | ratio                
+             |       Raw   Weighted |       Raw   Weighted 
+-------------+----------------------+----------------------
+   1.vigdrug | -.2926771   .0052402 |  .5166604   1.011797 
+    1.vigalc | -.0821921  -.0029945 |  .8969458   .9959875 
+  1.vigschiz |  .8185309   .0141827 |    5.7198   1.019829 
+    1.vigdep |  .3307297  -.0039862 |  1.597034   .9949242 
+   2006.year |  .1012564   .0067792 |  1.059473   1.003756 
+   2018.year |  .0687182   .0215334 |  1.058359   1.018608 
+ 1.cntct_tot |   .214781   .0461047 |  .9377851   .9880263 
+    1.female |  .0422297   .0280055 |  .9936181   .9970748 
+     1.metro | -.0230426   .0112008 |   .968043   1.016398 
+      2.race |   .090966  -.0422251 |   1.20382   .9243331 
+      3.race | -.0336086  -.0035906 |  .9051559   .9893899 
+    2.region | -.0049688   .0471343 |  .9880151   1.120599 
+    3.region |  .0132456  -.0039048 |  1.022609   .9930944 
+    4.region |  .0430542  -.0106036 |  1.166501   .9644343 
+    5.region | -.0102622  -.0341268 |  .9844764   .9523301 
+    6.region | -.0283166  -.0123743 |  .9038386   .9575725 
+    7.region | -.0260155  -.0274506 |  .9358779   .9333207 
+    8.region |  .0330908  -.0029844 |  1.111716   .9905903 
+    9.region | -.0148979    .032794 |  .9710047   1.068974 
+    1.degree | -.0134941  -.0333065 |  1.000539   1.003901 
+    2.degree |  .0030104   .0349771 |  1.008641   1.118486 
+    3.degree | -.0066735   .0446327 |  .9891735   1.079956 
+    4.degree |  .0072966   .0257058 |  1.019576   1.073925 
+         age | -.0036472  -.0273479 |  .9445227   .9320888 
+ c.age#c.age | -.0128368  -.0367887 |  .9281165   .9090336 
+      coninc | -.0088445   .0294087 |  .9908627   .9593802 
+
+.         
+. coefplot (matrix(balance[,1])) (matrix(balance[,2])), ///
+>         xline(0)  xtitle("Standardized Difference") ylab(,labsize(vsmall)) ///
+>         xlab(-.80(.20).80) legend(order(2 "Raw (unmatched)" 4 "AIP Weighted"))  ///
+>         headings(1.vigdrug = "{bf:Vignettes}" 1.cntct_tot = "{bf:Binary IVs}" ///
+>                 age = "{bf:Continuous IVs}"  2.race = "{bf:Race}" 2.region = "{bf:Region}" ///
+>                 1.degree = "{bf:Education}" 2006.year = "{bf:Survey Year}") ///
+>         title("") subtitle("") ///
+>         note("NOTES: (1) Ommitted reference categories are: normal ups and downs vignette, 1996, no 
+> contact, male," ///
+>                  "not a metro, white, New England, and < high school.", span)   
+(balance: could not determine CI1)
+(balance: could not determine CI1)
+
+. 
+.         graph export "Graphs/mls-do02-03-AIPW-balanceplot.png", replace 
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-do02-03-AIPW-balanceplot.png saved as PNG format
+
+. 
+.         
+.                 
+. *Separately for each vignette
+. *       NOTE: overid test doesn't converge for vigschiz or vigdep
+. foreach v of varlist vignorm vigdrug vigalc {
+  2.         di _newline(1)
+  3.         di in red "Vignette is: `v'"
+  4.         qui teffects aipw (`dv') (`iv' `cvs' i.year) if `v'
+  5.         capture tebalance overid
+  6.         }
+
+
+Vignette is: vignorm
+
+
+Vignette is: vigdrug
+
+
+Vignette is: vigalc
+
+.         
+. foreach v of varlist vignorm vigdrug vigalc vigschiz vigdep {
+  2.         di _newline(1)
+  3.         di in red "Vignette is: `v'"
+  4.         qui teffects aipw (`dv') (`iv' `cvs' i.year) if `v'
+  5. 
+.         teffects overlap, legend(order(1 "Did not label" 2 "Did label")) ///
+>         title("{bf:`v':} Overlap plots -- Propensity score distributions by label (or not)") ///
+>         xtitle("Propensity score")
+  6.         
+.                 graph export "Graphs/mls-`v'-AIPW-overlap.png", replace
+  7. 
+.         tebalance summarize
+  8.         mat     balance = r(table)
+  9.         
+.         coefplot (matrix(balance[,1])) (matrix(balance[,2])), ///
+>         xline(0)  xtitle("Standardized Difference") ///
+>         xlab(-.60(.20).60) legend(order(2 "Raw (unweighted)" 4 "AIP Weighted")) ///
+>                 sort graphregion(margin(l+5)) ///
+>         title("{bf:`v'}: Covariate standardized differences between labelers (and not)", span) ///
+>         subtitle("Raw (unweighted) vs AIP weighted data")
+ 10. 
+.                 graph export "Graphs/mls-`v'-AIPW-balanceplot.png", replace
+ 11.         }       
+
+
+Vignette is: vignorm
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-vignorm-AIPW-overlap.png saved as PNG format
+
+Covariate balance summary
+
+                         Raw     Weighted
+-----------------------------------------
+Number of obs =          667        667.0
+Treated obs   =          167        329.6
+Control obs   =          500        337.4
+-----------------------------------------
+
+-----------------------------------------------------------------
+                |Standardized differences          Variance ratio
+                |        Raw    Weighted           Raw   Weighted
+----------------+------------------------------------------------
+      cntct_tot |
+contact with~s  |   .1036602   -.0053879      .9608303    1.00214
+                |
+         female |
+        female  |   .0098232   -.0014832       1.00209    1.00036
+                |
+          metro |
+     MetroArea  |  -.1543206   -.0526831      .7664768   .9140186
+                |
+           race |
+         black  |   .3187375   -.0115524      1.779271   .9771708
+    other race  |  -.0829663    -.010924       .769743   .9667903
+                |
+         region |
+middle atlan~c  |   .2058928    .0060494      1.585062    1.01446
+e. nor. cent~l  |  -.2347383   -.0423959      .6470913   .9298945
+w. nor. cent~l  |   .0432801    .0280899      1.189904   1.115454
+south atlantic  |   .0571438    .0356403      1.086766   1.049173
+e. sou. cent~l  |   .0325806   -.0020061      1.130692   .9925166
+w. sou. cent~l  |  -.1038167   -.0633034      .7481375   .8333189
+      mountain  |   .0066315    .0064268      1.024398   1.019716
+       pacific  |   .0426695   -.0086356      1.087025   .9834706
+                |
+         degree |
+   high school  |   .0418793    .0490786      .9961801   .9905461
+junior college  |  -.1398313   -.0432674        .62506   .8687404
+      bachelor  |  -.1404812   -.0694426      .7610939   .8709766
+      graduate  |  -.0207003    .0270647      .9495687   1.072341
+                |
+            age |    -.07736    .0129761       1.05698   .9852634
+                |
+            age#|
+            age |  -.0612568    .0093478       1.03328   .9839108
+                |
+         coninc |  -.0861719   -.0483958        .94807   .8877665
+                |
+           year |
+          2006  |    .130851   -.0088706      1.032802   .9975315
+          2018  |    .104587   -.0324701      1.107963   .9663815
+-----------------------------------------------------------------
+(balance: could not determine CI1)
+(balance: could not determine CI1)
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-vignorm-AIPW-balanceplot.png saved as PNG format
+
+
+Vignette is: vigdrug
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-vigdrug-AIPW-overlap.png saved as PNG format
+
+Covariate balance summary
+
+                         Raw     Weighted
+-----------------------------------------
+Number of obs =          402        402.0
+Treated obs   =          164        201.3
+Control obs   =          238        200.7
+-----------------------------------------
+
+-----------------------------------------------------------------
+                |Standardized differences          Variance ratio
+                |        Raw    Weighted           Raw   Weighted
+----------------+------------------------------------------------
+      cntct_tot |
+contact with~s  |   .2407147   -.0054781       1.00086   .9998861
+                |
+         female |
+        female  |  -.0558456   -.0073574       1.00919   1.000907
+                |
+          metro |
+     MetroArea  |   .1007262   -.0026428      1.161569   .9960569
+                |
+           race |
+         black  |   .1093502    .0050152      1.250816   1.010588
+    other race  |   .0047724   -.0193182      1.016311   .9413574
+                |
+         region |
+middle atlan~c  |   -.217708     .014275      .6076503   1.030914
+e. nor. cent~l  |   .1157993    .0030972      1.225643     1.0055
+w. nor. cent~l  |    .138876   -.0078281      1.633892   .9733878
+south atlantic  |   .0713261   -.0105098      1.116085   .9842076
+e. sou. cent~l  |  -.0006126   -.0100854      .9997813   .9641349
+w. sou. cent~l  |  -.1322825    .0265584      .7101148   1.066903
+      mountain  |   .0706759    -.006779      1.309448   .9737971
+       pacific  |  -.0425027   -.0144034      .9258134    .973308
+                |
+         degree |
+   high school  |   .0769058    .0162617      .9946765   .9981059
+junior college  |   .0522488   -.0164297      1.157127   .9547678
+      bachelor  |  -.1972862    .0030868      .7230786   1.004822
+      graduate  |  -.0468997    -.009545      .8716411    .971918
+                |
+            age |   .0770217   -.0090725      1.209175   .9892285
+                |
+            age#|
+            age |   .1032319   -.0102194      1.332771   1.036636
+                |
+         coninc |  -.0418786   -.0295364      1.122551   1.044478
+                |
+           year |
+          2018  |  -.0646882   -.0082228      .9966137     .99904
+-----------------------------------------------------------------
+(balance: could not determine CI1)
+(balance: could not determine CI1)
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-vigdrug-AIPW-balanceplot.png saved as PNG format
+
+
+Vignette is: vigalc
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-vigalc-AIPW-overlap.png saved as PNG format
+
+Covariate balance summary
+
+                         Raw     Weighted
+-----------------------------------------
+Number of obs =          719        719.0
+Treated obs   =          404        359.7
+Control obs   =          315        359.3
+-----------------------------------------
+
+-----------------------------------------------------------------
+                |Standardized differences          Variance ratio
+                |        Raw    Weighted           Raw   Weighted
+----------------+------------------------------------------------
+      cntct_tot |
+contact with~s  |   .2634073    .0093615      .9305153   .9972723
+                |
+         female |
+        female  |    .094561     .009031      .9885884   .9987819
+                |
+          metro |
+     MetroArea  |   -.046689   -.0043084      .9433074   .9946447
+                |
+           race |
+         black  |   .1238356     .000624      1.266521   1.001157
+    other race  |    .054089    .0061942      1.162754   1.017251
+                |
+         region |
+middle atlan~c  |  -.0760393    .0018353      .8214326   1.004775
+e. nor. cent~l  |   .0877661   -.0056665      1.158484   .9906736
+w. nor. cent~l  |   .0581683   -.0082402      1.248038   .9699771
+south atlantic  |  -.0316692   -.0033582      .9550314   .9952455
+e. sou. cent~l  |   -.085806   -.0008028      .7238102   .9969905
+w. sou. cent~l  |   .1279582    .0091905      1.363879   1.021994
+      mountain  |   .0468632    .0114433      1.152391   1.036091
+       pacific  |  -.0829112   -.0037665      .8390243   .9918673
+                |
+         degree |
+   high school  |   .0143601    .0079991      1.000646   1.000821
+junior college  |  -.0793269    .0008826      .7992425   1.002511
+      bachelor  |   .0377862   -.0102066      1.055337   .9857429
+      graduate  |   .0183706   -.0034193      1.049136   .9909919
+                |
+            age |   -.005323   -.0011996      .9223349   1.003748
+                |
+            age#|
+            age |  -.0182527    -.000472      .8977297   1.003742
+                |
+         coninc |  -.1401689   -.0105168      .7764807   .8859043
+                |
+           year |
+          2006  |  -.0293698    .0004203      .9895904   1.000145
+          2018  |    .229284    .0037677      1.238916   1.003346
+-----------------------------------------------------------------
+(balance: could not determine CI1)
+(balance: could not determine CI1)
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-vigalc-AIPW-balanceplot.png saved as PNG format
+
+
+Vignette is: vigschiz
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-vigschiz-AIPW-overlap.png saved as PNG format
+
+Covariate balance summary
+
+                         Raw     Weighted
+-----------------------------------------
+Number of obs =          709        709.0
+Treated obs   =          656        364.2
+Control obs   =           53        344.8
+-----------------------------------------
+
+-----------------------------------------------------------------
+                |Standardized differences          Variance ratio
+                |        Raw    Weighted           Raw   Weighted
+----------------+------------------------------------------------
+      cntct_tot |
+contact with~s  |   .5963282    .1314435      1.025183   .9624852
+                |
+         female |
+        female  |   .2469245    .1700892      1.005928    1.01015
+                |
+          metro |
+     MetroArea  |   .1397884   -.1696385      1.217767   .8288145
+                |
+           race |
+         black  |  -.0900739    .1271153      .8250834   1.353378
+    other race  |  -.0926719    .1202826      .7642303   1.499379
+                |
+         region |
+middle atlan~c  |   .1738428    .0574576      1.572365   1.149133
+e. nor. cent~l  |  -.0016015    -.100208      .9798472   .8522771
+w. nor. cent~l  |  -.1304365    .0083333      .6430913   1.030899
+south atlantic  |  -.1908539   -.0507562      .7604674   .9266949
+e. sou. cent~l  |  -.0447054   -.0563654      .8439091   .8295883
+w. sou. cent~l  |  -.0405592   -.0799651      .8856883   .8226962
+      mountain  |   .0841455   -.0411667      1.319375   .8815178
+       pacific  |   .1402389    .1673289      1.326031   1.456658
+                |
+         degree |
+   high school  |  -.2812377     .037446      1.068152   .9993747
+junior college  |   .2440219    .0664855      2.415654   1.219665
+      bachelor  |   .3072482    .1357223      1.858986   1.273618
+      graduate  |   .2341827   -.0928363       2.34925   .7869088
+                |
+            age |  -.2055845   -.0410782      .6277474   .9414379
+                |
+            age#|
+            age |  -.2654493   -.0474081      .5465939   .9024924
+                |
+         coninc |   .1298257   -.0599551      .9756334   .6705593
+                |
+           year |
+          2006  |   .1451685    .0411174       1.05988   1.017809
+          2018  |    .199973   -.1305933      1.240596    .902065
+-----------------------------------------------------------------
+(balance: could not determine CI1)
+(balance: could not determine CI1)
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-vigschiz-AIPW-balanceplot.png saved as PNG format
+
+
+Vignette is: vigdep
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-vigdep-AIPW-overlap.png saved as PNG format
+
+Covariate balance summary
+
+                         Raw     Weighted
+-----------------------------------------
+Number of obs =          748        748.0
+Treated obs   =          553        374.5
+Control obs   =          195        373.5
+-----------------------------------------
+
+-----------------------------------------------------------------
+                |Standardized differences          Variance ratio
+                |        Raw    Weighted           Raw   Weighted
+----------------+------------------------------------------------
+      cntct_tot |
+contact with~s  |   .1866863   -.0089579      .9271757   1.004354
+                |
+         female |
+        female  |   .0957175    .0338091      .9826899   .9949137
+                |
+          metro |
+     MetroArea  |  -.1833972   -.0110576      .7839711   .9846866
+                |
+           race |
+         black  |   .0132686    .0101866      1.023605   1.020777
+    other race  |  -.1517491    .0089807      .6312431   1.029841
+                |
+         region |
+middle atlan~c  |  -.0494099   -.0058793      .8876799   .9859785
+e. nor. cent~l  |   .1492031    .0446618      1.317018   1.084444
+w. nor. cent~l  |  -.0387636    .0144297      .8892064   1.044522
+south atlantic  |    .045003   -.0164433       1.07101   .9752013
+e. sou. cent~l  |  -.0978977    .0030785      .7226857   1.010649
+w. sou. cent~l  |  -.1025611    .0115741      .7727323     1.0311
+      mountain  |   .0494829   -.0197698      1.173081   .9402879
+       pacific  |  -.0217514   -.0106354      .9537933    .978797
+                |
+         degree |
+   high school  |  -.0148114    .0096582      .9981262   .9993097
+junior college  |    .098529    .0310933      1.399709   1.110541
+      bachelor  |  -.0405869   -.0281597       .933641   .9566061
+      graduate  |   .0025938   -.0183046      1.003233   .9560147
+                |
+            age |   .1370543   -.0207519        .88229   .9918391
+                |
+            age#|
+            age |   .1021191   -.0201634      .8867285   .9727248
+                |
+         coninc |   .2092522   -.0219506      1.391932   .9563036
+                |
+           year |
+          2006  |   .0266568   -.0076779      1.005119   .9977724
+          2018  |   .1810365    .0142757      1.203156   1.013635
+-----------------------------------------------------------------
+(balance: could not determine CI1)
+(balance: could not determine CI1)
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStigma/work
+    > _socius_2024_09_corrected/Graphs/mls-vigdep-AIPW-balanceplot.png saved as PNG format
+
+.         
+.         
+. local dv "socdistSS" 
+
+. local iv "L_mentlillB" 
+
+. local cvs "i.cntct_tot c.age##c.age i.female i.race i.region i.metro coninc i.degree"
+
+. local evs "i.vigdrug i.vigalc i.vigschiz i.vigdep i.year"       
+
+.         
+. *Table A2 top panel: Augmented inverse probability weighting (doubly robust method)
+. mi est, cmdok: teffects aipw (`dv') (`iv' `cvs' `evs')
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =      3,920
+                                                Average RVI       =     0.0409
+                                                Largest FMI       =     0.1342
+DF adjustment:   Large sample                   DF:     min       =   1,079.91
+                                                        avg       =  32,532.50
+Within VCE type:       Robust                           max       = 237,527.34
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |   .0880956   .0261667     3.37   0.001     .0368073    .1393839
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |    2.39564   .0222853   107.50   0.000     2.351961     2.43932
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |   2.364702   .0189426   124.83   0.000     2.327575    2.401829
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |   2.497931   .0144173   173.26   0.000     2.469673    2.526188
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |   .4244586   .0814782     5.21   0.000     .2646672    .5842501
+                         age |   .0230832   .0126925     1.82   0.069    -.0017953    .0479617
+                             |
+                 c.age#c.age |  -.0002193   .0001256    -1.75   0.081    -.0004655    .0000268
+                             |
+                      female |
+                     female  |   .1035375   .0764779     1.35   0.176    -.0463597    .2534347
+                             |
+                        race |
+                      black  |   .3849441   .1173579     3.28   0.001       .15491    .6149782
+                 other race  |  -.0954109   .1451836    -0.66   0.511    -.3799969    .1891752
+                             |
+                      region |
+            middle atlantic  |   .0022432   .2117254     0.01   0.992    -.4128163    .4173027
+            e. nor. central  |   .0208913   .1981859     0.11   0.916     -.367569    .4093516
+            w. nor. central  |   .0162978   .2386369     0.07   0.946    -.4514416    .4840372
+             south atlantic  |  -.0939442   .1983955    -0.47   0.636    -.4828315    .2949431
+            e. sou. central  |  -.2400392   .2354178    -1.02   0.308    -.7015157    .2214373
+            w. sou. central  |  -.1408473   .2118021    -0.66   0.506    -.5559961    .2743016
+                   mountain  |   .0956555   .2272973     0.42   0.674      -.34988    .5411909
+                    pacific  |  -.0254705   .2060918    -0.12   0.902     -.429452     .378511
+                             |
+                       metro |
+                  MetroArea  |  -.1829132   .0954727    -1.92   0.055    -.3700463    .0042199
+                      coninc |   .0004082   .0011084     0.37   0.713    -.0017667    .0025832
+                             |
+                      degree |
+                high school  |  -.1548912   .1294628    -1.20   0.232    -.4086543     .098872
+             junior college  |  -.2181588   .1751405    -1.25   0.213    -.5614518    .1251342
+                   bachelor  |  -.2796404   .1535435    -1.82   0.069    -.5806258    .0213449
+                   graduate  |  -.1631944   .1784545    -0.91   0.360    -.5129779     .186589
+                             |
+                     vigdrug |
+                       Drug  |   .7622831   .1290479     5.91   0.000     .5093472    1.015219
+                             |
+                      vigalc |
+                    Alcohol  |   1.295495      .1068    12.13   0.000     1.086169    1.504821
+                             |
+                    vigschiz |
+              Schizophrenia  |   3.450912     .14955    23.08   0.000     3.157773    3.744051
+                             |
+                      vigdep |
+                 Depression  |   2.055318   .1129363    18.20   0.000     1.833948    2.276687
+                             |
+                        year |
+                       2006  |   .1567806   .0972722     1.61   0.107    -.0339164    .3474776
+                       2018  |   .3451388   .0962137     3.59   0.000     .1565405    .5337372
+                             |
+                       _cons |  -1.861637   .3616433    -5.15   0.000    -2.570486   -1.152788
+----------------------------------------------------------------------------------------------
+
+. 
+. *Table A2 top panel: Separately for each vignette
+. foreach v of varlist vignorm vigdrug vigalc vigschiz vigdep {
+  2.         di _newline(1)
+  3.         di in red "Vignette is: `v'"
+  4.         mi est, cmdok: teffects aipw (`dv') (`iv' `cvs' i.year) if `v'
+  5.         }       
+
+
+Vignette is: vignorm
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        815
+                                                Average RVI       =     0.0228
+                                                Largest FMI       =     0.0777
+DF adjustment:   Large sample                   DF:     min       =   3,195.91
+                                                        avg       = 4065763.98
+Within VCE type:       Robust                           max       =   9.20e+07
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |   .1932082   .0497842     3.88   0.000     .0956291    .2907873
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |   1.946909    .025219    77.20   0.000      1.89748    1.996338
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |   1.948531   .0248928    78.28   0.000     1.899741     1.99732
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |   2.137293   .0437151    48.89   0.000     2.051611    2.222975
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |   .2287763    .179057     1.28   0.201    -.1222581    .5798107
+                         age |  -.0052932   .0262015    -0.20   0.840    -.0566476    .0460612
+                             |
+                 c.age#c.age |   .0000207   .0002539     0.08   0.935     -.000477    .0005184
+                             |
+                      female |
+                     female  |   .0022937   .1722445     0.01   0.989    -.3353067    .3398941
+                             |
+                        race |
+                      black  |     .89447   .2340939     3.82   0.000     .4356508    1.353289
+                 other race  |  -.0729134   .3143581    -0.23   0.817    -.6890604    .5432335
+                             |
+                      region |
+            middle atlantic  |   .8881735   .5177156     1.72   0.086    -.1265305    1.902877
+            e. nor. central  |  -.1481522   .5129614    -0.29   0.773    -1.153538    .8572341
+            w. nor. central  |   .3205991   .5794115     0.55   0.580    -.8150266    1.456225
+             south atlantic  |   .1586176    .506492     0.31   0.754    -.8340888    1.151324
+            e. sou. central  |   .3216077   .5668281     0.57   0.570    -.7893595    1.432575
+            w. sou. central  |  -.2821266   .5426397    -0.52   0.603    -1.345685    .7814314
+                   mountain  |   .4344346   .5654319     0.77   0.442    -.6738021    1.542671
+                    pacific  |   .5521217   .5142092     1.07   0.283    -.4557124    1.559956
+                             |
+                       metro |
+                  MetroArea  |  -.4924014   .2264017    -2.17   0.030     -.936142   -.0486607
+                      coninc |   .0000476   .0024329     0.02   0.984    -.0047226    .0048178
+                             |
+                      degree |
+                high school  |  -.5331104   .2640317    -2.02   0.043    -1.050611   -.0156099
+             junior college  |   -.818803   .4042821    -2.03   0.043    -1.611203   -.0264026
+                   bachelor  |  -.9728056   .3474167    -2.80   0.005    -1.653738   -.2918731
+                   graduate  |  -.3299634   .3744947    -0.88   0.378    -1.063989     .404062
+                             |
+                        year |
+                       2006  |   .2520839   .2046273     1.23   0.218    -.1489906    .6531583
+                       2018  |   .4637378   .2281615     2.03   0.042     .0165391    .9109366
+                             |
+                       _cons |  -.9875547   .7912391    -1.25   0.212    -2.538371    .5632613
+----------------------------------------------------------------------------------------------
+
+
+Vignette is: vigdrug
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        505
+                                                Average RVI       =     0.0357
+                                                Largest FMI       =     0.1187
+DF adjustment:   Large sample                   DF:     min       =   1,378.38
+                                                        avg       =  20,552.42
+Within VCE type:       Robust                           max       =  76,698.00
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |  -.0123594   .0594762    -0.21   0.835     -.128941    .1042222
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |   2.901052   .0385395    75.27   0.000     2.825515    2.976589
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |   2.899843   .0389519    74.45   0.000     2.823497     2.97619
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |    2.89592   .0488367    59.30   0.000     2.800199    2.991641
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |   .4862499   .1955618     2.49   0.013     .1028589    .8696409
+                         age |  -.0312068   .0334456    -0.93   0.351    -.0967651    .0343515
+                             |
+                 c.age#c.age |   .0003845   .0003329     1.16   0.248     -.000268    .0010369
+                             |
+                      female |
+                     female  |  -.2149433    .191542    -1.12   0.262    -.5903646     .160478
+                             |
+                        race |
+                      black  |   .2548353   .2781044     0.92   0.360    -.2903051    .7999757
+                 other race  |  -.0089775   .3506396    -0.03   0.980    -.6962352    .6782803
+                             |
+                      region |
+            middle atlantic  |  -1.041067   .5525716    -1.88   0.060     -2.12504    .0429047
+            e. nor. central  |  -.3393112   .5213692    -0.65   0.515    -1.361724    .6831015
+            w. nor. central  |  -.0293653   .6185296    -0.05   0.962    -1.241915    1.183185
+             south atlantic  |  -.3434185   .5223092    -0.66   0.511    -1.367879    .6810423
+            e. sou. central  |  -.5316839   .5959377    -0.89   0.372    -1.700191    .6368235
+            w. sou. central  |  -.6838969   .5623686    -1.22   0.224     -1.78665    .4188559
+                   mountain  |  -.4842009   .6066138    -0.80   0.425    -1.673746    .7053439
+                    pacific  |  -.5641748   .5294021    -1.07   0.287    -1.602352    .4740028
+                             |
+                       metro |
+                  MetroArea  |   .2542243   .2413931     1.05   0.292     -.218962    .7274106
+                      coninc |   .0021484    .002868     0.75   0.454     -.003475    .0077719
+                             |
+                      degree |
+                high school  |  -.2373384   .3036551    -0.78   0.434    -.8325268      .35785
+             junior college  |  -.1383313   .4250972    -0.33   0.745    -.9715942    .6949316
+                   bachelor  |  -.5953181   .3777097    -1.58   0.115    -1.335715    .1450784
+                   graduate  |  -.5021761   .4494531    -1.12   0.264    -1.383106    .3787537
+                             |
+                        year |
+                       2018  |   -.203755   .1990775    -1.02   0.306    -.5939477    .1864378
+                             |
+                       _cons |   .7159503   .9009693     0.79   0.427    -1.050601    2.482502
+----------------------------------------------------------------------------------------------
+
+
+Vignette is: vigalc
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        859
+                                                Average RVI       =     0.0467
+                                                Largest FMI       =     0.1363
+DF adjustment:   Large sample                   DF:     min       =   1,047.81
+                                                        avg       = 377,613.58
+Within VCE type:       Robust                           max       = 7449964.48
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |   .0415212    .044548     0.93   0.351    -.0458004    .1288429
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |   2.661832    .035055    75.93   0.000     2.593122    2.730541
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |   2.671163   .0345612    77.29   0.000      2.60342    2.738905
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |    2.68871   .0282508    95.17   0.000     2.633337    2.744083
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |   .5225111    .155768     3.35   0.001     .2170808    .8279415
+                         age |   .0425673   .0235288     1.81   0.070    -.0035518    .0886864
+                             |
+                 c.age#c.age |  -.0004327   .0002331    -1.86   0.063    -.0008896    .0000242
+                             |
+                      female |
+                     female  |   .1224824    .149232     0.82   0.412    -.1700262    .4149909
+                             |
+                        race |
+                      black  |   .3625264   .2198462     1.65   0.099    -.0684235    .7934763
+                 other race  |   .2189197   .2703461     0.81   0.418    -.3110186     .748858
+                             |
+                      region |
+            middle atlantic  |   .1344316   .3981905     0.34   0.736    -.6460247    .9148878
+            e. nor. central  |   .3441481   .3763348     0.91   0.360    -.3934564    1.081753
+            w. nor. central  |    .543758   .4572315     1.19   0.234    -.3524069    1.439923
+             south atlantic  |   .1469191   .3698188     0.40   0.691    -.5779129    .8717511
+            e. sou. central  |   -.116367   .4459752    -0.26   0.794    -.9906018    .7578678
+            w. sou. central  |   .6281255   .4118531     1.53   0.127    -.1791574    1.435408
+                   mountain  |   .4604004   .4160874     1.11   0.269     -.355116    1.275917
+                    pacific  |   .0470267   .3868165     0.12   0.903    -.7111253    .8051788
+                             |
+                       metro |
+                  MetroArea  |  -.3159407    .180954    -1.75   0.081    -.6706578    .0387764
+                      coninc |  -.0028307   .0020284    -1.40   0.163    -.0068108    .0011494
+                             |
+                      degree |
+                high school  |   .0629285   .2345203     0.27   0.788    -.3967726    .5226295
+             junior college  |  -.3983153   .3301425    -1.21   0.228    -1.045469    .2488379
+                   bachelor  |   .0927786   .2799599     0.33   0.740    -.4560021    .6415592
+                   graduate  |   .0849121   .3299352     0.26   0.797    -.5617835    .7316077
+                             |
+                        year |
+                       2006  |   .1646055   .1780108     0.92   0.355    -.1844431    .5136542
+                       2018  |    .599765    .199356     3.01   0.003     .2088765    .9906534
+                             |
+                       _cons |  -1.384605   .6530417    -2.12   0.034    -2.664567   -.1046417
+----------------------------------------------------------------------------------------------
+
+
+Vignette is: vigschiz
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        843
+                                                Average RVI       =     0.0787
+                                                Largest FMI       =     0.2562
+DF adjustment:   Large sample                   DF:     min       =     300.96
+                                                        avg       =  99,380.79
+Within VCE type:       Robust                           max       = 1369802.23
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |   .1923586   .0689762     2.79   0.005      .057092    .3276251
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |   2.418356   .0648664    37.28   0.000     2.291139    2.545573
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |   2.488406   .0811457    30.67   0.000     2.329354    2.647457
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |   2.608809   .0240964   108.27   0.000     2.561581    2.656037
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |   1.010604    .306889     3.29   0.001      .408244    1.612963
+                         age |   .0736235   .0432659     1.70   0.089     -.011183    .1584299
+                             |
+                 c.age#c.age |  -.0008057   .0004204    -1.92   0.055    -.0016297    .0000183
+                             |
+                      female |
+                     female  |   .4382581   .2806221     1.56   0.118    -.1119584    .9884745
+                             |
+                        race |
+                      black  |  -.0998216   .4275838    -0.23   0.815    -.9379023     .738259
+                 other race  |  -.5692146   .4571231    -1.25   0.213    -1.465577    .3271474
+                             |
+                      region |
+            middle atlantic  |  -.0188355   .8030959    -0.02   0.981    -1.592894    1.555223
+            e. nor. central  |  -.3486399   .6862456    -0.51   0.611    -1.693673    .9963936
+            w. nor. central  |   -1.30103   .7251742    -1.79   0.073    -2.722364    .1203027
+             south atlantic  |  -.7983743   .6653107    -1.20   0.230    -2.102386    .5056375
+            e. sou. central  |  -.5781561   .7549549    -0.77   0.444    -2.057843    .9015306
+            w. sou. central  |  -.2990617   .7296627    -0.41   0.682    -1.729223    1.131099
+                   mountain  |  -.1859032   .8284025    -0.22   0.822    -1.809962    1.438156
+                    pacific  |  -.2739283   .7036034    -0.39   0.697    -1.653093    1.105236
+                             |
+                       metro |
+                  MetroArea  |   .3725157   .3994414     0.93   0.351    -.4105477    1.155579
+                      coninc |  -.0025891   .0045888    -0.56   0.573    -.0116192    .0064411
+                             |
+                      degree |
+                high school  |   .1278895   .3806226     0.34   0.737    -.6183141    .8740931
+             junior college  |   1.156257   .7855222     1.47   0.141    -.3841166     2.69663
+                   bachelor  |   1.424675    .583536     2.44   0.015     .2807338    2.568617
+                   graduate  |   .9392108   .7054908     1.33   0.183    -.4450029    2.323424
+                             |
+                        year |
+                       2006  |   .5042524   .3240284     1.56   0.120     -.131027    1.139532
+                       2018  |   .7643787   .3658975     2.09   0.037     .0471308    1.481627
+                             |
+                       _cons |   .1345386   1.127316     0.12   0.905    -2.075064    2.344141
+----------------------------------------------------------------------------------------------
+
+
+Vignette is: vigdep
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        898
+                                                Average RVI       =     0.0516
+                                                Largest FMI       =     0.1400
+DF adjustment:   Large sample                   DF:     min       =     994.01
+                                                        avg       =  21,347.95
+Within VCE type:       Robust                           max       = 208,339.09
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |   .0149663   .0501499     0.30   0.765    -.0833319    .1132644
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |   2.212021   .0437534    50.56   0.000     2.126262    2.297779
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |    2.23213   .0446161    50.03   0.000     2.144681    2.319578
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |   2.217525   .0250518    88.52   0.000     2.168425    2.266626
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |     .22751   .1698122     1.34   0.180    -.1055424    .5605624
+                         age |   .0348181   .0250633     1.39   0.165    -.0143132    .0839494
+                             |
+                 c.age#c.age |  -.0002765   .0002489    -1.11   0.267    -.0007644    .0002113
+                             |
+                      female |
+                     female  |   .2639648   .1597524     1.65   0.098    -.0491843     .577114
+                             |
+                        race |
+                      black  |   .1131641   .2361107     0.48   0.632    -.3497184    .5760465
+                 other race  |  -.3821126   .2885457    -1.32   0.185    -.9476577    .1834325
+                             |
+                      region |
+            middle atlantic  |  -.2773327   .4885696    -0.57   0.570    -1.235219    .6805536
+            e. nor. central  |   .0037508   .4778696     0.01   0.994    -.9330483    .9405498
+            w. nor. central  |  -.2607419   .5224362    -0.50   0.618    -1.284979    .7634949
+             south atlantic  |  -.1463996   .4784543    -0.31   0.760    -1.084384    .7915846
+            e. sou. central  |  -.5759721   .5161037    -1.12   0.264    -1.587749     .435805
+            w. sou. central  |  -.5233139   .4857521    -1.08   0.281    -1.475526    .4288984
+                   mountain  |  -.2181582   .5205832    -0.42   0.675    -1.238793    .8024762
+                    pacific  |  -.2006813   .4841521    -0.41   0.679    -1.149804    .7484411
+                             |
+                       metro |
+                  MetroArea  |  -.3006099   .1960598    -1.53   0.125    -.6849288     .083709
+                      coninc |   .0051807   .0025418     2.04   0.042     .0001927    .0101687
+                             |
+                      degree |
+                high school  |  -.0126105   .2461885    -0.05   0.959    -.4951901    .4699692
+             junior college  |   .0565731   .3832266     0.15   0.883    -.6945757     .807722
+                   bachelor  |  -.3840689   .3054735    -1.26   0.209    -.9828837     .214746
+                   graduate  |  -.2905732   .3579814    -0.81   0.417    -.9922882    .4111419
+                             |
+                        year |
+                       2006  |   .1322009   .1870769     0.71   0.480    -.2345473    .4989491
+                       2018  |   .3843391   .2109233     1.82   0.068    -.0291111    .7977894
+                             |
+                       _cons |  -.1876985    .739674    -0.25   0.800    -1.637606    1.262209
+----------------------------------------------------------------------------------------------
+
+. 
+.         
+.         
+. *******************************************************************
+. // #4b - Sensitivity analyses with different contact measures
+. *******************************************************************     
+. use "Data/mls-data07-mice-cont", clear  
+(MLS - GSS Data | Matching Labeling Stigma | Multiple Imputation CE | mls-data07-)
+
+. 
+. *Table A2 middle and bottom panels
+. 
+. *NOTE: Exact matching on self/other and valence contact measures not possible
+. *       because there are not enough exact matches. So, using AIPW for these
+. *       sensitivity analyses.
+. local dv "socdistSS" 
+
+. local iv "L_mentlillB" 
+
+. local cvs "c.age##c.age i.female i.race i.region i.metro coninc i.degree"
+
+. local evs "i.vigdrug i.vigalc i.vigschiz i.vigdep i.year"       
+
+. 
+.                 
+. *Augmented inverse probability weighting (doubly robust method)
+. mi est, cmdok: teffects aipw (`dv') (`iv' i.cntct_tot `cvs' `evs')
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =      3,920
+                                                Average RVI       =     0.0409
+                                                Largest FMI       =     0.1342
+DF adjustment:   Large sample                   DF:     min       =   1,079.91
+                                                        avg       =  32,532.50
+Within VCE type:       Robust                           max       = 237,527.34
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |   .0880956   .0261667     3.37   0.001     .0368073    .1393839
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |    2.39564   .0222853   107.50   0.000     2.351961     2.43932
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |   2.364702   .0189426   124.83   0.000     2.327575    2.401829
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |   2.497931   .0144173   173.26   0.000     2.469673    2.526188
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |   .4244586   .0814782     5.21   0.000     .2646672    .5842501
+                         age |   .0230832   .0126925     1.82   0.069    -.0017953    .0479617
+                             |
+                 c.age#c.age |  -.0002193   .0001256    -1.75   0.081    -.0004655    .0000268
+                             |
+                      female |
+                     female  |   .1035375   .0764779     1.35   0.176    -.0463597    .2534347
+                             |
+                        race |
+                      black  |   .3849441   .1173579     3.28   0.001       .15491    .6149782
+                 other race  |  -.0954109   .1451836    -0.66   0.511    -.3799969    .1891752
+                             |
+                      region |
+            middle atlantic  |   .0022432   .2117254     0.01   0.992    -.4128163    .4173027
+            e. nor. central  |   .0208913   .1981859     0.11   0.916     -.367569    .4093516
+            w. nor. central  |   .0162978   .2386369     0.07   0.946    -.4514416    .4840372
+             south atlantic  |  -.0939442   .1983955    -0.47   0.636    -.4828315    .2949431
+            e. sou. central  |  -.2400392   .2354178    -1.02   0.308    -.7015157    .2214373
+            w. sou. central  |  -.1408473   .2118021    -0.66   0.506    -.5559961    .2743016
+                   mountain  |   .0956555   .2272973     0.42   0.674      -.34988    .5411909
+                    pacific  |  -.0254705   .2060918    -0.12   0.902     -.429452     .378511
+                             |
+                       metro |
+                  MetroArea  |  -.1829132   .0954727    -1.92   0.055    -.3700463    .0042199
+                      coninc |   .0004082   .0011084     0.37   0.713    -.0017667    .0025832
+                             |
+                      degree |
+                high school  |  -.1548912   .1294628    -1.20   0.232    -.4086543     .098872
+             junior college  |  -.2181588   .1751405    -1.25   0.213    -.5614518    .1251342
+                   bachelor  |  -.2796404   .1535435    -1.82   0.069    -.5806258    .0213449
+                   graduate  |  -.1631944   .1784545    -0.91   0.360    -.5129779     .186589
+                             |
+                     vigdrug |
+                       Drug  |   .7622831   .1290479     5.91   0.000     .5093472    1.015219
+                             |
+                      vigalc |
+                    Alcohol  |   1.295495      .1068    12.13   0.000     1.086169    1.504821
+                             |
+                    vigschiz |
+              Schizophrenia  |   3.450912     .14955    23.08   0.000     3.157773    3.744051
+                             |
+                      vigdep |
+                 Depression  |   2.055318   .1129363    18.20   0.000     1.833948    2.276687
+                             |
+                        year |
+                       2006  |   .1567806   .0972722     1.61   0.107    -.0339164    .3474776
+                       2018  |   .3451388   .0962137     3.59   0.000     .1565405    .5337372
+                             |
+                       _cons |  -1.861637   .3616433    -5.15   0.000    -2.570486   -1.152788
+----------------------------------------------------------------------------------------------
+
+. mi est, cmdok: teffects aipw (`dv') (`iv' i.cntct_so4 `cvs' `evs')
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =      3,920
+                                                Average RVI       =     0.0442
+                                                Largest FMI       =     0.1365
+DF adjustment:   Large sample                   DF:     min       =   1,044.20
+                                                        avg       =  30,026.16
+Within VCE type:       Robust                           max       = 237,527.34
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .0914789   .0264148     3.46   0.001     .0397039     .143254
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   2.391925   .0225819   105.92   0.000     2.347664    2.436186
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |   2.364702   .0189426   124.83   0.000     2.327575    2.401829
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |   2.497931   .0144173   173.26   0.000     2.469673    2.526188
+---------------------+----------------------------------------------------------------
+TME1                 |
+           cntct_so4 |
+      Other Contact  |   .3489663   .0853078     4.09   0.000     .1816393    .5162933
+       Self Contact  |  -.0080284   .3908747    -0.02   0.984    -.7743859    .7583291
+               Both  |   1.022798   .1655129     6.18   0.000     .6982614    1.347334
+                     |
+                 age |   .0217012   .0127532     1.70   0.089    -.0032963    .0466987
+                     |
+         c.age#c.age |  -.0002002    .000126    -1.59   0.112    -.0004471    .0000468
+                     |
+              female |
+             female  |   .0867466   .0767949     1.13   0.259    -.0637714    .2372647
+                     |
+                race |
+              black  |   .4092971   .1172515     3.49   0.000     .1794752     .639119
+         other race  |  -.0764933   .1461107    -0.52   0.601     -.362891    .2099044
+                     |
+              region |
+    middle atlantic  |   .0232038   .2120373     0.11   0.913    -.3924576    .4388651
+    e. nor. central  |   .0427911   .1988735     0.22   0.830    -.3470174    .4325996
+    w. nor. central  |   .0178741   .2388181     0.07   0.940    -.4502243    .4859725
+     south atlantic  |  -.0894532   .1986183    -0.45   0.652    -.4787756    .2998692
+    e. sou. central  |  -.2279281   .2356072    -0.97   0.333      -.68977    .2339139
+    w. sou. central  |  -.1271574   .2121125    -0.60   0.549    -.5429078    .2885929
+           mountain  |   .0913838   .2283074     0.40   0.689      -.35613    .5388977
+            pacific  |  -.0298363    .206176    -0.14   0.885    -.4339746     .374302
+                     |
+               metro |
+          MetroArea  |  -.1946811   .0961795    -2.02   0.043    -.3832042   -.0061579
+              coninc |   .0005824   .0011136     0.52   0.601    -.0016028    .0027677
+                     |
+              degree |
+        high school  |  -.1511019   .1302989    -1.16   0.246    -.4065069    .1043031
+     junior college  |   -.222591   .1755167    -1.27   0.205     -.566621    .1214389
+           bachelor  |  -.2745848   .1544313    -1.78   0.075    -.5773212    .0281516
+           graduate  |  -.1622989   .1798726    -0.90   0.367    -.5148703    .1902724
+                     |
+             vigdrug |
+               Drug  |   .7638981   .1299594     5.88   0.000     .5091752    1.018621
+                     |
+              vigalc |
+            Alcohol  |   1.286115   .1072637    11.99   0.000     1.075879     1.49635
+                     |
+            vigschiz |
+      Schizophrenia  |   3.459869   .1497459    23.10   0.000     3.166346    3.753393
+                     |
+              vigdep |
+         Depression  |    2.05825   .1131334    18.19   0.000     1.836498    2.280003
+                     |
+                year |
+               2006  |   .2122961   .0987745     2.15   0.032     .0186542    .4059381
+               2018  |   .3070327   .0970698     3.16   0.002     .1167618    .4973036
+                     |
+               _cons |   -1.86569   .3641504    -5.12   0.000    -2.579448   -1.151931
+--------------------------------------------------------------------------------------
+
+. mi est, cmdok: teffects aipw (`dv') (`iv' i.cntct_val4 `cvs' `evs')
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =      3,920
+                                                Average RVI       =     0.0485
+                                                Largest FMI       =     0.1559
+DF adjustment:   Large sample                   DF:     min       =     803.07
+                                                        avg       =  30,653.84
+Within VCE type:       Robust                           max       = 237,527.34
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .0877557   .0260624     3.37   0.001     .0366727    .1388387
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   2.396543   .0222221   107.84   0.000     2.352987    2.440098
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |   2.364702   .0189426   124.83   0.000     2.327575    2.401829
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |   2.497931   .0144173   173.26   0.000     2.469673    2.526188
+---------------------+----------------------------------------------------------------
+TME1                 |
+          cntct_val4 |
+        Any Contact  |   .4491468    .100939     4.45   0.000     .2510114    .6472823
+        Bad Contact  |   .4854483   .1610713     3.01   0.003     .1693448    .8015519
+       Good Contact  |   .2613666   .1597239     1.64   0.102    -.0518875    .5746207
+                     |
+                 age |    .023128   .0127095     1.82   0.069    -.0017841      .04804
+                     |
+         c.age#c.age |  -.0002206   .0001257    -1.76   0.079     -.000467    .0000258
+                     |
+              female |
+             female  |   .0983523   .0766577     1.28   0.199    -.0518968    .2486013
+                     |
+                race |
+              black  |   .3914297   .1175137     3.33   0.001     .1610922    .6217673
+         other race  |  -.0976039    .145574    -0.67   0.503    -.3829535    .1877457
+                     |
+              region |
+    middle atlantic  |   .0065183   .2111038     0.03   0.975    -.4073113    .4203479
+    e. nor. central  |   .0271898   .1979684     0.14   0.891    -.3608428    .4152225
+    w. nor. central  |    .018253   .2381943     0.08   0.939    -.4486161     .485122
+     south atlantic  |  -.0908076    .197808    -0.46   0.646    -.4785365    .2969212
+    e. sou. central  |  -.2315314    .234762    -0.99   0.324    -.6917161    .2286533
+    w. sou. central  |  -.1296456   .2115384    -0.61   0.540    -.5442741    .2849829
+           mountain  |   .0943131      .2267     0.42   0.677    -.3500494    .5386755
+            pacific  |  -.0222867   .2056281    -0.11   0.914    -.4253529    .3807796
+                     |
+               metro |
+          MetroArea  |  -.1859882   .0955105    -1.95   0.052    -.3731972    .0012209
+              coninc |   .0004194   .0011144     0.38   0.707    -.0017675    .0026063
+                     |
+              degree |
+        high school  |  -.1516392   .1296107    -1.17   0.242    -.4056959    .1024175
+     junior college  |  -.2130662   .1747793    -1.22   0.223    -.5556466    .1295142
+           bachelor  |   -.274823   .1539282    -1.79   0.074    -.5765687    .0269227
+           graduate  |  -.1551843   .1784233    -0.87   0.384    -.5049077    .1945392
+                     |
+             vigdrug |
+               Drug  |    .760814   .1290267     5.90   0.000     .5079207    1.013707
+                     |
+              vigalc |
+            Alcohol  |   1.289672   .1071098    12.04   0.000     1.079737    1.499607
+                     |
+            vigschiz |
+      Schizophrenia  |   3.451134   .1501544    22.98   0.000     3.156801    3.745467
+                     |
+              vigdep |
+         Depression  |   2.053785   .1128363    18.20   0.000     1.832613    2.274957
+                     |
+                year |
+               2006  |   .1947626   .1396617     1.39   0.163    -.0793162    .4688414
+               2018  |    .342063   .0959704     3.56   0.000     .1539495    .5301766
+                     |
+               _cons |   -1.87435   .3627503    -5.17   0.000    -2.585365   -1.163335
+--------------------------------------------------------------------------------------
+
+. 
+. *Separately for each vignette (only works with 3-category measures)
+. foreach v of varlist vignorm vigalc vigschiz vigdep {
+  2.         di _newline(1)
+  3.         di in red "Vignette is: `v'"
+  4.         mi est, cmdok: teffects aipw (`dv') (`iv' i.cntct_tot `cvs' i.year) if `v'
+  5.         mi est, cmdok: teffects aipw (`dv') (`iv' i.cntct_so3 `cvs' i.year) if `v'
+  6.         mi est, cmdok: teffects aipw (`dv') (`iv' i.cntct_val3 `cvs' i.year) if `v'
+  7.         }       
+
+
+Vignette is: vignorm
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        815
+                                                Average RVI       =     0.0228
+                                                Largest FMI       =     0.0777
+DF adjustment:   Large sample                   DF:     min       =   3,195.91
+                                                        avg       = 4065763.98
+Within VCE type:       Robust                           max       =   9.20e+07
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |   .1932082   .0497842     3.88   0.000     .0956291    .2907873
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |   1.946909    .025219    77.20   0.000      1.89748    1.996338
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |   1.948531   .0248928    78.28   0.000     1.899741     1.99732
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |   2.137293   .0437151    48.89   0.000     2.051611    2.222975
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |   .2287763    .179057     1.28   0.201    -.1222581    .5798107
+                         age |  -.0052932   .0262015    -0.20   0.840    -.0566476    .0460612
+                             |
+                 c.age#c.age |   .0000207   .0002539     0.08   0.935     -.000477    .0005184
+                             |
+                      female |
+                     female  |   .0022937   .1722445     0.01   0.989    -.3353067    .3398941
+                             |
+                        race |
+                      black  |     .89447   .2340939     3.82   0.000     .4356508    1.353289
+                 other race  |  -.0729134   .3143581    -0.23   0.817    -.6890604    .5432335
+                             |
+                      region |
+            middle atlantic  |   .8881735   .5177156     1.72   0.086    -.1265305    1.902877
+            e. nor. central  |  -.1481522   .5129614    -0.29   0.773    -1.153538    .8572341
+            w. nor. central  |   .3205991   .5794115     0.55   0.580    -.8150266    1.456225
+             south atlantic  |   .1586176    .506492     0.31   0.754    -.8340888    1.151324
+            e. sou. central  |   .3216077   .5668281     0.57   0.570    -.7893595    1.432575
+            w. sou. central  |  -.2821266   .5426397    -0.52   0.603    -1.345685    .7814314
+                   mountain  |   .4344346   .5654319     0.77   0.442    -.6738021    1.542671
+                    pacific  |   .5521217   .5142092     1.07   0.283    -.4557124    1.559956
+                             |
+                       metro |
+                  MetroArea  |  -.4924014   .2264017    -2.17   0.030     -.936142   -.0486607
+                      coninc |   .0000476   .0024329     0.02   0.984    -.0047226    .0048178
+                             |
+                      degree |
+                high school  |  -.5331104   .2640317    -2.02   0.043    -1.050611   -.0156099
+             junior college  |   -.818803   .4042821    -2.03   0.043    -1.611203   -.0264026
+                   bachelor  |  -.9728056   .3474167    -2.80   0.005    -1.653738   -.2918731
+                   graduate  |  -.3299634   .3744947    -0.88   0.378    -1.063989     .404062
+                             |
+                        year |
+                       2006  |   .2520839   .2046273     1.23   0.218    -.1489906    .6531583
+                       2018  |   .4637378   .2281615     2.03   0.042     .0165391    .9109366
+                             |
+                       _cons |  -.9875547   .7912391    -1.25   0.212    -2.538371    .5632613
+----------------------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        815
+                                                Average RVI       =     0.0341
+                                                Largest FMI       =     0.1763
+DF adjustment:   Large sample                   DF:     min       =     629.89
+                                                        avg       = 576,131.39
+Within VCE type:       Robust                           max       = 6320378.48
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .1935045   .0496077     3.90   0.000     .0962721    .2907369
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   1.946618   .0252857    76.98   0.000     1.897058    1.996177
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |   1.948531   .0248928    78.28   0.000     1.899741     1.99732
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |   2.137293   .0437151    48.89   0.000     2.051611    2.222975
+---------------------+----------------------------------------------------------------
+TME1                 |
+           cntct_so3 |
+      Other Contact  |   .1835428   .1902409     0.96   0.335    -.1895642    .5566498
+       Self Contact  |   .5536364   .3645726     1.52   0.129    -.1622884    1.269561
+                     |
+                 age |  -.0071589   .0262806    -0.27   0.785    -.0586684    .0443507
+                     |
+         c.age#c.age |    .000041   .0002549     0.16   0.872    -.0004585    .0005406
+                     |
+              female |
+             female  |  -.0024825   .1726667    -0.01   0.989    -.3409106    .3359456
+                     |
+                race |
+              black  |   .9149571   .2345802     3.90   0.000      .455184     1.37473
+         other race  |  -.0643904   .3164291    -0.20   0.839    -.6845993    .5558185
+                     |
+              region |
+    middle atlantic  |   .8630049   .5182321     1.67   0.096    -.1527116    1.878721
+    e. nor. central  |  -.1513117   .5136147    -0.29   0.768    -1.157979    .8553553
+    w. nor. central  |   .2907454   .5789278     0.50   0.616    -.8439326    1.425423
+     south atlantic  |    .134578   .5081719     0.26   0.791    -.8614214    1.130577
+    e. sou. central  |   .2953004   .5653312     0.52   0.601    -.8127347    1.403335
+    w. sou. central  |  -.3003184   .5442756    -0.55   0.581    -1.367083     .766446
+           mountain  |   .4054623   .5687018     0.71   0.476    -.7091845    1.520109
+            pacific  |   .5233453   .5156893     1.01   0.310    -.4873911    1.534082
+                     |
+               metro |
+          MetroArea  |  -.4962536   .2272585    -2.18   0.029    -.9416734   -.0508338
+              coninc |    .000187   .0024248     0.08   0.939     -.004567    .0049411
+                     |
+              degree |
+        high school  |  -.5454031   .2643419    -2.06   0.039    -1.063511    -.027295
+     junior college  |  -.8610556   .4102621    -2.10   0.036     -1.66519   -.0569211
+           bachelor  |  -.9841278   .3472753    -2.83   0.005    -1.664783   -.3034724
+           graduate  |  -.3365504   .3769235    -0.89   0.372    -1.075338    .4022369
+                     |
+                year |
+               2006  |   .2914767   .2110429     1.38   0.167    -.1221923    .7051457
+               2018  |   .4328493   .2296795     1.88   0.059    -.0173386    .8830373
+                     |
+               _cons |  -.9354415   .7921491    -1.18   0.238    -2.488045    .6171616
+--------------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        815
+                                                Average RVI       =     0.0302
+                                                Largest FMI       =     0.1353
+DF adjustment:   Large sample                   DF:     min       =   1,062.55
+                                                        avg       = 1971906.59
+Within VCE type:       Robust                           max       =   4.61e+07
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .1899244   .0506695     3.75   0.000     .0906055    .2892433
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   1.946777   .0252195    77.19   0.000     1.897347    1.996206
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |   1.948531   .0248928    78.28   0.000     1.899741     1.99732
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |   2.137293   .0437151    48.89   0.000     2.051611    2.222975
+---------------------+----------------------------------------------------------------
+TME1                 |
+          cntct_val3 |
+        Any Contact  |   .0499308   .2361497     0.21   0.833    -.4132845    .5131461
+        Bad Contact  |   .4130267   .2875308     1.44   0.151    -.1511659    .9772193
+                     |
+                 age |  -.0049972   .0260911    -0.19   0.848    -.0561352    .0461409
+                     |
+         c.age#c.age |   .0000193   .0002527     0.08   0.939     -.000476    .0005145
+                     |
+              female |
+             female  |  -.0024974   .1728813    -0.01   0.988    -.3413475    .3363526
+                     |
+                race |
+              black  |   .8788203    .234798     3.74   0.000     .4186186    1.339022
+         other race  |  -.0900682   .3127021    -0.29   0.773    -.7029728    .5228365
+                     |
+              region |
+    middle atlantic  |   .9324631   .5177623     1.80   0.072    -.0823329    1.947259
+    e. nor. central  |   -.135062   .5115792    -0.26   0.792    -1.137739    .8676154
+    w. nor. central  |   .3526939   .5782767     0.61   0.542    -.7807076    1.486095
+     south atlantic  |   .1925691   .5059889     0.38   0.704    -.7991518     1.18429
+    e. sou. central  |   .3602668   .5667912     0.64   0.525    -.7506278    1.471161
+    w. sou. central  |  -.2697808   .5414491    -0.50   0.618    -1.331005    .7914438
+           mountain  |   .4762967   .5657339     0.84   0.400    -.6325386    1.585132
+            pacific  |   .5788306   .5125131     1.13   0.259    -.4256783     1.58334
+                     |
+               metro |
+          MetroArea  |  -.4883997   .2266731    -2.15   0.031    -.9326738   -.0441257
+              coninc |  -.0000237   .0024413    -0.01   0.992    -.0048103    .0047628
+                     |
+              degree |
+        high school  |  -.5446804   .2643956    -2.06   0.039    -1.062893   -.0264674
+     junior college  |  -.8225494   .4036441    -2.04   0.042    -1.613706   -.0313924
+           bachelor  |  -.9728972   .3467636    -2.81   0.005    -1.652546   -.2932482
+           graduate  |  -.3294319   .3749549    -0.88   0.380     -1.06436    .4054961
+                     |
+                year |
+               2006  |   .0501323   .3006868     0.17   0.868    -.5395651    .6398297
+               2018  |    .478599   .2290972     2.09   0.037     .0295642    .9276338
+                     |
+               _cons |  -.9316001    .790739    -1.18   0.239    -2.481434    .6182338
+--------------------------------------------------------------------------------------
+
+
+Vignette is: vigalc
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        859
+                                                Average RVI       =     0.0467
+                                                Largest FMI       =     0.1363
+DF adjustment:   Large sample                   DF:     min       =   1,047.81
+                                                        avg       = 377,613.58
+Within VCE type:       Robust                           max       = 7449964.48
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |   .0415212    .044548     0.93   0.351    -.0458004    .1288429
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |   2.661832    .035055    75.93   0.000     2.593122    2.730541
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |   2.671163   .0345612    77.29   0.000      2.60342    2.738905
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |    2.68871   .0282508    95.17   0.000     2.633337    2.744083
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |   .5225111    .155768     3.35   0.001     .2170808    .8279415
+                         age |   .0425673   .0235288     1.81   0.070    -.0035518    .0886864
+                             |
+                 c.age#c.age |  -.0004327   .0002331    -1.86   0.063    -.0008896    .0000242
+                             |
+                      female |
+                     female  |   .1224824    .149232     0.82   0.412    -.1700262    .4149909
+                             |
+                        race |
+                      black  |   .3625264   .2198462     1.65   0.099    -.0684235    .7934763
+                 other race  |   .2189197   .2703461     0.81   0.418    -.3110186     .748858
+                             |
+                      region |
+            middle atlantic  |   .1344316   .3981905     0.34   0.736    -.6460247    .9148878
+            e. nor. central  |   .3441481   .3763348     0.91   0.360    -.3934564    1.081753
+            w. nor. central  |    .543758   .4572315     1.19   0.234    -.3524069    1.439923
+             south atlantic  |   .1469191   .3698188     0.40   0.691    -.5779129    .8717511
+            e. sou. central  |   -.116367   .4459752    -0.26   0.794    -.9906018    .7578678
+            w. sou. central  |   .6281255   .4118531     1.53   0.127    -.1791574    1.435408
+                   mountain  |   .4604004   .4160874     1.11   0.269     -.355116    1.275917
+                    pacific  |   .0470267   .3868165     0.12   0.903    -.7111253    .8051788
+                             |
+                       metro |
+                  MetroArea  |  -.3159407    .180954    -1.75   0.081    -.6706578    .0387764
+                      coninc |  -.0028307   .0020284    -1.40   0.163    -.0068108    .0011494
+                             |
+                      degree |
+                high school  |   .0629285   .2345203     0.27   0.788    -.3967726    .5226295
+             junior college  |  -.3983153   .3301425    -1.21   0.228    -1.045469    .2488379
+                   bachelor  |   .0927786   .2799599     0.33   0.740    -.4560021    .6415592
+                   graduate  |   .0849121   .3299352     0.26   0.797    -.5617835    .7316077
+                             |
+                        year |
+                       2006  |   .1646055   .1780108     0.92   0.355    -.1844431    .5136542
+                       2018  |    .599765    .199356     3.01   0.003     .2088765    .9906534
+                             |
+                       _cons |  -1.384605   .6530417    -2.12   0.034    -2.664567   -.1046417
+----------------------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        859
+                                                Average RVI       =     0.0512
+                                                Largest FMI       =     0.1406
+DF adjustment:   Large sample                   DF:     min       =     984.76
+                                                        avg       = 134,066.05
+Within VCE type:       Robust                           max       = 2248668.22
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .0583702   .0443962     1.31   0.189    -.0286529    .1453933
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   2.643911   .0351088    75.31   0.000     2.575097    2.712726
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |   2.671163   .0345612    77.29   0.000      2.60342    2.738905
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |    2.68871   .0282508    95.17   0.000     2.633337    2.744083
+---------------------+----------------------------------------------------------------
+TME1                 |
+           cntct_so3 |
+      Other Contact  |    .376163    .163646     2.30   0.022     .0552246    .6971014
+       Self Contact  |   1.386936   .3349523     4.14   0.000     .7300607    2.043811
+                     |
+                 age |   .0430775   .0237631     1.81   0.070    -.0035019    .0896569
+                     |
+         c.age#c.age |  -.0004217   .0002344    -1.80   0.072    -.0008811    .0000378
+                     |
+              female |
+             female  |    .087084   .1498306     0.58   0.561    -.2065956    .3807637
+                     |
+                race |
+              black  |   .3862522    .221205     1.75   0.081    -.0473608    .8198652
+         other race  |   .2388301   .2712604     0.88   0.379    -.2928851    .7705453
+                     |
+              region |
+    middle atlantic  |   .1407245   .3914918     0.36   0.719    -.6265988    .9080478
+    e. nor. central  |   .3500545   .3688206     0.95   0.343    -.3728226    1.072932
+    w. nor. central  |   .5485313   .4464788     1.23   0.219    -.3265637    1.423626
+     south atlantic  |   .1004813   .3622335     0.28   0.781    -.6094851    .8104477
+    e. sou. central  |  -.1492671     .44455    -0.34   0.737    -1.020714    .7221794
+    w. sou. central  |   .6325406   .4039907     1.57   0.117    -.1593256    1.424407
+           mountain  |   .4561973   .4102741     1.11   0.266    -.3479255     1.26032
+            pacific  |   .0314161   .3789279     0.08   0.934    -.7112756    .7741078
+                     |
+               metro |
+          MetroArea  |  -.3494585   .1842599    -1.90   0.058    -.7106474    .0117304
+              coninc |  -.0026462   .0020317    -1.30   0.193    -.0066331    .0013407
+                     |
+              degree |
+        high school  |   .0535089   .2382416     0.22   0.822    -.4134785    .5204963
+     junior college  |   -.352623   .3333384    -1.06   0.290    -1.006072    .3008262
+           bachelor  |   .0962292   .2829098     0.34   0.734    -.4583393    .6507977
+           graduate  |   .0727976   .3329407     0.22   0.827    -.5797937     .725389
+                     |
+                year |
+               2006  |   .2757264   .1825408     1.51   0.131    -.0822554    .6337083
+               2018  |   .5256116   .2042581     2.57   0.010     .1251075    .9261158
+                     |
+               _cons |  -1.432641   .6538949    -2.19   0.028    -2.714278   -.1510036
+--------------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        859
+                                                Average RVI       =     0.0512
+                                                Largest FMI       =     0.1372
+DF adjustment:   Large sample                   DF:     min       =   1,033.96
+                                                        avg       = 191,825.60
+Within VCE type:       Robust                           max       = 3498586.39
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .0446813   .0443891     1.01   0.314    -.0423294    .1316921
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   2.660125   .0349441    76.13   0.000     2.591633    2.728617
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |   2.671163   .0345612    77.29   0.000      2.60342    2.738905
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |    2.68871   .0282508    95.17   0.000     2.633337    2.744083
+---------------------+----------------------------------------------------------------
+TME1                 |
+          cntct_val3 |
+        Any Contact  |    .440309   .2007222     2.19   0.028     .0465945    .8340236
+        Bad Contact  |   .6835941   .2400985     2.85   0.004     .2126387     1.15455
+                     |
+                 age |   .0416512   .0235995     1.76   0.078    -.0046066    .0879089
+                     |
+         c.age#c.age |  -.0004222    .000234    -1.80   0.071    -.0008808    .0000364
+                     |
+              female |
+             female  |   .1201928   .1490875     0.81   0.420    -.1720286    .4124142
+                     |
+                race |
+              black  |   .3619446   .2199515     1.65   0.100    -.0692027     .793092
+         other race  |    .237717   .2736314     0.87   0.385     -.298659    .7740931
+                     |
+              region |
+    middle atlantic  |   .1192934   .3977263     0.30   0.764    -.6602465    .8988333
+    e. nor. central  |   .3262673   .3772308     0.86   0.387     -.413095     1.06563
+    w. nor. central  |   .5261804   .4566174     1.15   0.249    -.3687823    1.421143
+     south atlantic  |   .1430178   .3703157     0.39   0.699    -.5827884    .8688241
+    e. sou. central  |  -.1279617   .4469347    -0.29   0.775    -1.004086    .7481629
+    w. sou. central  |   .6222452   .4123599     1.51   0.131     -.186039    1.430529
+           mountain  |   .4549059   .4171383     1.09   0.275    -.3626705    1.272482
+            pacific  |    .038657   .3877312     0.10   0.921    -.7212879     .798602
+                     |
+               metro |
+          MetroArea  |  -.3133916   .1816912    -1.72   0.085    -.6695616    .0427784
+              coninc |  -.0029009   .0020344    -1.43   0.154     -.006893    .0010911
+                     |
+              degree |
+        high school  |   .0717419   .2354644     0.30   0.761    -.3898093    .5332932
+     junior college  |  -.3913821   .3301567    -1.19   0.236    -1.038563    .2557989
+           bachelor  |   .0954462     .28128     0.34   0.734     -.455933    .6468255
+           graduate  |   .0881116   .3321927     0.27   0.791    -.5630246    .7392479
+                     |
+                year |
+               2006  |   .0273902   .2435193     0.11   0.910    -.4501529    .5049333
+               2018  |   .6031299   .1989542     3.03   0.002      .213014    .9932458
+                     |
+               _cons |  -1.324057   .6579422    -2.01   0.044    -2.613627   -.0344868
+--------------------------------------------------------------------------------------
+
+
+Vignette is: vigschiz
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        843
+                                                Average RVI       =     0.0787
+                                                Largest FMI       =     0.2562
+DF adjustment:   Large sample                   DF:     min       =     300.96
+                                                        avg       =  99,380.79
+Within VCE type:       Robust                           max       = 1369802.23
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |   .1923586   .0689762     2.79   0.005      .057092    .3276251
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |   2.418356   .0648664    37.28   0.000     2.291139    2.545573
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |   2.488406   .0811457    30.67   0.000     2.329354    2.647457
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |   2.608809   .0240964   108.27   0.000     2.561581    2.656037
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |   1.010604    .306889     3.29   0.001      .408244    1.612963
+                         age |   .0736235   .0432659     1.70   0.089     -.011183    .1584299
+                             |
+                 c.age#c.age |  -.0008057   .0004204    -1.92   0.055    -.0016297    .0000183
+                             |
+                      female |
+                     female  |   .4382581   .2806221     1.56   0.118    -.1119584    .9884745
+                             |
+                        race |
+                      black  |  -.0998216   .4275838    -0.23   0.815    -.9379023     .738259
+                 other race  |  -.5692146   .4571231    -1.25   0.213    -1.465577    .3271474
+                             |
+                      region |
+            middle atlantic  |  -.0188355   .8030959    -0.02   0.981    -1.592894    1.555223
+            e. nor. central  |  -.3486399   .6862456    -0.51   0.611    -1.693673    .9963936
+            w. nor. central  |   -1.30103   .7251742    -1.79   0.073    -2.722364    .1203027
+             south atlantic  |  -.7983743   .6653107    -1.20   0.230    -2.102386    .5056375
+            e. sou. central  |  -.5781561   .7549549    -0.77   0.444    -2.057843    .9015306
+            w. sou. central  |  -.2990617   .7296627    -0.41   0.682    -1.729223    1.131099
+                   mountain  |  -.1859032   .8284025    -0.22   0.822    -1.809962    1.438156
+                    pacific  |  -.2739283   .7036034    -0.39   0.697    -1.653093    1.105236
+                             |
+                       metro |
+                  MetroArea  |   .3725157   .3994414     0.93   0.351    -.4105477    1.155579
+                      coninc |  -.0025891   .0045888    -0.56   0.573    -.0116192    .0064411
+                             |
+                      degree |
+                high school  |   .1278895   .3806226     0.34   0.737    -.6183141    .8740931
+             junior college  |   1.156257   .7855222     1.47   0.141    -.3841166     2.69663
+                   bachelor  |   1.424675    .583536     2.44   0.015     .2807338    2.568617
+                   graduate  |   .9392108   .7054908     1.33   0.183    -.4450029    2.323424
+                             |
+                        year |
+                       2006  |   .5042524   .3240284     1.56   0.120     -.131027    1.139532
+                       2018  |   .7643787   .3658975     2.09   0.037     .0471308    1.481627
+                             |
+                       _cons |   .1345386   1.127316     0.12   0.905    -2.075064    2.344141
+----------------------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        843
+                                                Average RVI       =     0.0833
+                                                Largest FMI       =     0.2587
+DF adjustment:   Large sample                   DF:     min       =     295.15
+                                                        avg       = 120,829.99
+Within VCE type:       Robust                           max       = 1369802.23
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .1927296    .068729     2.80   0.005     .0579211    .3275381
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   2.417729   .0644946    37.49   0.000     2.291215    2.544243
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |   2.488406   .0811457    30.67   0.000     2.329354    2.647457
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |   2.608809   .0240964   108.27   0.000     2.561581    2.656037
+---------------------+----------------------------------------------------------------
+TME1                 |
+           cntct_so3 |
+      Other Contact  |   1.107133   .3372195     3.28   0.001     .4444397    1.769826
+       Self Contact  |   .5980421   .5886409     1.02   0.310    -.5559504    1.752035
+                     |
+                 age |   .0744072   .0435523     1.71   0.088    -.0109615     .159776
+                     |
+         c.age#c.age |  -.0008141   .0004235    -1.92   0.055    -.0016442     .000016
+                     |
+              female |
+             female  |   .4483446   .2792789     1.61   0.109    -.0992346    .9959238
+                     |
+                race |
+              black  |  -.1071578   .4293028    -0.25   0.803    -.9486185    .7343028
+         other race  |  -.5657621   .4565458    -1.24   0.215    -1.460942    .3294182
+                     |
+              region |
+    middle atlantic  |    -.00753   .8040568    -0.01   0.993    -1.583461    1.568401
+    e. nor. central  |  -.3335179   .6878397    -0.48   0.628    -1.681669    1.014633
+    w. nor. central  |  -1.288727   .7295544    -1.77   0.077    -2.718638    .1411843
+     south atlantic  |  -.7923085   .6642134    -1.19   0.233     -2.09415    .5095329
+    e. sou. central  |  -.5756005   .7534246    -0.76   0.445    -2.052287    .9010863
+    w. sou. central  |  -.2865195   .7283565    -0.39   0.694    -1.714097    1.141058
+           mountain  |  -.1793665   .8359585    -0.21   0.830     -1.81839    1.459657
+            pacific  |    -.29374   .7011935    -0.42   0.675    -1.668123    1.080643
+                     |
+               metro |
+          MetroArea  |    .387609   .3972629     0.98   0.329    -.3911876    1.166406
+              coninc |  -.0027865   .0045798    -0.61   0.543    -.0117997    .0062267
+                     |
+              degree |
+        high school  |   .1228977   .3821959     0.32   0.748    -.6264599    .8722554
+     junior college  |   1.186887    .788468     1.51   0.132    -.3592164    2.732991
+           bachelor  |   1.417624   .5815526     2.44   0.015     .2775964    2.557651
+           graduate  |   .9356508    .703146     1.33   0.184    -.4438973    2.315199
+                     |
+                year |
+               2006  |   .4645075   .3369917     1.38   0.168    -.1962202    1.125235
+               2018  |   .7871734   .3564577     2.21   0.027     .0884811    1.485866
+                     |
+               _cons |   .1206785   1.126721     0.11   0.915    -2.087776    2.329133
+--------------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        843
+                                                Average RVI       =     0.0836
+                                                Largest FMI       =     0.2546
+DF adjustment:   Large sample                   DF:     min       =     304.78
+                                                        avg       = 108,312.55
+Within VCE type:       Robust                           max       = 1369802.23
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .1871102   .0685594     2.73   0.006     .0525712    .3216491
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   2.422939   .0644198    37.61   0.000     2.296503    2.549376
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |   2.488406   .0811457    30.67   0.000     2.329354    2.647457
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |   2.608809   .0240964   108.27   0.000     2.561581    2.656037
+---------------------+----------------------------------------------------------------
+TME1                 |
+          cntct_val3 |
+        Any Contact  |   .8601688   .3762894     2.29   0.023     .1215818    1.598756
+        Bad Contact  |   1.253151   .4882431     2.57   0.010     .2951604    2.211141
+                     |
+                 age |     .07364   .0432158     1.70   0.088    -.0110684    .1583485
+                     |
+         c.age#c.age |  -.0008083   .0004199    -1.93   0.054    -.0016313    .0000147
+                     |
+              female |
+             female  |     .44775   .2773144     1.61   0.106    -.0958864    .9913865
+                     |
+                race |
+              black  |  -.0929888   .4336531    -0.21   0.830     -.942996    .7570183
+         other race  |  -.5573328   .4574914    -1.22   0.223    -1.454362    .3396964
+                     |
+              region |
+    middle atlantic  |   .0038927   .7997866     0.00   0.996     -1.56367    1.571456
+    e. nor. central  |  -.3290747   .6815197    -0.48   0.629    -1.664839    1.006689
+    w. nor. central  |  -1.291004   .7254755    -1.78   0.075    -2.712934    .1309262
+     south atlantic  |  -.8029253   .6624826    -1.21   0.226    -2.101389    .4955384
+    e. sou. central  |  -.5833677   .7507448    -0.78   0.437    -2.054802    .8880671
+    w. sou. central  |  -.2990046   .7249053    -0.41   0.680    -1.719823    1.121814
+           mountain  |  -.1733353   .8291363    -0.21   0.834    -1.798859    1.452188
+            pacific  |  -.2737437   .6975641    -0.39   0.695    -1.641026    1.093538
+                     |
+               metro |
+          MetroArea  |   .3699689   .3998189     0.93   0.355     -.413823    1.153761
+              coninc |  -.0025825   .0045503    -0.57   0.571    -.0115365    .0063716
+                     |
+              degree |
+        high school  |   .1086105   .3894396     0.28   0.780    -.6549418    .8721628
+     junior college  |   1.144577   .7863543     1.46   0.146    -.3974085    2.686562
+           bachelor  |   1.399534   .5861934     2.39   0.017     .2503986    2.548669
+           graduate  |   .9026486   .7128598     1.27   0.206    -.4959141    2.301211
+                     |
+                year |
+               2006  |   .3684384   .3834305     0.96   0.337    -.3831636     1.12004
+               2018  |   .7751159   .3612407     2.15   0.032     .0670175    1.483214
+                     |
+               _cons |   .1889126    1.13561     0.17   0.868    -2.036927    2.414752
+--------------------------------------------------------------------------------------
+
+
+Vignette is: vigdep
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        898
+                                                Average RVI       =     0.0516
+                                                Largest FMI       =     0.1400
+DF adjustment:   Large sample                   DF:     min       =     994.01
+                                                        avg       =  21,347.95
+Within VCE type:       Robust                           max       = 208,339.09
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |   .0149663   .0501499     0.30   0.765    -.0833319    .1132644
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |   2.212021   .0437534    50.56   0.000     2.126262    2.297779
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |    2.23213   .0446161    50.03   0.000     2.144681    2.319578
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |   2.217525   .0250518    88.52   0.000     2.168425    2.266626
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |     .22751   .1698122     1.34   0.180    -.1055424    .5605624
+                         age |   .0348181   .0250633     1.39   0.165    -.0143132    .0839494
+                             |
+                 c.age#c.age |  -.0002765   .0002489    -1.11   0.267    -.0007644    .0002113
+                             |
+                      female |
+                     female  |   .2639648   .1597524     1.65   0.098    -.0491843     .577114
+                             |
+                        race |
+                      black  |   .1131641   .2361107     0.48   0.632    -.3497184    .5760465
+                 other race  |  -.3821126   .2885457    -1.32   0.185    -.9476577    .1834325
+                             |
+                      region |
+            middle atlantic  |  -.2773327   .4885696    -0.57   0.570    -1.235219    .6805536
+            e. nor. central  |   .0037508   .4778696     0.01   0.994    -.9330483    .9405498
+            w. nor. central  |  -.2607419   .5224362    -0.50   0.618    -1.284979    .7634949
+             south atlantic  |  -.1463996   .4784543    -0.31   0.760    -1.084384    .7915846
+            e. sou. central  |  -.5759721   .5161037    -1.12   0.264    -1.587749     .435805
+            w. sou. central  |  -.5233139   .4857521    -1.08   0.281    -1.475526    .4288984
+                   mountain  |  -.2181582   .5205832    -0.42   0.675    -1.238793    .8024762
+                    pacific  |  -.2006813   .4841521    -0.41   0.679    -1.149804    .7484411
+                             |
+                       metro |
+                  MetroArea  |  -.3006099   .1960598    -1.53   0.125    -.6849288     .083709
+                      coninc |   .0051807   .0025418     2.04   0.042     .0001927    .0101687
+                             |
+                      degree |
+                high school  |  -.0126105   .2461885    -0.05   0.959    -.4951901    .4699692
+             junior college  |   .0565731   .3832266     0.15   0.883    -.6945757     .807722
+                   bachelor  |  -.3840689   .3054735    -1.26   0.209    -.9828837     .214746
+                   graduate  |  -.2905732   .3579814    -0.81   0.417    -.9922882    .4111419
+                             |
+                        year |
+                       2006  |   .1322009   .1870769     0.71   0.480    -.2345473    .4989491
+                       2018  |   .3843391   .2109233     1.82   0.068    -.0291111    .7977894
+                             |
+                       _cons |  -.1876985    .739674    -0.25   0.800    -1.637606    1.262209
+----------------------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        898
+                                                Average RVI       =     0.0567
+                                                Largest FMI       =     0.1408
+DF adjustment:   Large sample                   DF:     min       =     982.88
+                                                        avg       =  20,292.46
+Within VCE type:       Robust                           max       = 208,339.09
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .0124427   .0504173     0.25   0.805    -.0863811    .1112665
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   2.215255   .0440195    50.32   0.000     2.128974    2.301536
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |    2.23213   .0446161    50.03   0.000     2.144681    2.319578
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |   2.217525   .0250518    88.52   0.000     2.168425    2.266626
+---------------------+----------------------------------------------------------------
+TME1                 |
+           cntct_so3 |
+      Other Contact  |   .1847597   .1713451     1.08   0.281    -.1512127    .5207322
+       Self Contact  |   .6246871    .384799     1.62   0.105    -.1303396    1.379714
+                     |
+                 age |   .0339202   .0250896     1.35   0.176    -.0152636     .083104
+                     |
+         c.age#c.age |   -.000264   .0002491    -1.06   0.289    -.0007523    .0002243
+                     |
+              female |
+             female  |   .2592063   .1595058     1.63   0.104    -.0534445    .5718571
+                     |
+                race |
+              black  |   .1205667   .2373751     0.51   0.612    -.3448006     .585934
+         other race  |  -.3641128    .288153    -1.26   0.206    -.9288882    .2006625
+                     |
+              region |
+    middle atlantic  |  -.2450581   .4885408    -0.50   0.616    -1.202996    .7128795
+    e. nor. central  |   .0342677   .4780196     0.07   0.943    -.9028793    .9714147
+    w. nor. central  |  -.2407698   .5221646    -0.46   0.645    -1.264539    .7829999
+     south atlantic  |  -.1196093   .4795137    -0.25   0.803    -1.059775    .8205563
+    e. sou. central  |  -.5494283   .5149138    -1.07   0.286    -1.558954    .4600977
+    w. sou. central  |  -.5023972    .483618    -1.04   0.299    -1.450462    .4456676
+           mountain  |  -.2070163   .5195968    -0.40   0.690    -1.225749    .8117164
+            pacific  |  -.1857975   .4822584    -0.39   0.700    -1.131241    .7596457
+                     |
+               metro |
+          MetroArea  |  -.3125152    .196042    -1.59   0.111     -.696791    .0717607
+              coninc |   .0052578   .0025541     2.06   0.040     .0002456      .01027
+                     |
+              degree |
+        high school  |  -.0089914   .2453019    -0.04   0.971     -.489827    .4718442
+     junior college  |   .0429894   .3826859     0.11   0.911    -.7070997    .7930785
+           bachelor  |  -.3719865   .3050907    -1.22   0.223    -.9700257    .2260527
+           graduate  |  -.2874943   .3577383    -0.80   0.422     -.988714    .4137253
+                     |
+                year |
+               2006  |   .1681793   .1877831     0.90   0.371    -.1999498    .5363084
+               2018  |   .3473176   .2150946     1.61   0.106    -.0743052    .7689405
+                     |
+               _cons |  -.2149977   .7419592    -0.29   0.772    -1.669461    1.239466
+--------------------------------------------------------------------------------------
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        898
+                                                Average RVI       =     0.0589
+                                                Largest FMI       =     0.1455
+DF adjustment:   Large sample                   DF:     min       =     921.19
+                                                        avg       =  18,568.90
+Within VCE type:       Robust                           max       = 208,339.09
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .0085545    .050334     0.17   0.865    -.0901049    .1072138
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   2.218271   .0439926    50.42   0.000     2.132044    2.304498
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |    2.23213   .0446161    50.03   0.000     2.144681    2.319578
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |   2.217525   .0250518    88.52   0.000     2.168425    2.266626
+---------------------+----------------------------------------------------------------
+TME1                 |
+          cntct_val3 |
+        Any Contact  |   .5044743   .2187598     2.31   0.021     .0753867    .9335619
+        Bad Contact  |  -.1598469   .2603809    -0.61   0.539    -.6708556    .3511617
+                     |
+                 age |   .0381335   .0251938     1.51   0.130    -.0112566    .0875236
+                     |
+         c.age#c.age |  -.0003055   .0002496    -1.22   0.221    -.0007949    .0001838
+                     |
+              female |
+             female  |   .2830002     .16052     1.76   0.078    -.0316568    .5976571
+                     |
+                race |
+              black  |   .1083731   .2342427     0.46   0.644     -.350845    .5675912
+         other race  |  -.3998148   .2902523    -1.38   0.168    -.9687069    .1690774
+                     |
+              region |
+    middle atlantic  |  -.2592054   .4882638    -0.53   0.596    -1.216528    .6981173
+    e. nor. central  |   .0362648   .4788199     0.08   0.940    -.9024306    .9749603
+    w. nor. central  |   -.244175   .5242376    -0.47   0.641    -1.271974    .7836241
+     south atlantic  |   -.138993   .4785585    -0.29   0.771    -1.077231    .7992449
+    e. sou. central  |  -.5248213   .5174219    -1.01   0.310    -1.539193     .489551
+    w. sou. central  |  -.5157885   .4841074    -1.07   0.287    -1.464779    .4332021
+           mountain  |  -.1922938   .5246391    -0.37   0.714    -1.220926    .8363381
+            pacific  |  -.1897202   .4858937    -0.39   0.696    -1.142273    .7628326
+                     |
+               metro |
+          MetroArea  |  -.3031913   .1958862    -1.55   0.122    -.6871678    .0807851
+              coninc |    .005526   .0025576     2.16   0.031     .0005076    .0105445
+                     |
+              degree |
+        high school  |  -.0315731    .247201    -0.13   0.898    -.5161465    .4530002
+     junior college  |  -.0036038   .3844909    -0.01   0.993    -.7572346     .750027
+           bachelor  |  -.4014584   .3061025    -1.31   0.190    -1.001512    .1985949
+           graduate  |  -.3319061   .3565593    -0.93   0.352    -1.030838    .3670258
+                     |
+                year |
+               2006  |   .4878046   .2572774     1.90   0.058    -.0168385    .9924477
+               2018  |   .3481268    .214609     1.62   0.105    -.0725809    .7688346
+                     |
+               _cons |   -.403966   .7495487    -0.54   0.590    -1.873349    1.065417
+--------------------------------------------------------------------------------------
+
+.         
+. *Valence measure not in year with drug vignette 
+. mi est, cmdok: teffects aipw (`dv') (`iv' i.cntct_tot `cvs' i.year) if vigdrug
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        505
+                                                Average RVI       =     0.0357
+                                                Largest FMI       =     0.1187
+DF adjustment:   Large sample                   DF:     min       =   1,378.38
+                                                        avg       =  20,552.42
+Within VCE type:       Robust                           max       =  76,698.00
+
+----------------------------------------------------------------------------------------------
+                   socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+ATE                          |
+                 L_mentlillB |
+           (Lab MntlIllness  |
+                         vs  |
+        NoLab MntlIllness )  |  -.0123594   .0594762    -0.21   0.835     -.128941    .1042222
+-----------------------------+----------------------------------------------------------------
+POmean                       |
+                 L_mentlillB |
+         NoLab MntlIllness   |   2.901052   .0385395    75.27   0.000     2.825515    2.976589
+-----------------------------+----------------------------------------------------------------
+OME0                         |
+                       _cons |   2.899843   .0389519    74.45   0.000     2.823497     2.97619
+-----------------------------+----------------------------------------------------------------
+OME1                         |
+                       _cons |    2.89592   .0488367    59.30   0.000     2.800199    2.991641
+-----------------------------+----------------------------------------------------------------
+TME1                         |
+                   cntct_tot |
+contact with mental illness  |   .4862499   .1955618     2.49   0.013     .1028589    .8696409
+                         age |  -.0312068   .0334456    -0.93   0.351    -.0967651    .0343515
+                             |
+                 c.age#c.age |   .0003845   .0003329     1.16   0.248     -.000268    .0010369
+                             |
+                      female |
+                     female  |  -.2149433    .191542    -1.12   0.262    -.5903646     .160478
+                             |
+                        race |
+                      black  |   .2548353   .2781044     0.92   0.360    -.2903051    .7999757
+                 other race  |  -.0089775   .3506396    -0.03   0.980    -.6962352    .6782803
+                             |
+                      region |
+            middle atlantic  |  -1.041067   .5525716    -1.88   0.060     -2.12504    .0429047
+            e. nor. central  |  -.3393112   .5213692    -0.65   0.515    -1.361724    .6831015
+            w. nor. central  |  -.0293653   .6185296    -0.05   0.962    -1.241915    1.183185
+             south atlantic  |  -.3434185   .5223092    -0.66   0.511    -1.367879    .6810423
+            e. sou. central  |  -.5316839   .5959377    -0.89   0.372    -1.700191    .6368235
+            w. sou. central  |  -.6838969   .5623686    -1.22   0.224     -1.78665    .4188559
+                   mountain  |  -.4842009   .6066138    -0.80   0.425    -1.673746    .7053439
+                    pacific  |  -.5641748   .5294021    -1.07   0.287    -1.602352    .4740028
+                             |
+                       metro |
+                  MetroArea  |   .2542243   .2413931     1.05   0.292     -.218962    .7274106
+                      coninc |   .0021484    .002868     0.75   0.454     -.003475    .0077719
+                             |
+                      degree |
+                high school  |  -.2373384   .3036551    -0.78   0.434    -.8325268      .35785
+             junior college  |  -.1383313   .4250972    -0.33   0.745    -.9715942    .6949316
+                   bachelor  |  -.5953181   .3777097    -1.58   0.115    -1.335715    .1450784
+                   graduate  |  -.5021761   .4494531    -1.12   0.264    -1.383106    .3787537
+                             |
+                        year |
+                       2018  |   -.203755   .1990775    -1.02   0.306    -.5939477    .1864378
+                             |
+                       _cons |   .7159503   .9009693     0.79   0.427    -1.050601    2.482502
+----------------------------------------------------------------------------------------------
+
+. mi est, cmdok: teffects aipw (`dv') (`iv' i.cntct_so3 `cvs' i.year) if vigdrug
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        505
+                                                Average RVI       =     0.0386
+                                                Largest FMI       =     0.1181
+DF adjustment:   Large sample                   DF:     min       =   1,390.82
+                                                        avg       =  17,259.52
+Within VCE type:       Robust                           max       =  66,850.94
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+ATE                  |
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |  -.0087625   .0600178    -0.15   0.884    -.1264077    .1088827
+---------------------+----------------------------------------------------------------
+POmean               |
+         L_mentlillB |
+ NoLab MntlIllness   |   2.900304   .0386583    75.02   0.000     2.824533    2.976075
+---------------------+----------------------------------------------------------------
+OME0                 |
+               _cons |   2.899843   .0389519    74.45   0.000     2.823497     2.97619
+---------------------+----------------------------------------------------------------
+OME1                 |
+               _cons |    2.89592   .0488367    59.30   0.000     2.800199    2.991641
+---------------------+----------------------------------------------------------------
+TME1                 |
+           cntct_so3 |
+      Other Contact  |   .3843103    .213447     1.80   0.072    -.0342884     .802909
+       Self Contact  |    .876146   .3193494     2.74   0.006      .250021    1.502271
+                     |
+                 age |  -.0346881   .0334766    -1.04   0.300     -.100307    .0309309
+                     |
+         c.age#c.age |   .0004262   .0003323     1.28   0.200    -.0002251    .0010776
+                     |
+              female |
+             female  |  -.2469365   .1943982    -1.27   0.204     -.627957    .1340839
+                     |
+                race |
+              black  |   .2804259   .2803407     1.00   0.317    -.2691305    .8299824
+         other race  |   .0516154   .3559686     0.14   0.885     -.646097    .7493278
+                     |
+              region |
+    middle atlantic  |  -.9758572   .5563248    -1.75   0.080    -2.067183    .1154689
+    e. nor. central  |  -.2713836   .5237165    -0.52   0.604    -1.298387    .7556195
+    w. nor. central  |  -.0208001   .6169732    -0.03   0.973    -1.230299    1.188699
+     south atlantic  |  -.3043474   .5257945    -0.58   0.563     -1.33568    .7269848
+    e. sou. central  |  -.4377484   .6007856    -0.73   0.466    -1.615715    .7402186
+    w. sou. central  |  -.6133248    .565969    -1.08   0.279    -1.723128     .496478
+           mountain  |  -.4050283   .6123824    -0.66   0.508    -1.605872    .7958152
+            pacific  |  -.5118276   .5312666    -0.96   0.335    -1.553612    .5299564
+                     |
+               metro |
+          MetroArea  |   .2294746   .2423973     0.95   0.344    -.2456654    .7046147
+              coninc |   .0024226   .0029093     0.83   0.405    -.0032815    .0081266
+                     |
+              degree |
+        high school  |  -.2015765   .3042415    -0.66   0.508    -.7979071    .3947542
+     junior college  |  -.0962706   .4263471    -0.23   0.821    -.9320112      .73947
+           bachelor  |   -.526992    .378784    -1.39   0.164    -1.269486     .215502
+           graduate  |  -.4645698   .4505117    -1.03   0.302    -1.347573    .4184337
+                     |
+                year |
+               2018  |  -.2386278   .2018387    -1.18   0.237    -.6342403    .1569846
+                     |
+               _cons |    .690319   .9080386     0.76   0.447    -1.089984    2.470622
+--------------------------------------------------------------------------------------
+
+.         
+.         
+.         
+. ************************************************************
+. //#5 Sensitivty analysis matching on attributions
+. ************************************************************    
+. // Exact matching on contact //
+. *       NOTE: Not enough overlap in data for exact matching on any additional vars
+. local dv "socdistSS" 
+
+. local iv "L_mentlillB" 
+
+. local con "c.age##c.age coninc"         // Separate out continuous controls
+
+. local cvs "i.female i.metro i.race i.region i.degree"
+
+. local att  "i.a_imbalnceR i.a_geneticsR i.a_stressesR i.a_wayraiseR i.a_charactrR i.a_godswillR"
+
+. local evs "i.vigdrug i.vigalc i.vigschiz i.vigdep i.year i.cntct_tot"
+
+. 
+.                                                         
+. *Pooling over all four vignettes
+. mi est, cmdok: teffects nnmatch (`dv' `cvs' `con' `att') (`iv'), ///
+>                                                 ematch(`evs') metric(mahalanobis) ///
+>                                                 biasadj(`con')
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =      3,561
+                                                Average RVI       =     0.0396
+                                                Largest FMI       =     0.0383
+DF adjustment:   Large sample                   DF:     min       =  13,068.07
+                                                        avg       =  13,068.07
+Within VCE type:    AI robust                           max       =  13,068.07
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .1184498   .0307114     3.86   0.000     .0582509    .1786487
+--------------------------------------------------------------------------------------
+
+.                                                 
+. *Separately for each vignette
+. foreach v of varlist vignorm vigdrug vigalc vigschiz vigdep {
+  2.         di _newline(1)
+  3.         di in red "Vignette is: `v'"
+  4.         mi est, cmdok: teffects nnmatch (`dv' `cvs' `con' `att') (`iv') ///
+>                                                         if `v', ///
+>                                                         ematch(year i.cntct_tot) metric(mahalanobis)
+>  ///
+>                                                         biasadj(`con')
+  5.         }               
+
+
+Vignette is: vignorm
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        746
+                                                Average RVI       =     0.0273
+                                                Largest FMI       =     0.0266
+DF adjustment:   Large sample                   DF:     min       =  26,967.11
+                                                        avg       =  26,967.11
+Within VCE type:    AI robust                           max       =  26,967.11
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .1874277      .0619     3.03   0.002     .0661005     .308755
+--------------------------------------------------------------------------------------
+
+
+Vignette is: vigdrug
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        461
+                                                Average RVI       =     0.1567
+                                                Largest FMI       =     0.1371
+DF adjustment:   Large sample                   DF:     min       =   1,035.61
+                                                        avg       =   1,035.61
+Within VCE type:    AI robust                           max       =   1,035.61
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |  -.0085821   .0772331    -0.11   0.912    -.1601333     .142969
+--------------------------------------------------------------------------------------
+
+
+Vignette is: vigalc
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        769
+                                                Average RVI       =     0.0115
+                                                Largest FMI       =     0.0114
+DF adjustment:   Large sample                   DF:     min       = 146,638.29
+                                                        avg       = 146,638.29
+Within VCE type:    AI robust                           max       = 146,638.29
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .0637045   .0578541     1.10   0.271    -.0496883    .1770974
+--------------------------------------------------------------------------------------
+
+
+Vignette is: vigschiz
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        763
+                                                Average RVI       =     0.0236
+                                                Largest FMI       =     0.0231
+DF adjustment:   Large sample                   DF:     min       =  35,787.91
+                                                        avg       =  35,787.91
+Within VCE type:    AI robust                           max       =  35,787.91
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .2289988    .085837     2.67   0.008     .0607557    .3972419
+--------------------------------------------------------------------------------------
+
+
+Vignette is: vigdep
+
+Multiple-imputation estimates                   Imputations       =         20
+Treatment-effects estimation                    Number of obs     =        822
+                                                Average RVI       =     0.0301
+                                                Largest FMI       =     0.0293
+DF adjustment:   Large sample                   DF:     min       =  22,252.55
+                                                        avg       =  22,252.55
+Within VCE type:    AI robust                           max       =  22,252.55
+
+--------------------------------------------------------------------------------------
+           socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+         L_mentlillB |
+   (Lab MntlIllness  |
+                 vs  |
+NoLab MntlIllness )  |   .0436335   .0653722     0.67   0.504    -.0845006    .1717676
+--------------------------------------------------------------------------------------
+
+.         
+.         
+.         
+. **************          
+. log close
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_MatchingLabelingStig
+> ma/work_socius_2024_09_other_imputed/mls-do02-matching.log
+  log type:  text
+ closed on:  26 Sep 2024, 15:19:13
+------------------------------------------------------------------------------------------------------

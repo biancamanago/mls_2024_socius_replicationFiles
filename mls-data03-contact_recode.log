@@ -1,0 +1,2632 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/ML
+> S_MatchingLabelingStigma/work_socius_2024_09_other_imputed/mls-data03-contact_
+> recode.log
+  log type:  text
+ opened on:  26 Sep 2024, 10:21:35
+
+.  
+.  
+. **********
+. /// #0 Setup    
+> **********      
+.  
+.  version 15.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+
+. 
+.  
+.  local pgm   mls-data03-contact_recode.do
+
+.  local dte   2024-09-25 
+
+.  local who   bianca manago
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+.  di "`tag'"
+mls-data03-contact_recode.do.do bianca manago 2024-09-25
+
+.  
+. ****************************************************************
+.  // #1 Load Data
+. **************************************************************** 
+.  
+.  use "Data/mls-data02-label_name_recode", clear
+
+.  
+. ****************************************************************
+. // #2
+. ****************************************************************
+. 
+. fre mhtrtoth mhothyou mhothrel
+
+mhtrtoth -- r personally has known someone who received treatment
+------------------------------------------------------------------
+                     |      Freq.    Percent      Valid       Cum.
+---------------------+--------------------------------------------
+Valid   1  yes       |        902      21.79      63.84      63.84
+        2  no        |        511      12.34      36.16     100.00
+        Total        |       1413      34.13     100.00           
+Missing .d DONT KNOW |         11       0.27                      
+        .i IAP       |       2703      65.29                      
+        .n NO ANSWER |         13       0.31                      
+        Total        |       2727      65.87                      
+Total                |       4140     100.00                      
+------------------------------------------------------------------
+
+mhothyou -- how much distress his mental health problem caused r
+---------------------------------------------------------------------
+                        |      Freq.    Percent      Valid       Cum.
+------------------------+--------------------------------------------
+Valid   1  a great deal |        240       5.80      26.67      26.67
+        2  quite a bit  |        179       4.32      19.89      46.56
+        3  a little     |        281       6.79      31.22      77.78
+        4  not at all   |        200       4.83      22.22     100.00
+        Total           |        900      21.74     100.00           
+Missing .d DONT KNOW    |          1       0.02                      
+        .i IAP          |       3225      77.90                      
+        .n NO ANSWER    |         14       0.34                      
+        Total           |       3240      78.26                      
+Total                   |       4140     100.00                      
+---------------------------------------------------------------------
+
+mhothrel -- result of mental health problem to relationship with him 
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  became stronger      |        237       5.72      26.45      26.45
+        2  became worse         |        125       3.02      13.95      40.40
+        3  was unchanged        |        457      11.04      51.00      91.41
+        4  ended as a result of |         77       1.86       8.59     100.00
+           the problem          |                                            
+        Total                   |        896      21.64     100.00           
+Missing .d DONT KNOW            |          6       0.14                      
+        .i IAP                  |       3225      77.90                      
+        .n NO ANSWER            |         13       0.31                      
+        Total                   |       3244      78.36                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+. 
+. 
+.         local contact "evmhp evbrkdwn brkddur"
+
+.         local contact "`contact' diagnosd mhtrtoth mhtrtot2 mhtrtslf mhtreatd"
+
+.         local contact "`contact' knwpatnt knwmhosp mhdiagno"
+
+.         
+.         foreach v in `contact' {
+  2.                 di in red ". tab `v' year, m"
+  3.                 tab `v' year, m
+  4.                 }
+. tab evmhp year, m
+
+  ever had |
+    mental |
+    health |  gss year for this respondent 
+  problem  |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+       yes |        76          0          0 |        76 
+        no |       977          0          0 |       977 
+        NA |        13          0          0 |        13 
+       IAP |       377      1,523      1,173 |     3,073 
+  NOT SURE |         1          0          0 |         1 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+. tab evbrkdwn year, m
+
+ ever felt |
+  going to |
+    have a |
+   nervous |  gss year for this respondent 
+breakdown? |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+       yes |       376          0          0 |       376 
+        no |     1,047          0          0 |     1,047 
+ DONT KNOW |        10          0          0 |        10 
+       IAP |         0      1,523      1,173 |     2,696 
+        NA |        11          0          0 |        11 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+. tab brkddur year, m
+
+ duration, |
+  severity |
+of nervous |
+ breakdown |  gss year for this respondent 
+ feelings  |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+         1 |        87          0          0 |        87 
+         2 |         1          0          0 |         1 
+         3 |        18          0          0 |        18 
+         4 |        16          0          0 |        16 
+         5 |        20          0          0 |        20 
+         6 |         5          0          0 |         5 
+         7 |        51          0          0 |        51 
+         8 |        13          0          0 |        13 
+       IAP |     1,057      1,523      1,173 |     3,753 
+        NA |       176          0          0 |       176 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+. tab diagnosd year, m
+
+    r ever |
+ diagnosed |
+   with mh |  gss year for this respondent 
+   problem |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+       yes |         0          0        197 |       197 
+        no |         0          0        936 |       936 
+Don't know |         0          0          5 |         5 
+       IAP |     1,444      1,523          0 |     2,967 
+ No answer |         0          0         35 |        35 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+. tab mhtrtoth year, m
+
+         r |
+personally |
+ has known |
+   someone |
+       who |
+  received |  gss year for this respondent 
+ treatment |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+       yes |         0        902          0 |       902 
+        no |         0        511          0 |       511 
+ DONT KNOW |         0         11          0 |        11 
+       IAP |     1,444         86      1,173 |     2,703 
+ NO ANSWER |         0         13          0 |        13 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+. tab mhtrtot2 year, m
+
+   r knows |
+   someone |
+       who |
+  received |
+ treatment |
+for mental |  gss year for this respondent 
+    health |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+       IAP |     1,444      1,523      1,173 |     4,140 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+. tab mhtrtslf year, m
+
+    r have |
+      ever |
+personally |
+  received |
+ treatment |
+for mental |
+    health |  gss year for this respondent 
+   problem |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+       IAP |     1,444      1,523      1,173 |     4,140 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+. tab mhtreatd year, m
+
+    r ever |
+   treated |
+    for mh |  gss year for this respondent 
+   problem |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+       yes |         0          0        187 |       187 
+        no |         0          0         10 |        10 
+       IAP |     1,444      1,523        941 |     3,908 
+ No answer |         0          0         35 |        35 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+. tab knwpatnt year, m
+
+     known |
+    anyone |
+  seeing a |
+psychologi |  gss year for this respondent 
+  st etc?  |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+       yes |       388          0          0 |       388 
+        no |       271          0          0 |       271 
+ DONT KNOW |        11          0          0 |        11 
+       IAP |       708      1,523      1,173 |     3,404 
+        NA |        66          0          0 |        66 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+. tab knwmhosp year, m
+
+      know |
+anyone who |
+  was in a |  gss year for this respondent 
+ hospital  |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+       yes |       366          0          0 |       366 
+        no |       355          0          0 |       355 
+        NA |         7          0          0 |         7 
+       IAP |       708      1,523      1,173 |     3,404 
+  NOT SURE |         8          0          0 |         8 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+. tab mhdiagno year, m
+
+   r knows |
+   someone |
+   who has |
+      been |
+ diagnosed |
+    with a |
+    mental |
+    health |  gss year for this respondent 
+   problem |      1996       2006       2018 |     Total
+-----------+---------------------------------+----------
+       yes |         0          0        597 |       597 
+        no |         0          0        533 |       533 
+Don't know |         0          0          6 |         6 
+       IAP |     1,444      1,523          0 |     2,967 
+ No answer |         0          0         37 |        37 
+-----------+---------------------------------+----------
+     Total |     1,444      1,523      1,173 |     4,140 
+
+.                 
+.         /* All of the different GSS versions
+>            use wildly different measures of contact...
+>            in 2006 there is no measure of self contact,
+>            however, in 1996 only 44 people, or 1% of the sample
+>            reported having mental illness without knowing anyone
+>            else with mental illness. (Another 32 people, or .77% 
+>            of the sample, reported having mental illness
+>            and knowing others with mental illness. There is another
+>            ballot in 2006 that has measures of individuals' own mental
+>            illness, but they weren't asked */
+.            
+.           **  if not sure - counted as no
+.         
+. **********
+. /// 1996        
+> **********      
+. /* From Codebook
+> Long-term
+> 1. Long-term reaction (severe) -- extensive period mentioned in which R elabor
+> ates on a severe nervous feeling state. for months, I cried almost all the tim
+> e
+> 2. Long-term reaction (no very severe) -- extensive period mentioned in which 
+> R elaborates a minor nervous feeling state. In have felt blue every so often d
+> uring the past ten years.
+> 3. Long-term reaction (severity NA) -- extensive period mentioned in which R d
+> oes not give enough elaborations to allow coder to code 1 or 2.. I’ve been ove
+> rworking for years.
+> Short-term
+> 4. Short-term reaction (severe) -- a short period mentioned in which R elabora
+> tes on a severe nervous feeling state. I was in a state of shock the week afte
+> r my parents died.
+> 5. Short-term reaction (not very severe) -- A short period mentioned in which 
+> R elaborates a minor nervous feeling state. When we had tornado warnings, I wa
+> s a little concerned
+> 6. Short-term reaction (severity NA). -- a short period mentioned in which R d
+> oes not give enough elaboration to allow coder to code 4 or 5. when my mother 
+> died, I was upset.
+> NA Duration
+> 7. Severe reaction, NA how long.
+> 8. Not very severe reaction, NA how long. 
+> 9. NA severity and Length. BK R said no breakdown. */
+. 
+. // Creating variable for breakdown severity that'll be used to create the cont
+> act variable
+. fre evbrkdwn    
+
+evbrkdwn -- ever felt going to have a nervous breakdown?
+------------------------------------------------------------------
+                     |      Freq.    Percent      Valid       Cum.
+---------------------+--------------------------------------------
+Valid   1  yes       |        376       9.08      26.42      26.42
+        2  no        |       1047      25.29      73.58     100.00
+        Total        |       1423      34.37     100.00           
+Missing .d DONT KNOW |         10       0.24                      
+        .i IAP       |       2696      65.12                      
+        .n NA        |         11       0.27                      
+        Total        |       2717      65.63                      
+Total                |       4140     100.00                      
+------------------------------------------------------------------
+
+. recode brkddur (1 4 7 = 1) (2 3 5 6 8 9 .i .n = 0) if year==1996, gen(brkdsev)
+(1357 differences between brkddur and brkdsev)
+
+.         label var brkdsev "Severity Breakdown 1=severe"
+
+.         
+.         fre brkdsev
+
+brkdsev -- Severity Breakdown 1=severe
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       1290      31.16      89.34      89.34
+        1     |        154       3.72      10.66     100.00
+        Total |       1444      34.88     100.00           
+Missing .     |       2696      65.12                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+.         
+.         tab brkddur brkdsev if year==1996, m
+
+ duration, |
+  severity |
+of nervous |  Severity Breakdown
+ breakdown |       1=severe
+ feelings  |         0          1 |     Total
+-----------+----------------------+----------
+         1 |         0         87 |        87 
+         2 |         1          0 |         1 
+         3 |        18          0 |        18 
+         4 |         0         16 |        16 
+         5 |        20          0 |        20 
+         6 |         5          0 |         5 
+         7 |         0         51 |        51 
+         8 |        13          0 |        13 
+       IAP |     1,057          0 |     1,057 
+        NA |       176          0 |       176 
+-----------+----------------------+----------
+     Total |     1,290        154 |     1,444 
+
+.         tab brkddur evbrkdwn if year==1996, m
+
+ duration, |
+  severity |
+of nervous |      ever felt going to have a nervous
+ breakdown |                 breakdown?
+ feelings  |       yes         no  DONT KNOW         NA |     Total
+-----------+--------------------------------------------+----------
+         1 |        87          0          0          0 |        87 
+         2 |         1          0          0          0 |         1 
+         3 |        18          0          0          0 |        18 
+         4 |        16          0          0          0 |        16 
+         5 |        20          0          0          0 |        20 
+         6 |         5          0          0          0 |         5 
+         7 |        51          0          0          0 |        51 
+         8 |        13          0          0          0 |        13 
+       IAP |         0      1,047         10          0 |     1,057 
+        NA |       165          0          0         11 |       176 
+-----------+--------------------------------------------+----------
+     Total |       376      1,047         10         11 |     1,444 
+
+. 
+. // also creating a variable for breakdown length        
+.         recode brkddur (1/3 = 1) (4/9 = 0), gen(brkdlong)
+(124 differences between brkddur and brkdlong)
+
+.         label var brkdlong "Length Breakdown 1=Long"
+
+.         
+.         tab brkddur brkdlong, m
+
+ duration, |
+  severity |
+of nervous |
+ breakdown |           Length Breakdown 1=Long
+ feelings  |         0          1         .i         .n |     Total
+-----------+--------------------------------------------+----------
+         1 |         0         87          0          0 |        87 
+         2 |         0          1          0          0 |         1 
+         3 |         0         18          0          0 |        18 
+         4 |        16          0          0          0 |        16 
+         5 |        20          0          0          0 |        20 
+         6 |         5          0          0          0 |         5 
+         7 |        51          0          0          0 |        51 
+         8 |        13          0          0          0 |        13 
+       IAP |         0          0      3,753          0 |     3,753 
+        NA |         0          0          0        176 |       176 
+-----------+--------------------------------------------+----------
+     Total |       105        106      3,753        176 |     4,140 
+
+.         
+. **************************************************************** 
+. // 1996
+. ****************************************************************        
+. 
+. ******
+. // Contact Self Variable
+. ******  
+. 
+. fre evbrkdwn
+
+evbrkdwn -- ever felt going to have a nervous breakdown?
+------------------------------------------------------------------
+                     |      Freq.    Percent      Valid       Cum.
+---------------------+--------------------------------------------
+Valid   1  yes       |        376       9.08      26.42      26.42
+        2  no        |       1047      25.29      73.58     100.00
+        Total        |       1423      34.37     100.00           
+Missing .d DONT KNOW |         10       0.24                      
+        .i IAP       |       2696      65.12                      
+        .n NA        |         11       0.27                      
+        Total        |       2717      65.63                      
+Total                |       4140     100.00                      
+------------------------------------------------------------------
+
+. count if evmhp==1 | brkdsev==1  
+  230
+
+.                 
+.         gen cntct_slf96 = .
+(4,140 missing values generated)
+
+.         replace cntct_slf96=.y if year==2006 | year==2018
+(2,696 real changes made, 2,696 to missing)
+
+.         replace cntct_slf96=.m if evmhp==.a | evmhp==.d
+(13 real changes made, 13 to missing)
+
+.         
+.         replace cntct_slf96=0  if evbrkdwn==2
+(1,047 real changes made)
+
+.         replace cntct_slf96=0  if brkdsev==0 & evmhp!=1
+(239 real changes made)
+
+.         replace cntct_slf96=1  if evmhp==1 
+(76 real changes made)
+
+.         replace cntct_slf96=1  if brkdsev==1
+(154 real changes made)
+
+.         
+.                 la var cntct_slf96 "Contact w/ Self 96"
+
+.                 la val cntct_slf96 yesno
+
+.                 
+.         fre cntct_slf96  if year==1996
+
+cntct_slf96 -- Contact w/ Self 96
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       1214      84.07      84.07      84.07
+        1     |        230      15.93      15.93     100.00
+        Total |       1444     100.00     100.00           
+-----------------------------------------------------------
+
+.         tab evmhp brkdsev if year==1996, m
+
+  ever had |
+    mental |  Severity Breakdown
+    health |       1=severe
+  problem  |         0          1 |     Total
+-----------+----------------------+----------
+       yes |        76          0 |        76 
+        no |       977          0 |       977 
+        NA |        13          0 |        13 
+       IAP |       223        154 |       377 
+  NOT SURE |         1          0 |         1 
+-----------+----------------------+----------
+     Total |     1,290        154 |     1,444 
+
+.         
+.         local vars "evbrkdwn brkdsev evmhp"
+
+.         foreach v in `vars' {
+  2.                 tab cntct_slf96 `v' if year==1996, m
+  3.                 }
+
+           |      ever felt going to have a nervous
+Contact w/ |                 breakdown?
+   Self 96 |       yes         no  DONT KNOW         NA |     Total
+-----------+--------------------------------------------+----------
+         0 |       222        975          6         11 |     1,214 
+         1 |       154         72          4          0 |       230 
+-----------+--------------------------------------------+----------
+     Total |       376      1,047         10         11 |     1,444 
+
+           |  Severity Breakdown
+Contact w/ |       1=severe
+   Self 96 |         0          1 |     Total
+-----------+----------------------+----------
+         0 |     1,214          0 |     1,214 
+         1 |        76        154 |       230 
+-----------+----------------------+----------
+     Total |     1,290        154 |     1,444 
+
+Contact w/ |            ever had mental health problem 
+   Self 96 |       yes         no         NA        IAP   NOT SURE |     Total
+-----------+-------------------------------------------------------+----------
+         0 |         0        977         13        223          1 |     1,214 
+         1 |        76          0          0        154          0 |       230 
+-----------+-------------------------------------------------------+----------
+     Total |        76        977         13        377          1 |     1,444 
+
+.                 
+.         list evmhp evbrkdwn brkdsev if cntct_slf96==.
+
+.                 
+.         fre evmhp evbrkdwn brkdsev if year==1996        
+
+evmhp -- ever had mental health problem 
+-----------------------------------------------------------------
+                    |      Freq.    Percent      Valid       Cum.
+--------------------+--------------------------------------------
+Valid   1  yes      |         76       5.26       7.22       7.22
+        2  no       |        977      67.66      92.78     100.00
+        Total       |       1053      72.92     100.00           
+Missing .a NA       |         13       0.90                      
+        .i IAP      |        377      26.11                      
+        .n NOT SURE |          1       0.07                      
+        Total       |        391      27.08                      
+Total               |       1444     100.00                      
+-----------------------------------------------------------------
+
+evbrkdwn -- ever felt going to have a nervous breakdown?
+------------------------------------------------------------------
+                     |      Freq.    Percent      Valid       Cum.
+---------------------+--------------------------------------------
+Valid   1  yes       |        376      26.04      26.42      26.42
+        2  no        |       1047      72.51      73.58     100.00
+        Total        |       1423      98.55     100.00           
+Missing .d DONT KNOW |         10       0.69                      
+        .n NA        |         11       0.76                      
+        Total        |         21       1.45                      
+Total                |       1444     100.00                      
+------------------------------------------------------------------
+
+brkdsev -- Severity Breakdown 1=severe
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       1290      89.34      89.34      89.34
+        1     |        154      10.66      10.66     100.00
+        Total |       1444     100.00     100.00           
+-----------------------------------------------------------
+
+.         fre cntct_slf96  if year==1996  
+
+cntct_slf96 -- Contact w/ Self 96
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       1214      84.07      84.07      84.07
+        1     |        230      15.93      15.93     100.00
+        Total |       1444     100.00     100.00           
+-----------------------------------------------------------
+
+.         
+. ******
+. //  Contact other variable      
+. ******
+. 
+.         sort year
+
+.         list ballot if evmhp==.i & year==1996 in 1/20
+
+     +----------+
+     |   ballot |
+     |----------|
+  3. | ballot a |
+  5. | ballot c |
+  8. | ballot b |
+  9. | ballot c |
+ 13. | ballot b |
+     |----------|
+ 15. | ballot a |
+ 16. | ballot c |
+ 19. | ballot a |
+     +----------+
+
+.         list ballot if evmhp==.i & year==1996 in 1/20
+
+     +----------+
+     |   ballot |
+     |----------|
+  3. | ballot a |
+  5. | ballot c |
+  8. | ballot b |
+  9. | ballot c |
+ 13. | ballot b |
+     |----------|
+ 15. | ballot a |
+ 16. | ballot c |
+ 19. | ballot a |
+     +----------+
+
+. 
+.         gen cntct_oth96 =.
+(4,140 missing values generated)
+
+.         replace cntct_oth96=.y if year==2006 
+(1,523 real changes made, 1,523 to missing)
+
+.         replace cntct_oth96=.y if year==2018
+(1,173 real changes made, 1,173 to missing)
+
+.         
+.         replace cntct_oth96=.m if knwmhosp==.d | knwmhosp==.n | knwmhosp==.a |
+>  ///
+>                                   knwpatnt==.d | knwpatnt==.n | knwpatnt==.a
+(81 real changes made, 81 to missing)
+
+.                                                           
+.         replace cntct_oth96=.i if knwmhosp==.i & year==1996 | ///
+>                                   knwpatnt==.i & year==1996 
+(708 real changes made, 708 to missing)
+
+.                                                           
+.         replace cntct_oth96=1  if knwmhosp==1 
+(366 real changes made)
+
+.         replace cntct_oth96=1  if knwpatnt==1
+(133 real changes made)
+
+.         replace cntct_oth96=0  if knwpatnt==2 & knwmhosp!=1
+(164 real changes made)
+
+.         replace cntct_oth96=0  if knwmhosp==2 & knwpatnt!=1
+(62 real changes made)
+
+.  
+.                 la var cntct_oth96 "Contact w/ Other 96"
+
+.                 la val cntct_oth96 yesno
+
+.                 
+.         
+.     list knwmhosp knwpatnt form if cntct_oth96==.i in 1/200
+
+     +--------------------------------+
+     | knwmhosp   knwpatnt       form |
+     |--------------------------------|
+  4. |      IAP        IAP   alternat |
+  6. |      IAP        IAP   alternat |
+  7. |      IAP        IAP   alternat |
+ 10. |      IAP        IAP   alternat |
+ 13. |      IAP        IAP   alternat |
+     |--------------------------------|
+ 14. |      IAP        IAP   alternat |
+ 18. |      IAP        IAP   alternat |
+ 20. |      IAP        IAP   alternat |
+ 22. |      IAP        IAP   alternat |
+ 25. |      IAP        IAP   alternat |
+     |--------------------------------|
+ 26. |      IAP        IAP   alternat |
+ 28. |      IAP        IAP   alternat |
+ 29. |      IAP        IAP   alternat |
+ 30. |      IAP        IAP   alternat |
+ 32. |      IAP        IAP   alternat |
+     |--------------------------------|
+ 34. |      IAP        IAP   alternat |
+ 36. |      IAP        IAP   alternat |
+ 37. |      IAP        IAP   alternat |
+ 38. |      IAP        IAP   alternat |
+ 44. |      IAP        IAP   alternat |
+     |--------------------------------|
+ 46. |      IAP        IAP   alternat |
+ 48. |      IAP        IAP   alternat |
+ 49. |      IAP        IAP   alternat |
+ 50. |      IAP        IAP   alternat |
+ 54. |      IAP        IAP   alternat |
+     |--------------------------------|
+ 55. |      IAP        IAP   alternat |
+ 57. |      IAP        IAP   alternat |
+ 58. |      IAP        IAP   alternat |
+ 59. |      IAP        IAP   alternat |
+ 60. |      IAP        IAP   alternat |
+     |--------------------------------|
+ 61. |      IAP        IAP   alternat |
+ 63. |      IAP        IAP   alternat |
+ 64. |      IAP        IAP   alternat |
+ 66. |      IAP        IAP   alternat |
+ 68. |      IAP        IAP   alternat |
+     |--------------------------------|
+ 70. |      IAP        IAP   alternat |
+ 73. |      IAP        IAP   alternat |
+ 77. |      IAP        IAP   alternat |
+ 78. |      IAP        IAP   alternat |
+ 79. |      IAP        IAP   alternat |
+     |--------------------------------|
+ 80. |      IAP        IAP   alternat |
+ 82. |      IAP        IAP   alternat |
+ 83. |      IAP        IAP   alternat |
+ 87. |      IAP        IAP   alternat |
+ 88. |      IAP        IAP   alternat |
+     |--------------------------------|
+ 89. |      IAP        IAP   alternat |
+ 92. |      IAP        IAP   alternat |
+ 93. |      IAP        IAP   alternat |
+ 95. |      IAP        IAP   alternat |
+ 97. |      IAP        IAP   alternat |
+     |--------------------------------|
+ 98. |      IAP        IAP   alternat |
+100. |      IAP        IAP   alternat |
+103. |      IAP        IAP   alternat |
+107. |      IAP        IAP   alternat |
+108. |      IAP        IAP   alternat |
+     |--------------------------------|
+117. |      IAP        IAP   alternat |
+120. |      IAP        IAP   alternat |
+121. |      IAP        IAP   alternat |
+124. |      IAP        IAP   alternat |
+126. |      IAP        IAP   alternat |
+     |--------------------------------|
+127. |      IAP        IAP   alternat |
+132. |      IAP        IAP   alternat |
+133. |      IAP        IAP   alternat |
+134. |      IAP        IAP   alternat |
+137. |      IAP        IAP   alternat |
+     |--------------------------------|
+138. |      IAP        IAP   alternat |
+141. |      IAP        IAP   alternat |
+142. |      IAP        IAP   alternat |
+146. |      IAP        IAP   alternat |
+147. |      IAP        IAP   alternat |
+     |--------------------------------|
+149. |      IAP        IAP   alternat |
+150. |      IAP        IAP   alternat |
+153. |      IAP        IAP   alternat |
+154. |      IAP        IAP   alternat |
+158. |      IAP        IAP   alternat |
+     |--------------------------------|
+160. |      IAP        IAP   alternat |
+164. |      IAP        IAP   alternat |
+166. |      IAP        IAP   alternat |
+167. |      IAP        IAP   alternat |
+168. |      IAP        IAP   alternat |
+     |--------------------------------|
+170. |      IAP        IAP   alternat |
+171. |      IAP        IAP   alternat |
+172. |      IAP        IAP   alternat |
+173. |      IAP        IAP   alternat |
+174. |      IAP        IAP   alternat |
+     |--------------------------------|
+175. |      IAP        IAP   alternat |
+176. |      IAP        IAP   alternat |
+177. |      IAP        IAP   alternat |
+178. |      IAP        IAP   alternat |
+181. |      IAP        IAP   alternat |
+     |--------------------------------|
+185. |      IAP        IAP   alternat |
+192. |      IAP        IAP   alternat |
+195. |      IAP        IAP   alternat |
+196. |      IAP        IAP   alternat |
+198. |      IAP        IAP   alternat |
+     |--------------------------------|
+199. |      IAP        IAP   alternat |
+200. |      IAP        IAP   alternat |
+     +--------------------------------+
+
+.         
+.         fre knwmhosp knwpatnt if year==1996
+
+knwmhosp -- know anyone who was in a hospital 
+-----------------------------------------------------------------
+                    |      Freq.    Percent      Valid       Cum.
+--------------------+--------------------------------------------
+Valid   1  yes      |        366      25.35      50.76      50.76
+        2  no       |        355      24.58      49.24     100.00
+        Total       |        721      49.93     100.00           
+Missing .a NA       |          7       0.48                      
+        .i IAP      |        708      49.03                      
+        .n NOT SURE |          8       0.55                      
+        Total       |        723      50.07                      
+Total               |       1444     100.00                      
+-----------------------------------------------------------------
+
+knwpatnt -- known anyone seeing a psychologist etc? 
+------------------------------------------------------------------
+                     |      Freq.    Percent      Valid       Cum.
+---------------------+--------------------------------------------
+Valid   1  yes       |        388      26.87      58.88      58.88
+        2  no        |        271      18.77      41.12     100.00
+        Total        |        659      45.64     100.00           
+Missing .d DONT KNOW |         11       0.76                      
+        .i IAP       |        708      49.03                      
+        .n NA        |         66       4.57                      
+        Total        |        785      54.36                      
+Total                |       1444     100.00                      
+------------------------------------------------------------------
+
+.         fre cntct_oth96  if year==1996
+
+cntct_oth96 -- Contact w/ Other 96
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        226      15.65      31.17      31.17
+        1     |        499      34.56      68.83     100.00
+        Total |        725      50.21     100.00           
+Missing .i    |        708      49.03                      
+        .m    |         11       0.76                      
+        Total |        719      49.79                      
+Total         |       1444     100.00                      
+-----------------------------------------------------------
+
+.         
+.         tab knwmhosp knwpatnt, m                        
+
+      know |
+anyone who |
+  was in a |        known anyone seeing a psychologist etc? 
+ hospital  |       yes         no  DONT KNOW        IAP         NA |     Total
+-----------+-------------------------------------------------------+----------
+       yes |       255        107          3          0          1 |       366 
+        no |       129        164          4          0         58 |       355 
+        NA |         1          0          0          0          6 |         7 
+       IAP |         0          0          0      3,404          0 |     3,404 
+  NOT SURE |         3          0          4          0          1 |         8 
+-----------+-------------------------------------------------------+----------
+     Total |       388        271         11      3,404         66 |     4,140 
+
+.         local vars "knwmhosp knwpatnt"
+
+.         foreach v in `vars' {
+  2.                 fre `v'
+  3.                 tab cntct_oth96 `v', m
+  4.                 }
+
+knwmhosp -- know anyone who was in a hospital 
+-----------------------------------------------------------------
+                    |      Freq.    Percent      Valid       Cum.
+--------------------+--------------------------------------------
+Valid   1  yes      |        366       8.84      50.76      50.76
+        2  no       |        355       8.57      49.24     100.00
+        Total       |        721      17.42     100.00           
+Missing .a NA       |          7       0.17                      
+        .i IAP      |       3404      82.22                      
+        .n NOT SURE |          8       0.19                      
+        Total       |       3419      82.58                      
+Total               |       4140     100.00                      
+-----------------------------------------------------------------
+
+Contact w/ |           know anyone who was in a hospital 
+  Other 96 |       yes         no         NA        IAP   NOT SURE |     Total
+-----------+-------------------------------------------------------+----------
+         0 |         0        226          0          0          0 |       226 
+         1 |       366        129          1          0          3 |       499 
+        .i |         0          0          0        708          0 |       708 
+        .m |         0          0          6          0          5 |        11 
+        .y |         0          0          0      2,696          0 |     2,696 
+-----------+-------------------------------------------------------+----------
+     Total |       366        355          7      3,404          8 |     4,140 
+
+knwpatnt -- known anyone seeing a psychologist etc? 
+------------------------------------------------------------------
+                     |      Freq.    Percent      Valid       Cum.
+---------------------+--------------------------------------------
+Valid   1  yes       |        388       9.37      58.88      58.88
+        2  no        |        271       6.55      41.12     100.00
+        Total        |        659      15.92     100.00           
+Missing .d DONT KNOW |         11       0.27                      
+        .i IAP       |       3404      82.22                      
+        .n NA        |         66       1.59                      
+        Total        |       3481      84.08                      
+Total                |       4140     100.00                      
+------------------------------------------------------------------
+
+Contact w/ |        known anyone seeing a psychologist etc? 
+  Other 96 |       yes         no  DONT KNOW        IAP         NA |     Total
+-----------+-------------------------------------------------------+----------
+         0 |         0        164          4          0         58 |       226 
+         1 |       388        107          3          0          1 |       499 
+        .i |         0          0          0        708          0 |       708 
+        .m |         0          0          4          0          7 |        11 
+        .y |         0          0          0      2,696          0 |     2,696 
+-----------+-------------------------------------------------------+----------
+     Total |       388        271         11      3,404         66 |     4,140 
+
+.         
+. ******
+. // Contact Self or Other
+. ******
+. 
+. tab cntct_oth96 cntct_slf96 if year==1996, m
+
+Contact w/ |  Contact w/ Self 96
+  Other 96 |         0          1 |     Total
+-----------+----------------------+----------
+         0 |       210         16 |       226 
+         1 |       397        102 |       499 
+        .i |       596        112 |       708 
+        .m |        11          0 |        11 
+-----------+----------------------+----------
+     Total |     1,214        230 |     1,444 
+
+.         
+.         gen cntct_so96 = .
+(4,140 missing values generated)
+
+.         replace cntct_so96=.y if year==2006 | year==2018
+(2,696 real changes made, 2,696 to missing)
+
+.         replace cntct_so96=.i if knwmhosp==.i & year==1996 | ///
+>                                  knwpatnt==.i & year==1996 
+(708 real changes made, 708 to missing)
+
+.                                                          
+.         replace cntct_so96=0  if cntct_slf96==0 & cntct_oth96==0              
+>                                    
+(210 real changes made)
+
+.         replace cntct_so96=1  if cntct_slf96==1 & cntct_oth96==0
+(16 real changes made)
+
+.     replace cntct_so96=2  if cntct_oth96==1 & cntct_slf==0
+(397 real changes made)
+
+.         replace cntct_so96=3  if cntct_slf96==1 & cntct_oth96==1
+(102 real changes made)
+
+.                 la var cntct_so96 "Contact w/ Slf&/Othr 96"
+
+.                 la def cntct_so 0 "No" 1 "Self Only" 2 "Other Only" 3 "Both"
+
+.                 la val cntct_so96 cntct_so
+
+.         
+.         fre cntct_so96  if year==1996
+
+cntct_so96 -- Contact w/ Slf&/Othr 96
+-------------------------------------------------------------------
+                      |      Freq.    Percent      Valid       Cum.
+----------------------+--------------------------------------------
+Valid   0  No         |        210      14.54      28.97      28.97
+        1  Self Only  |         16       1.11       2.21      31.17
+        2  Other Only |        397      27.49      54.76      85.93
+        3  Both       |        102       7.06      14.07     100.00
+        Total         |        725      50.21     100.00           
+Missing .             |         11       0.76                      
+        .i            |        708      49.03                      
+        Total         |        719      49.79                      
+Total                 |       1444     100.00                      
+-------------------------------------------------------------------
+
+.         
+.         tab cntct_so96 cntct_slf96 if year==1996, m
+
+Contact w/ |
+ Slf&/Othr |  Contact w/ Self 96
+        96 |         0          1 |     Total
+-----------+----------------------+----------
+        No |       210          0 |       210 
+ Self Only |         0         16 |        16 
+Other Only |       397          0 |       397 
+      Both |         0        102 |       102 
+         . |        11          0 |        11 
+        .i |       596        112 |       708 
+-----------+----------------------+----------
+     Total |     1,214        230 |     1,444 
+
+.         tab cntct_so96 cntct_oth96 if year==1996, m
+
+Contact w/ |
+ Slf&/Othr |             Contact w/ Other 96
+        96 |         0          1         .i         .m |     Total
+-----------+--------------------------------------------+----------
+        No |       210          0          0          0 |       210 
+ Self Only |        16          0          0          0 |        16 
+Other Only |         0        397          0          0 |       397 
+      Both |         0        102          0          0 |       102 
+         . |         0          0          0         11 |        11 
+        .i |         0          0        708          0 |       708 
+-----------+--------------------------------------------+----------
+     Total |       226        499        708         11 |     1,444 
+
+.         
+.         
+. *******
+. //  Any contact 
+. ******
+.         gen cntct_any96 = 0
+
+.         replace cntct_any96=.y if year==2006   | year==2018
+(2,696 real changes made, 2,696 to missing)
+
+.         replace cntct_any96=.m if evmhp==.a    | evmhp==.n    | ///
+>                                   knwmhosp==.d | knwmhosp==.n | ///
+>                                   knwpatnt==.d | knwpatnt==.n
+(89 real changes made, 89 to missing)
+
+.         replace cntct_any96=.i if knwmhosp==.i & evmhp==.i & year==1996 | ///
+>                                   knwpatnt==.i & evmhp==.i & year==1996 
+(171 real changes made, 171 to missing)
+
+.         replace cntct_any96=1  if cntct_slf96==1 
+(230 real changes made)
+
+.         replace cntct_any96=1  if cntct_oth96==1 
+(397 real changes made)
+
+.                 la var cntct_any96 "Contact w/ Slf&/Othr 96"
+
+.                 la val cntct_any96 yesno
+
+.         fre cntct_any96  if year==1996
+
+cntct_any96 -- Contact w/ Slf&/Othr 96
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        641      44.39      50.55      50.55
+        1     |        627      43.42      49.45     100.00
+        Total |       1268      87.81     100.00           
+Missing .i    |        101       6.99                      
+        .m    |         75       5.19                      
+        Total |        176      12.19                      
+Total         |       1444     100.00                      
+-----------------------------------------------------------
+
+.         
+.         local vars "cntct_slf96 cntct_oth96"
+
+.         foreach v in `vars' {
+  2.                 fre `v'
+  3.                 tab cntct_any96 `v', m
+  4.                 }
+
+cntct_slf96 -- Contact w/ Self 96
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       1214      29.32      84.07      84.07
+        1     |        230       5.56      15.93     100.00
+        Total |       1444      34.88     100.00           
+Missing .y    |       2696      65.12                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+Contact w/ |
+ Slf&/Othr |        Contact w/ Self 96
+        96 |         0          1         .y |     Total
+-----------+---------------------------------+----------
+         0 |       641          0          0 |       641 
+         1 |       397        230          0 |       627 
+        .i |       101          0          0 |       101 
+        .m |        75          0          0 |        75 
+        .y |         0          0      2,696 |     2,696 
+-----------+---------------------------------+----------
+     Total |     1,214        230      2,696 |     4,140 
+
+cntct_oth96 -- Contact w/ Other 96
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        226       5.46      31.17      31.17
+        1     |        499      12.05      68.83     100.00
+        Total |        725      17.51     100.00           
+Missing .i    |        708      17.10                      
+        .m    |         11       0.27                      
+        .y    |       2696      65.12                      
+        Total |       3415      82.49                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+Contact w/ |
+ Slf&/Othr |                  Contact w/ Other 96
+        96 |         0          1         .i         .m         .y |     Total
+-----------+-------------------------------------------------------+----------
+         0 |       154          0        487          0          0 |       641 
+         1 |        16        499        112          0          0 |       627 
+        .i |         0          0        101          0          0 |       101 
+        .m |        56          0          8         11          0 |        75 
+        .y |         0          0          0          0      2,696 |     2,696 
+-----------+-------------------------------------------------------+----------
+     Total |       226        499        708         11      2,696 |     4,140 
+
+.         
+.         count if cntct_slf96==.i & cntct_oth96==.i
+  0
+
+.         
+. **********
+. /// 2006        
+> **********
+.         
+.         gen cntct_any06 = 0
+
+.         replace cntct_any06=.y if year==1996   | year==2018
+(2,617 real changes made, 2,617 to missing)
+
+.         replace cntct_any06=.i if mhtrtoth==.i & year==2006
+(86 real changes made, 86 to missing)
+
+.         replace cntct_any06=.m if mhtrtoth==.d & year==2006 | mhtrtoth==.n & y
+> ear==2006
+(24 real changes made, 24 to missing)
+
+.         replace cntct_any06=1  if mhtrtoth==1 & year==2006
+(902 real changes made)
+
+.                 la var cntct_any06 "Contact w/ Slf&/Othr 06"
+
+.                 la val cntct_any06 yesno
+
+.         fre cntct_any06
+
+cntct_any06 -- Contact w/ Slf&/Othr 06
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        511      12.34      36.16      36.16
+        1     |        902      21.79      63.84     100.00
+        Total |       1413      34.13     100.00           
+Missing .i    |         86       2.08                      
+        .m    |         24       0.58                      
+        .y    |       2617      63.21                      
+        Total |       2727      65.87                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+.         
+.         tab cntct_any06 mhtrtoth, m
+
+Contact w/ |
+ Slf&/Othr | r personally has known someone who received treatment
+        06 |       yes         no  DONT KNOW        IAP  NO ANSWER |     Total
+-----------+-------------------------------------------------------+----------
+         0 |         0        511          0          0          0 |       511 
+         1 |       902          0          0          0          0 |       902 
+        .i |         0          0          0         86          0 |        86 
+        .m |         0          0         11          0         13 |        24 
+        .y |         0          0          0      2,617          0 |     2,617 
+-----------+-------------------------------------------------------+----------
+     Total |       902        511         11      2,703         13 |     4,140 
+
+.         
+.         gen cntct_oth06 = 0
+
+.         replace cntct_oth06=.y if year==1996  | year==2018
+(2,617 real changes made, 2,617 to missing)
+
+.         replace cntct_oth06=.i if mhtrtoth==.i & year==2006
+(86 real changes made, 86 to missing)
+
+.         replace cntct_oth06=.m if mhtrtoth==.d & year==2006 | mhtrtoth==.n & y
+> ear==2006
+(24 real changes made, 24 to missing)
+
+.         replace cntct_oth06=1  if mhtrtoth==1 & year==2006
+(902 real changes made)
+
+.                 la var cntct_oth06 "Contact w/ Other 06"
+
+.                 la val cntct_oth06 yesno
+
+.         fre cntct_oth06 
+
+cntct_oth06 -- Contact w/ Other 06
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        511      12.34      36.16      36.16
+        1     |        902      21.79      63.84     100.00
+        Total |       1413      34.13     100.00           
+Missing .i    |         86       2.08                      
+        .m    |         24       0.58                      
+        .y    |       2617      63.21                      
+        Total |       2727      65.87                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+. 
+.         gen cntct_slf06 = .y
+(4,140 missing values generated)
+
+.                 la var cntct_slf06 "No 06 measure of self in ballots"
+
+.                 
+.         gen cntct_so06 = .y
+(4,140 missing values generated)
+
+.                 la var cntct_so06 "No 06 measure of self in ballots"
+
+. 
+. **********
+. /// 2018        
+> **********      
+.    
+.         gen cntct_any18 = 0
+
+.         replace cntct_any18=.y if year==2006   | year==1996
+(2,967 real changes made, 2,967 to missing)
+
+.         replace cntct_any18=.i if diagnosd==.i & year==2018 | ///
+>                                   mhdiagno==.i & year==2018
+(0 real changes made)
+
+.         replace cntct_any18=.m if diagnosd==.d | mhdiagno==.d | ///
+>                                                           diagnosd==.n | mhdia
+> gno==.n 
+(56 real changes made, 56 to missing)
+
+.         replace cntct_any18=1  if diagnosd==1  | mhdiagno==1
+(625 real changes made)
+
+.                 la var cntct_any18 "Contact w/ Slf&/Othr 18"
+
+.                 la val cntct_any18 yesno
+
+.         fre cntct_any18 if year==2018
+
+cntct_any18 -- Contact w/ Slf&/Othr 18
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        497      42.37      44.30      44.30
+        1     |        625      53.28      55.70     100.00
+        Total |       1122      95.65     100.00           
+Missing .m    |         51       4.35                      
+Total         |       1173     100.00                      
+-----------------------------------------------------------
+
+.         
+.         tab cntct_any18 diagnosd if year==2018, m
+
+Contact w/ |
+ Slf&/Othr |      r ever diagnosed with mh problem
+        18 |       yes         no  Don't kno  No answer |     Total
+-----------+--------------------------------------------+----------
+         0 |         0        497          0          0 |       497 
+         1 |       197        423          1          4 |       625 
+        .m |         0         16          4         31 |        51 
+-----------+--------------------------------------------+----------
+     Total |       197        936          5         35 |     1,173 
+
+.         tab cntct_any18 mhdiagno if year==2018, m
+
+Contact w/ | r knows someone who has been diagnosed with
+ Slf&/Othr |           a mental health problem
+        18 |       yes         no  Don't kno  No answer |     Total
+-----------+--------------------------------------------+----------
+         0 |         0        497          0          0 |       497 
+         1 |       597         28          0          0 |       625 
+        .m |         0          8          6         37 |        51 
+-----------+--------------------------------------------+----------
+     Total |       597        533          6         37 |     1,173 
+
+.         
+.         gen cntct_oth18 = .
+(4,140 missing values generated)
+
+.         replace cntct_oth18=.y if year==2006   | year==1996  
+(2,967 real changes made, 2,967 to missing)
+
+.         replace cntct_oth18=.i if mhdiagno==.i & year==2018
+(0 real changes made)
+
+.         replace cntct_oth18=.m if mhdiagno==.d | mhdiagno==.n
+(43 real changes made, 43 to missing)
+
+.         
+.         replace cntct_oth18=1  if mhdiagno==1 
+(597 real changes made)
+
+.         replace cntct_oth18=0  if mhdiagno==2 
+(533 real changes made)
+
+.                 la var cntct_oth18 "Contact w/ Other 18"
+
+.                 la val cntct_oth18 yesno
+
+.         fre cntct_oth18 if year==2018
+
+cntct_oth18 -- Contact w/ Other 18
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        533      45.44      47.17      47.17
+        1     |        597      50.90      52.83     100.00
+        Total |       1130      96.33     100.00           
+Missing .m    |         43       3.67                      
+Total         |       1173     100.00                      
+-----------------------------------------------------------
+
+.         
+.         tab cntct_oth18 mhdiagno if year==2018, m
+
+           | r knows someone who has been diagnosed with
+Contact w/ |           a mental health problem
+  Other 18 |       yes         no  Don't kno  No answer |     Total
+-----------+--------------------------------------------+----------
+         0 |         0        533          0          0 |       533 
+         1 |       597          0          0          0 |       597 
+        .m |         0          0          6         37 |        43 
+-----------+--------------------------------------------+----------
+     Total |       597        533          6         37 |     1,173 
+
+.                 
+.         gen cntct_slf18 = .
+(4,140 missing values generated)
+
+.         replace cntct_slf18=.y if year==2006   | year==1996
+(2,967 real changes made, 2,967 to missing)
+
+.         replace cntct_slf18=.i if diagnosd==.i & year==2018
+(0 real changes made)
+
+.         replace cntct_slf18=.m if diagnosd==.d
+(5 real changes made, 5 to missing)
+
+.         replace cntct_slf18=.m if diagnosd==.n
+(35 real changes made, 35 to missing)
+
+.         replace cntct_slf18=1  if diagnosd==1
+(197 real changes made)
+
+.         replace cntct_slf18=0  if diagnosd==2
+(936 real changes made)
+
+.                 la var cntct_slf18 "Contact w/ Self 18"
+
+.                 la val cntct_slf18 yesno        
+
+.         fre cntct_slf18 if year==2018
+
+cntct_slf18 -- Contact w/ Self 18
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        936      79.80      82.61      82.61
+        1     |        197      16.79      17.39     100.00
+        Total |       1133      96.59     100.00           
+Missing .m    |         40       3.41                      
+Total         |       1173     100.00                      
+-----------------------------------------------------------
+
+.         fre diagnosd if year==2018
+
+diagnosd -- r ever diagnosed with mh problem
+-------------------------------------------------------------------
+                      |      Freq.    Percent      Valid       Cum.
+----------------------+--------------------------------------------
+Valid   1  yes        |        197      16.79      17.39      17.39
+        2  no         |        936      79.80      82.61     100.00
+        Total         |       1133      96.59     100.00           
+Missing .d Don't know |          5       0.43                      
+        .n No answer  |         35       2.98                      
+        Total         |         40       3.41                      
+Total                 |       1173     100.00                      
+-------------------------------------------------------------------
+
+.         
+.         gen cntct_so18 = .
+(4,140 missing values generated)
+
+.         replace cntct_so18=.y if year==2006   | year==1996
+(2,967 real changes made, 2,967 to missing)
+
+.         replace cntct_so18=.i if diagnosd==.i  & year==2018 | ///
+>                                  mhdiagno==.i  & year==2018
+(0 real changes made)
+
+.         replace cntct_so18=.m if diagnosd==.d | mhdiagno==.d | ///
+>                                                          diagnosd==.n | mhdiag
+> no==.n 
+(56 real changes made, 56 to missing)
+
+.         replace cntct_so18=1 if cntct_slf18==1
+(197 real changes made)
+
+.         replace cntct_so18=2 if cntct_oth18==1
+(597 real changes made)
+
+.         replace cntct_so18=3 if cntct_slf18==1 & cntct_oth18==1
+(169 real changes made)
+
+.         replace cntct_so18=0 if cntct_slf18==0 & cntct_oth18==0
+(497 real changes made)
+
+.                 la var cntct_so18 "Contact w/ Slf&/Othr 18"
+
+.                 la val cntct_so18 cntct_so
+
+.         fre cntct_so18
+
+cntct_so18 -- Contact w/ Slf&/Othr 18
+-------------------------------------------------------------------
+                      |      Freq.    Percent      Valid       Cum.
+----------------------+--------------------------------------------
+Valid   0  No         |        497      12.00      44.30      44.30
+        1  Self Only  |         28       0.68       2.50      46.79
+        2  Other Only |        428      10.34      38.15      84.94
+        3  Both       |        169       4.08      15.06     100.00
+        Total         |       1122      27.10     100.00           
+Missing .m            |         51       1.23                      
+        .y            |       2967      71.67                      
+        Total         |       3018      72.90                      
+Total                 |       4140     100.00                      
+-------------------------------------------------------------------
+
+. 
+. **********
+. /// Combined Measure    
+> **********      
+.         gen cntct_tot = .
+(4,140 missing values generated)
+
+.         replace cntct_tot=1  if cntct_any96==1  | cntct_any06==1   | cntct_any
+> 18==1
+(2,154 real changes made)
+
+.         replace cntct_tot=0  if cntct_any96==0 & !missing(cntct_any96) | ///
+>                                 cntct_any06==0 & !missing(cntct_any06) | ///
+>                                                         cntct_any18==0 & !miss
+> ing(cntct_any18)
+(1,649 real changes made)
+
+. 
+.                 la var cntct_tot "Contact: Self and/or Other"
+
+.                 lab def contlab 0"no contact" 1"contact with mental illness"
+
+.                 lab val cntct_tot contlab
+
+.                 
+.         fre cntct_tot
+
+cntct_tot -- Contact: Self and/or Other
+---------------------------------------------------------------------------
+                              |      Freq.    Percent      Valid       Cum.
+------------------------------+--------------------------------------------
+Valid   0 no contact          |       1649      39.83      43.36      43.36
+        1 contact with mental |       2154      52.03      56.64     100.00
+          illness             |                                            
+        Total                 |       3803      91.86     100.00           
+Missing .                     |        337       8.14                      
+Total                         |       4140     100.00                      
+---------------------------------------------------------------------------
+
+.         
+.         
+. // check work   
+.         local any "cntct_any96 cntct_any06 cntct_any18"
+
+.         
+.         foreach v in `any' {
+  2.                 tab cntct_tot `v' if !missing(`v'), m
+  3.                 }
+
+                      | Contact w/ Slf&/Othr
+ Contact: Self and/or |          96
+                Other |         0          1 |     Total
+----------------------+----------------------+----------
+           no contact |       641          0 |       641 
+contact with mental i |         0        627 |       627 
+----------------------+----------------------+----------
+                Total |       641        627 |     1,268 
+
+                      | Contact w/ Slf&/Othr
+ Contact: Self and/or |          06
+                Other |         0          1 |     Total
+----------------------+----------------------+----------
+           no contact |       511          0 |       511 
+contact with mental i |         0        902 |       902 
+----------------------+----------------------+----------
+                Total |       511        902 |     1,413 
+
+                      | Contact w/ Slf&/Othr
+ Contact: Self and/or |          18
+                Other |         0          1 |     Total
+----------------------+----------------------+----------
+           no contact |       497          0 |       497 
+contact with mental i |         0        625 |       625 
+----------------------+----------------------+----------
+                Total |       497        625 |     1,122 
+
+.                 
+.                 
+.         list cntct_slf18 cntct_so18 cntct_oth18 if missing(cntct_so18) & !miss
+> ing(cntct_oth18)
+
+      +--------------------------------+
+      | cntc~f18   cntc~o18   cntc~h18 |
+      |--------------------------------|
+2996. |       .m         .m          0 |
+3204. |       .m         .m          0 |
+3246. |       .m         .m          0 |
+3283. |       .m         .m          0 |
+3288. |       .m         .m          0 |
+      |--------------------------------|
+3596. |       .m         .m          0 |
+3926. |       .m         .m          0 |
+3977. |       .m         .m          0 |
+      +--------------------------------+
+
+.                 
+. *all summary measures
+. fre     cntct_tot
+
+cntct_tot -- Contact: Self and/or Other
+---------------------------------------------------------------------------
+                              |      Freq.    Percent      Valid       Cum.
+------------------------------+--------------------------------------------
+Valid   0 no contact          |       1649      39.83      43.36      43.36
+        1 contact with mental |       2154      52.03      56.64     100.00
+          illness             |                                            
+        Total                 |       3803      91.86     100.00           
+Missing .                     |        337       8.14                      
+Total                         |       4140     100.00                      
+---------------------------------------------------------------------------
+
+. 
+. local y "cntct_any96 cntct_oth96 cntct_slf96 cntct_so96"
+
+. local y "`y' cntct_any06 cntct_oth06 cntct_slf06 cntct_so06"
+
+. local y "`y' cntct_any18 cntct_oth18 cntct_slf18 cntct_so18"
+
+. 
+. foreach v in `y' {
+  2.         di in red ". tab    `v' cntct_tot, m"
+  3.         tab    `v' cntct_tot if `v'!=.y, m
+  4. }               
+. tab    cntct_any96 cntct_tot, m
+
+Contact w/ |
+ Slf&/Othr |    Contact: Self and/or Other
+        96 | no contac  contact w          . |     Total
+-----------+---------------------------------+----------
+         0 |       641          0          0 |       641 
+         1 |         0        627          0 |       627 
+        .i |         0          0        101 |       101 
+        .m |         0          0         75 |        75 
+-----------+---------------------------------+----------
+     Total |       641        627        176 |     1,444 
+. tab    cntct_oth96 cntct_tot, m
+
+Contact w/ |    Contact: Self and/or Other
+  Other 96 | no contac  contact w          . |     Total
+-----------+---------------------------------+----------
+         0 |       154         16         56 |       226 
+         1 |         0        499          0 |       499 
+        .i |       487        112        109 |       708 
+        .m |         0          0         11 |        11 
+-----------+---------------------------------+----------
+     Total |       641        627        176 |     1,444 
+. tab    cntct_slf96 cntct_tot, m
+
+Contact w/ |    Contact: Self and/or Other
+   Self 96 | no contac  contact w          . |     Total
+-----------+---------------------------------+----------
+         0 |       641        397        176 |     1,214 
+         1 |         0        230          0 |       230 
+-----------+---------------------------------+----------
+     Total |       641        627        176 |     1,444 
+. tab    cntct_so96 cntct_tot, m
+
+Contact w/ |
+ Slf&/Othr |    Contact: Self and/or Other
+        96 | no contac  contact w          . |     Total
+-----------+---------------------------------+----------
+        No |       154          0         56 |       210 
+ Self Only |         0         16          0 |        16 
+Other Only |         0        397          0 |       397 
+      Both |         0        102          0 |       102 
+         . |         0          0         11 |        11 
+        .i |       487        112        109 |       708 
+-----------+---------------------------------+----------
+     Total |       641        627        176 |     1,444 
+. tab    cntct_any06 cntct_tot, m
+
+Contact w/ |
+ Slf&/Othr |    Contact: Self and/or Other
+        06 | no contac  contact w          . |     Total
+-----------+---------------------------------+----------
+         0 |       511          0          0 |       511 
+         1 |         0        902          0 |       902 
+        .i |         0          0         86 |        86 
+        .m |         0          0         24 |        24 
+-----------+---------------------------------+----------
+     Total |       511        902        110 |     1,523 
+. tab    cntct_oth06 cntct_tot, m
+
+Contact w/ |    Contact: Self and/or Other
+  Other 06 | no contac  contact w          . |     Total
+-----------+---------------------------------+----------
+         0 |       511          0          0 |       511 
+         1 |         0        902          0 |       902 
+        .i |         0          0         86 |        86 
+        .m |         0          0         24 |        24 
+-----------+---------------------------------+----------
+     Total |       511        902        110 |     1,523 
+. tab    cntct_slf06 cntct_tot, m
+no observations
+. tab    cntct_so06 cntct_tot, m
+no observations
+. tab    cntct_any18 cntct_tot, m
+
+Contact w/ |
+ Slf&/Othr |    Contact: Self and/or Other
+        18 | no contac  contact w          . |     Total
+-----------+---------------------------------+----------
+         0 |       497          0          0 |       497 
+         1 |         0        625          0 |       625 
+        .m |         0          0         51 |        51 
+-----------+---------------------------------+----------
+     Total |       497        625         51 |     1,173 
+. tab    cntct_oth18 cntct_tot, m
+
+Contact w/ |    Contact: Self and/or Other
+  Other 18 | no contac  contact w          . |     Total
+-----------+---------------------------------+----------
+         0 |       497         28          8 |       533 
+         1 |         0        597          0 |       597 
+        .m |         0          0         43 |        43 
+-----------+---------------------------------+----------
+     Total |       497        625         51 |     1,173 
+. tab    cntct_slf18 cntct_tot, m
+
+Contact w/ |    Contact: Self and/or Other
+   Self 18 | no contac  contact w          . |     Total
+-----------+---------------------------------+----------
+         0 |       497        423         16 |       936 
+         1 |         0        197          0 |       197 
+        .m |         0          5         35 |        40 
+-----------+---------------------------------+----------
+     Total |       497        625         51 |     1,173 
+. tab    cntct_so18 cntct_tot, m
+
+Contact w/ |
+ Slf&/Othr |    Contact: Self and/or Other
+        18 | no contac  contact w          . |     Total
+-----------+---------------------------------+----------
+        No |       497          0          0 |       497 
+ Self Only |         0         28          0 |        28 
+Other Only |         0        428          0 |       428 
+      Both |         0        169          0 |       169 
+        .m |         0          0         51 |        51 
+-----------+---------------------------------+----------
+     Total |       497        625         51 |     1,173 
+
+.                 
+. // should be no observations
+. local year "96 06 18"
+
+. 
+. foreach y in `year' {
+  2.          di in red "Year is `y'"
+  3.          list cntct_slf`y' cntct_oth`y' cntct_so`y' cntct_tot if ///
+>           cntct_tot==1 & cntct_slf`y'==0 & cntct_oth`y'==0      
+  4.                   
+.          list cntct_slf`y' cntct_oth`y' cntct_so`y' cntct_tot if ///
+>           cntct_tot==1 & missing(cntct_slf`y') & missing(cntct_oth`y'==0) ///
+>                   & cntct_slf`y'!=.y & cntct_oth`y'!=.y
+  5.                 
+.         list cntct_slf`y' cntct_oth`y' cntct_so`y' cntct_tot if ///
+>           cntct_tot==0 & cntct_slf`y'==1 & cntct_slf`y'!=.y & cntct_oth`y'!=.y
+>  | ///
+>                   cntct_tot==0 & cntct_oth`y'==1 & cntct_slf`y'!=.y & cntct_ot
+> h`y'!=.y    
+  6. }
+Year is 96
+Year is 06
+Year is 18
+
+.                 
+.                 
+. **************************************************************** 
+. // Valence of contact
+. ****************************************************************              
+>   
+.                 
+.         fre mhothrel mhothyou   
+
+mhothrel -- result of mental health problem to relationship with him 
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  became stronger      |        237       5.72      26.45      26.45
+        2  became worse         |        125       3.02      13.95      40.40
+        3  was unchanged        |        457      11.04      51.00      91.41
+        4  ended as a result of |         77       1.86       8.59     100.00
+           the problem          |                                            
+        Total                   |        896      21.64     100.00           
+Missing .d DONT KNOW            |          6       0.14                      
+        .i IAP                  |       3225      77.90                      
+        .n NO ANSWER            |         13       0.31                      
+        Total                   |       3244      78.36                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+mhothyou -- how much distress his mental health problem caused r
+---------------------------------------------------------------------
+                        |      Freq.    Percent      Valid       Cum.
+------------------------+--------------------------------------------
+Valid   1  a great deal |        240       5.80      26.67      26.67
+        2  quite a bit  |        179       4.32      19.89      46.56
+        3  a little     |        281       6.79      31.22      77.78
+        4  not at all   |        200       4.83      22.22     100.00
+        Total           |        900      21.74     100.00           
+Missing .d DONT KNOW    |          1       0.02                      
+        .i IAP          |       3225      77.90                      
+        .n NO ANSWER    |         14       0.34                      
+        Total           |       3240      78.26                      
+Total                   |       4140     100.00                      
+---------------------------------------------------------------------
+
+.         recode mhothyou (1=4 "A great deal") (2=3 "Quite a bit") ///
+>                 (3=2 "A little") (4=1 "Not at all") ///
+>                                 (.i=0 "No Contact") if year==2006, gen(c_effec
+> tY)        
+(1508 differences between mhothyou and c_effectY)
+
+.                                 
+.         la var c_effectY "Personal Distress from Contact"                     
+>           
+
+.   
+.         recode mhothrel (1=1 "Stronger") (3 .d=2 "No Change") ///
+>                 (2 4=3 "Worse") (.i=0 "No Contact") if year==2006, gen(c_effec
+> tR)       
+(1273 differences between mhothrel and c_effectR)
+
+.         
+.         la var c_effectR "Relationship Consequences of MI"
+
+.         
+.         fre c_*
+
+c_effectY -- Personal Distress from Contact
+---------------------------------------------------------------------
+                        |      Freq.    Percent      Valid       Cum.
+------------------------+--------------------------------------------
+Valid   0  No Contact   |        608      14.69      40.32      40.32
+        1  Not at all   |        200       4.83      13.26      53.58
+        2  A little     |        281       6.79      18.63      72.21
+        3  Quite a bit  |        179       4.32      11.87      84.08
+        4  A great deal |        240       5.80      15.92     100.00
+        Total           |       1508      36.43     100.00           
+Missing .               |       2617      63.21                      
+        .d              |          1       0.02                      
+        .n              |         14       0.34                      
+        Total           |       2632      63.57                      
+Total                   |       4140     100.00                      
+---------------------------------------------------------------------
+
+c_effectR -- Relationship Consequences of MI
+-------------------------------------------------------------------
+                      |      Freq.    Percent      Valid       Cum.
+----------------------+--------------------------------------------
+Valid   0  No Contact |        608      14.69      40.26      40.26
+        1  Stronger   |        237       5.72      15.70      55.96
+        2  No Change  |        463      11.18      30.66      86.62
+        3  Worse      |        202       4.88      13.38     100.00
+        Total         |       1510      36.47     100.00           
+Missing .             |       2617      63.21                      
+        .n            |         13       0.31                      
+        Total         |       2630      63.53                      
+Total                 |       4140     100.00                      
+-------------------------------------------------------------------
+
+.         
+.         replace c_effectR=.y if year!=2006
+(2,617 real changes made, 2,617 to missing)
+
+.         replace c_effectY=.y if year!=2006
+(2,617 real changes made, 2,617 to missing)
+
+.         
+.         
+. **************************************************************** 
+. // TDM: Addiitonal summary measures with diff types of contact
+. ****************************************************************        
+. fre     cntct_tot cntct_so* c_effectY c_effectR 
+
+cntct_tot -- Contact: Self and/or Other
+---------------------------------------------------------------------------
+                              |      Freq.    Percent      Valid       Cum.
+------------------------------+--------------------------------------------
+Valid   0 no contact          |       1649      39.83      43.36      43.36
+        1 contact with mental |       2154      52.03      56.64     100.00
+          illness             |                                            
+        Total                 |       3803      91.86     100.00           
+Missing .                     |        337       8.14                      
+Total                         |       4140     100.00                      
+---------------------------------------------------------------------------
+
+cntct_so96 -- Contact w/ Slf&/Othr 96
+-------------------------------------------------------------------
+                      |      Freq.    Percent      Valid       Cum.
+----------------------+--------------------------------------------
+Valid   0  No         |        210       5.07      28.97      28.97
+        1  Self Only  |         16       0.39       2.21      31.17
+        2  Other Only |        397       9.59      54.76      85.93
+        3  Both       |        102       2.46      14.07     100.00
+        Total         |        725      17.51     100.00           
+Missing .             |         11       0.27                      
+        .i            |        708      17.10                      
+        .y            |       2696      65.12                      
+        Total         |       3415      82.49                      
+Total                 |       4140     100.00                      
+-------------------------------------------------------------------
+
+cntct_so06 -- No 06 measure of self in ballots
+--------------------------------------------------------
+           |      Freq.    Percent      Valid       Cum.
+-----------+--------------------------------------------
+Missing .y |       4140     100.00                      
+--------------------------------------------------------
+
+cntct_so18 -- Contact w/ Slf&/Othr 18
+-------------------------------------------------------------------
+                      |      Freq.    Percent      Valid       Cum.
+----------------------+--------------------------------------------
+Valid   0  No         |        497      12.00      44.30      44.30
+        1  Self Only  |         28       0.68       2.50      46.79
+        2  Other Only |        428      10.34      38.15      84.94
+        3  Both       |        169       4.08      15.06     100.00
+        Total         |       1122      27.10     100.00           
+Missing .m            |         51       1.23                      
+        .y            |       2967      71.67                      
+        Total         |       3018      72.90                      
+Total                 |       4140     100.00                      
+-------------------------------------------------------------------
+
+c_effectY -- Personal Distress from Contact
+---------------------------------------------------------------------
+                        |      Freq.    Percent      Valid       Cum.
+------------------------+--------------------------------------------
+Valid   0  No Contact   |        608      14.69      40.32      40.32
+        1  Not at all   |        200       4.83      13.26      53.58
+        2  A little     |        281       6.79      18.63      72.21
+        3  Quite a bit  |        179       4.32      11.87      84.08
+        4  A great deal |        240       5.80      15.92     100.00
+        Total           |       1508      36.43     100.00           
+Missing .d              |          1       0.02                      
+        .n              |         14       0.34                      
+        .y              |       2617      63.21                      
+        Total           |       2632      63.57                      
+Total                   |       4140     100.00                      
+---------------------------------------------------------------------
+
+c_effectR -- Relationship Consequences of MI
+-------------------------------------------------------------------
+                      |      Freq.    Percent      Valid       Cum.
+----------------------+--------------------------------------------
+Valid   0  No Contact |        608      14.69      40.26      40.26
+        1  Stronger   |        237       5.72      15.70      55.96
+        2  No Change  |        463      11.18      30.66      86.62
+        3  Worse      |        202       4.88      13.38     100.00
+        Total         |       1510      36.47     100.00           
+Missing .n            |         13       0.31                      
+        .y            |       2617      63.21                      
+        Total         |       2630      63.53                      
+Total                 |       4140     100.00                      
+-------------------------------------------------------------------
+
+. 
+. // var for whether contact is with other, self, both, or none
+. gen     cntct_so4 = cntct_tot
+(337 missing values generated)
+
+. lab var cntct_so4 "Contact with self or others"
+
+. lab def cso4lab 0"No Contact" 1"Other Contact" 2"Self Contact" 3"Both"
+
+. fre             cntct_oth06     // no self measure in 06
+
+cntct_oth06 -- Contact w/ Other 06
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        511      12.34      36.16      36.16
+        1     |        902      21.79      63.84     100.00
+        Total |       1413      34.13     100.00           
+Missing .i    |         86       2.08                      
+        .m    |         24       0.58                      
+        .y    |       2617      63.21                      
+        Total |       2727      65.87                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+. *break out self or both when avaialble
+. replace cntct_so4 = 1 if cntct_so96 == 2 | cntct_so18 == 2
+(0 real changes made)
+
+. replace cntct_so4 = 2 if cntct_so96 == 1 | cntct_so18 == 1 
+(44 real changes made)
+
+. replace cntct_so4 = 3 if cntct_so96 == 3 | cntct_so18 == 3
+(271 real changes made)
+
+. lab val cntct_so4 cso4lab
+
+. fre     cntct_so4
+
+cntct_so4 -- Contact with self or others
+---------------------------------------------------------------------
+                        |      Freq.    Percent      Valid       Cum.
+------------------------+--------------------------------------------
+Valid   0 No Contact    |       1649      39.83      43.36      43.36
+        1 Other Contact |       1839      44.42      48.36      91.72
+        2 Self Contact  |         44       1.06       1.16      92.87
+        3 Both          |        271       6.55       7.13     100.00
+        Total           |       3803      91.86     100.00           
+Missing .               |        337       8.14                      
+Total                   |       4140     100.00                      
+---------------------------------------------------------------------
+
+. tab     cntct_so4 cntct_tot, miss
+
+ Contact with |
+      self or |    Contact: Self and/or Other
+       others | no contac  contact w          . |     Total
+--------------+---------------------------------+----------
+   No Contact |     1,649          0          0 |     1,649 
+Other Contact |         0      1,839          0 |     1,839 
+ Self Contact |         0         44          0 |        44 
+         Both |         0        271          0 |       271 
+            . |         0          0        337 |       337 
+--------------+---------------------------------+----------
+        Total |     1,649      2,154        337 |     4,140 
+
+. 
+. *3 category version collapsing self and both
+. clonevar        cntct_so3 = cntct_so4
+(337 missing values generated)
+
+. recode          cntct_so3 2 3 = 2
+(271 changes made to cntct_so3)
+
+. tab             cntct_so4 cntct_so3, miss
+
+ Contact with |
+      self or |         Contact with self or others
+       others | No Contac  Other Con  Self Cont          . |     Total
+--------------+--------------------------------------------+----------
+   No Contact |     1,649          0          0          0 |     1,649 
+Other Contact |         0      1,839          0          0 |     1,839 
+ Self Contact |         0          0         44          0 |        44 
+         Both |         0          0        271          0 |       271 
+            . |         0          0          0        337 |       337 
+--------------+--------------------------------------------+----------
+        Total |     1,649      1,839        315        337 |     4,140 
+
+. 
+. 
+. local y "cntct_any96 cntct_oth96 cntct_slf96 cntct_so96"
+
+. local y "`y' cntct_any06 cntct_oth06 cntct_slf06 cntct_so06"
+
+. local y "`y' cntct_any18 cntct_oth18 cntct_slf18 cntct_so18"
+
+. 
+. foreach v in `y' {
+  2.         di in red ". tab    `v' cntct_so4, m"
+  3.         tab    `v' cntct_so4 if `v'!=.y, m      
+  4. }
+. tab    cntct_any96 cntct_so4, m
+
+Contact w/ |
+ Slf&/Othr |              Contact with self or others
+        96 | No Contac  Other Con  Self Cont       Both          . |     Total
+-----------+-------------------------------------------------------+----------
+         0 |       641          0          0          0          0 |       641 
+         1 |         0        509         16        102          0 |       627 
+        .i |         0          0          0          0        101 |       101 
+        .m |         0          0          0          0         75 |        75 
+-----------+-------------------------------------------------------+----------
+     Total |       641        509         16        102        176 |     1,444 
+. tab    cntct_oth96 cntct_so4, m
+
+Contact w/ |              Contact with self or others
+  Other 96 | No Contac  Other Con  Self Cont       Both          . |     Total
+-----------+-------------------------------------------------------+----------
+         0 |       154          0         16          0         56 |       226 
+         1 |         0        397          0        102          0 |       499 
+        .i |       487        112          0          0        109 |       708 
+        .m |         0          0          0          0         11 |        11 
+-----------+-------------------------------------------------------+----------
+     Total |       641        509         16        102        176 |     1,444 
+. tab    cntct_slf96 cntct_so4, m
+
+Contact w/ |              Contact with self or others
+   Self 96 | No Contac  Other Con  Self Cont       Both          . |     Total
+-----------+-------------------------------------------------------+----------
+         0 |       641        397          0          0        176 |     1,214 
+         1 |         0        112         16        102          0 |       230 
+-----------+-------------------------------------------------------+----------
+     Total |       641        509         16        102        176 |     1,444 
+. tab    cntct_so96 cntct_so4, m
+
+Contact w/ |
+ Slf&/Othr |              Contact with self or others
+        96 | No Contac  Other Con  Self Cont       Both          . |     Total
+-----------+-------------------------------------------------------+----------
+        No |       154          0          0          0         56 |       210 
+ Self Only |         0          0         16          0          0 |        16 
+Other Only |         0        397          0          0          0 |       397 
+      Both |         0          0          0        102          0 |       102 
+         . |         0          0          0          0         11 |        11 
+        .i |       487        112          0          0        109 |       708 
+-----------+-------------------------------------------------------+----------
+     Total |       641        509         16        102        176 |     1,444 
+. tab    cntct_any06 cntct_so4, m
+
+Contact w/ |
+ Slf&/Othr |   Contact with self or others
+        06 | No Contac  Other Con          . |     Total
+-----------+---------------------------------+----------
+         0 |       511          0          0 |       511 
+         1 |         0        902          0 |       902 
+        .i |         0          0         86 |        86 
+        .m |         0          0         24 |        24 
+-----------+---------------------------------+----------
+     Total |       511        902        110 |     1,523 
+. tab    cntct_oth06 cntct_so4, m
+
+Contact w/ |   Contact with self or others
+  Other 06 | No Contac  Other Con          . |     Total
+-----------+---------------------------------+----------
+         0 |       511          0          0 |       511 
+         1 |         0        902          0 |       902 
+        .i |         0          0         86 |        86 
+        .m |         0          0         24 |        24 
+-----------+---------------------------------+----------
+     Total |       511        902        110 |     1,523 
+. tab    cntct_slf06 cntct_so4, m
+no observations
+. tab    cntct_so06 cntct_so4, m
+no observations
+. tab    cntct_any18 cntct_so4, m
+
+Contact w/ |
+ Slf&/Othr |              Contact with self or others
+        18 | No Contac  Other Con  Self Cont       Both          . |     Total
+-----------+-------------------------------------------------------+----------
+         0 |       497          0          0          0          0 |       497 
+         1 |         0        428         28        169          0 |       625 
+        .m |         0          0          0          0         51 |        51 
+-----------+-------------------------------------------------------+----------
+     Total |       497        428         28        169         51 |     1,173 
+. tab    cntct_oth18 cntct_so4, m
+
+Contact w/ |              Contact with self or others
+  Other 18 | No Contac  Other Con  Self Cont       Both          . |     Total
+-----------+-------------------------------------------------------+----------
+         0 |       497          0         28          0          8 |       533 
+         1 |         0        428          0        169          0 |       597 
+        .m |         0          0          0          0         43 |        43 
+-----------+-------------------------------------------------------+----------
+     Total |       497        428         28        169         51 |     1,173 
+. tab    cntct_slf18 cntct_so4, m
+
+Contact w/ |              Contact with self or others
+   Self 18 | No Contac  Other Con  Self Cont       Both          . |     Total
+-----------+-------------------------------------------------------+----------
+         0 |       497        423          0          0         16 |       936 
+         1 |         0          0         28        169          0 |       197 
+        .m |         0          5          0          0         35 |        40 
+-----------+-------------------------------------------------------+----------
+     Total |       497        428         28        169         51 |     1,173 
+. tab    cntct_so18 cntct_so4, m
+
+Contact w/ |
+ Slf&/Othr |              Contact with self or others
+        18 | No Contac  Other Con  Self Cont       Both          . |     Total
+-----------+-------------------------------------------------------+----------
+        No |       497          0          0          0          0 |       497 
+ Self Only |         0          0         28          0          0 |        28 
+Other Only |         0        428          0          0          0 |       428 
+      Both |         0          0          0        169          0 |       169 
+        .m |         0          0          0          0         51 |        51 
+-----------+-------------------------------------------------------+----------
+     Total |       497        428         28        169         51 |     1,173 
+
+. 
+. 
+. // var for the valence of contact (only in 06 survey). Ccoding it as 
+. *       bad contact if it caused distress and/or had neg relationship conseque
+> nces 
+. gen     cntct_val4 = cntct_tot
+(337 missing values generated)
+
+. lab var cntct_val4 "Contact with valence"
+
+. lab def cv4lab 0"No Contact" 1"Any Contact" 2"Bad Contact" 3"Good Contact"
+
+. replace cntct_val4 = 3 if cntct_tot == 1 & year == 2006
+(902 real changes made)
+
+. replace cntct_val4 = 2 if c_effectY == 3 | c_effectY == 4
+(419 real changes made)
+
+. replace cntct_val4 = 2 if c_effectR == 3 
+(49 real changes made)
+
+. lab val cntct_val4 cv4lab
+
+. fre     cntct_val4
+
+cntct_val4 -- Contact with valence
+--------------------------------------------------------------------
+                       |      Freq.    Percent      Valid       Cum.
+-----------------------+--------------------------------------------
+Valid   0 No Contact   |       1649      39.83      43.36      43.36
+        1 Any Contact  |       1252      30.24      32.92      76.28
+        2 Bad Contact  |        468      11.30      12.31      88.59
+        3 Good Contact |        434      10.48      11.41     100.00
+        Total          |       3803      91.86     100.00           
+Missing .              |        337       8.14                      
+Total                  |       4140     100.00                      
+--------------------------------------------------------------------
+
+. tab     cntct_val4 cntct_tot, miss
+
+Contact with |    Contact: Self and/or Other
+     valence | no contac  contact w          . |     Total
+-------------+---------------------------------+----------
+  No Contact |     1,649          0          0 |     1,649 
+ Any Contact |         0      1,252          0 |     1,252 
+ Bad Contact |         0        468          0 |       468 
+Good Contact |         0        434          0 |       434 
+           . |         0          0        337 |       337 
+-------------+---------------------------------+----------
+       Total |     1,649      2,154        337 |     4,140 
+
+. 
+. *3 category version collpasing good and any
+. clonevar        cntct_val3 = cntct_val4
+(337 missing values generated)
+
+. recode          cntct_val3 2 3 = 2
+(434 changes made to cntct_val3)
+
+. tab             cntct_val4 cntct_val3, miss
+
+Contact with |            Contact with valence
+     valence | No Contac  Any Conta  Bad Conta          . |     Total
+-------------+--------------------------------------------+----------
+  No Contact |     1,649          0          0          0 |     1,649 
+ Any Contact |         0      1,252          0          0 |     1,252 
+ Bad Contact |         0          0        468          0 |       468 
+Good Contact |         0          0        434          0 |       434 
+           . |         0          0          0        337 |       337 
+-------------+--------------------------------------------+----------
+       Total |     1,649      1,252        902        337 |     4,140 
+
+.         
+. **********
+. /// Examining Contact   
+> **********              
+. 
+.         fre cntct_*
+
+cntct_slf96 -- Contact w/ Self 96
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       1214      29.32      84.07      84.07
+        1     |        230       5.56      15.93     100.00
+        Total |       1444      34.88     100.00           
+Missing .y    |       2696      65.12                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+cntct_oth96 -- Contact w/ Other 96
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        226       5.46      31.17      31.17
+        1     |        499      12.05      68.83     100.00
+        Total |        725      17.51     100.00           
+Missing .i    |        708      17.10                      
+        .m    |         11       0.27                      
+        .y    |       2696      65.12                      
+        Total |       3415      82.49                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+cntct_so96 -- Contact w/ Slf&/Othr 96
+-------------------------------------------------------------------
+                      |      Freq.    Percent      Valid       Cum.
+----------------------+--------------------------------------------
+Valid   0  No         |        210       5.07      28.97      28.97
+        1  Self Only  |         16       0.39       2.21      31.17
+        2  Other Only |        397       9.59      54.76      85.93
+        3  Both       |        102       2.46      14.07     100.00
+        Total         |        725      17.51     100.00           
+Missing .             |         11       0.27                      
+        .i            |        708      17.10                      
+        .y            |       2696      65.12                      
+        Total         |       3415      82.49                      
+Total                 |       4140     100.00                      
+-------------------------------------------------------------------
+
+cntct_any96 -- Contact w/ Slf&/Othr 96
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        641      15.48      50.55      50.55
+        1     |        627      15.14      49.45     100.00
+        Total |       1268      30.63     100.00           
+Missing .i    |        101       2.44                      
+        .m    |         75       1.81                      
+        .y    |       2696      65.12                      
+        Total |       2872      69.37                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+cntct_any06 -- Contact w/ Slf&/Othr 06
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        511      12.34      36.16      36.16
+        1     |        902      21.79      63.84     100.00
+        Total |       1413      34.13     100.00           
+Missing .i    |         86       2.08                      
+        .m    |         24       0.58                      
+        .y    |       2617      63.21                      
+        Total |       2727      65.87                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+cntct_oth06 -- Contact w/ Other 06
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        511      12.34      36.16      36.16
+        1     |        902      21.79      63.84     100.00
+        Total |       1413      34.13     100.00           
+Missing .i    |         86       2.08                      
+        .m    |         24       0.58                      
+        .y    |       2617      63.21                      
+        Total |       2727      65.87                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+cntct_slf06 -- No 06 measure of self in ballots
+--------------------------------------------------------
+           |      Freq.    Percent      Valid       Cum.
+-----------+--------------------------------------------
+Missing .y |       4140     100.00                      
+--------------------------------------------------------
+
+cntct_so06 -- No 06 measure of self in ballots
+--------------------------------------------------------
+           |      Freq.    Percent      Valid       Cum.
+-----------+--------------------------------------------
+Missing .y |       4140     100.00                      
+--------------------------------------------------------
+
+cntct_any18 -- Contact w/ Slf&/Othr 18
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        497      12.00      44.30      44.30
+        1     |        625      15.10      55.70     100.00
+        Total |       1122      27.10     100.00           
+Missing .m    |         51       1.23                      
+        .y    |       2967      71.67                      
+        Total |       3018      72.90                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+cntct_oth18 -- Contact w/ Other 18
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        533      12.87      47.17      47.17
+        1     |        597      14.42      52.83     100.00
+        Total |       1130      27.29     100.00           
+Missing .m    |         43       1.04                      
+        .y    |       2967      71.67                      
+        Total |       3010      72.71                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+cntct_slf18 -- Contact w/ Self 18
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        936      22.61      82.61      82.61
+        1     |        197       4.76      17.39     100.00
+        Total |       1133      27.37     100.00           
+Missing .m    |         40       0.97                      
+        .y    |       2967      71.67                      
+        Total |       3007      72.63                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+cntct_so18 -- Contact w/ Slf&/Othr 18
+-------------------------------------------------------------------
+                      |      Freq.    Percent      Valid       Cum.
+----------------------+--------------------------------------------
+Valid   0  No         |        497      12.00      44.30      44.30
+        1  Self Only  |         28       0.68       2.50      46.79
+        2  Other Only |        428      10.34      38.15      84.94
+        3  Both       |        169       4.08      15.06     100.00
+        Total         |       1122      27.10     100.00           
+Missing .m            |         51       1.23                      
+        .y            |       2967      71.67                      
+        Total         |       3018      72.90                      
+Total                 |       4140     100.00                      
+-------------------------------------------------------------------
+
+cntct_tot -- Contact: Self and/or Other
+---------------------------------------------------------------------------
+                              |      Freq.    Percent      Valid       Cum.
+------------------------------+--------------------------------------------
+Valid   0 no contact          |       1649      39.83      43.36      43.36
+        1 contact with mental |       2154      52.03      56.64     100.00
+          illness             |                                            
+        Total                 |       3803      91.86     100.00           
+Missing .                     |        337       8.14                      
+Total                         |       4140     100.00                      
+---------------------------------------------------------------------------
+
+cntct_so4 -- Contact with self or others
+---------------------------------------------------------------------
+                        |      Freq.    Percent      Valid       Cum.
+------------------------+--------------------------------------------
+Valid   0 No Contact    |       1649      39.83      43.36      43.36
+        1 Other Contact |       1839      44.42      48.36      91.72
+        2 Self Contact  |         44       1.06       1.16      92.87
+        3 Both          |        271       6.55       7.13     100.00
+        Total           |       3803      91.86     100.00           
+Missing .               |        337       8.14                      
+Total                   |       4140     100.00                      
+---------------------------------------------------------------------
+
+cntct_so3 -- Contact with self or others
+---------------------------------------------------------------------
+                        |      Freq.    Percent      Valid       Cum.
+------------------------+--------------------------------------------
+Valid   0 No Contact    |       1649      39.83      43.36      43.36
+        1 Other Contact |       1839      44.42      48.36      91.72
+        2 Self Contact  |        315       7.61       8.28     100.00
+        Total           |       3803      91.86     100.00           
+Missing .               |        337       8.14                      
+Total                   |       4140     100.00                      
+---------------------------------------------------------------------
+
+cntct_val4 -- Contact with valence
+--------------------------------------------------------------------
+                       |      Freq.    Percent      Valid       Cum.
+-----------------------+--------------------------------------------
+Valid   0 No Contact   |       1649      39.83      43.36      43.36
+        1 Any Contact  |       1252      30.24      32.92      76.28
+        2 Bad Contact  |        468      11.30      12.31      88.59
+        3 Good Contact |        434      10.48      11.41     100.00
+        Total          |       3803      91.86     100.00           
+Missing .              |        337       8.14                      
+Total                  |       4140     100.00                      
+--------------------------------------------------------------------
+
+cntct_val3 -- Contact with valence
+-------------------------------------------------------------------
+                      |      Freq.    Percent      Valid       Cum.
+----------------------+--------------------------------------------
+Valid   0 No Contact  |       1649      39.83      43.36      43.36
+        1 Any Contact |       1252      30.24      32.92      76.28
+        2 Bad Contact |        902      21.79      23.72     100.00
+        Total         |       3803      91.86     100.00           
+Missing .             |        337       8.14                      
+Total                 |       4140     100.00                      
+-------------------------------------------------------------------
+
+.         
+.         local contact "evmhp evbrkdwn brkddur brkdsev brkdlong"
+
+.         local contact "`contact' diagnosd mhtrtoth mhtrtot2 mhtrtslf mhtreatd"
+
+.         local contact "`contact' knwpatnt knwmhosp mhdiagno mhothyou mhothrel"
+>  
+
+.         
+.         foreach v in `contact' {
+  2.                 rename `v' c_`v'
+  3.                 }
+
+. 
+.         // should be no observations
+. local year "96 06 18"
+
+. 
+. foreach y in `year' {
+  2.          di in red "Year is `y'"
+  3.          list cntct_slf`y' cntct_oth`y' cntct_so`y' cntct_tot if ///
+>           cntct_so4!=0 & cntct_slf`y'==0 & cntct_oth`y'==0      
+  4.                   
+.          list cntct_slf`y' cntct_oth`y' cntct_so`y' cntct_tot if ///
+>           cntct_so4!=0 & !missing(cntct_so4) /// 
+>                   & missing(cntct_slf`y') & missing(cntct_oth`y') ///
+>                   & cntct_slf`y'!=.y & cntct_oth`y'!=.y
+  5.                 
+.         list cntct_slf`y' cntct_oth`y' cntct_so`y' cntct_tot if ///
+>           cntct_tot==0 & cntct_slf`y'==1 & cntct_slf`y'!=.y & cntct_oth`y'!=.y
+>  | ///
+>                   cntct_tot==0 & cntct_oth`y'==1 & cntct_slf`y'!=.y & cntct_ot
+> h`y'!=.y    
+  6. }       
+Year is 96
+
+      +-------------------------------------------+
+      | cntc~f96   cntc~h96   cntc~o96   cntct_~t |
+      |-------------------------------------------|
+  12. |        0          0         No          . |
+  33. |        0          0         No          . |
+  84. |        0          0         No          . |
+ 112. |        0          0         No          . |
+ 113. |        0          0         No          . |
+      |-------------------------------------------|
+ 123. |        0          0         No          . |
+ 186. |        0          0         No          . |
+ 193. |        0          0         No          . |
+ 226. |        0          0         No          . |
+ 236. |        0          0         No          . |
+      |-------------------------------------------|
+ 281. |        0          0         No          . |
+ 386. |        0          0         No          . |
+ 391. |        0          0         No          . |
+ 398. |        0          0         No          . |
+ 434. |        0          0         No          . |
+      |-------------------------------------------|
+ 481. |        0          0         No          . |
+ 482. |        0          0         No          . |
+ 510. |        0          0         No          . |
+ 534. |        0          0         No          . |
+ 559. |        0          0         No          . |
+      |-------------------------------------------|
+ 568. |        0          0         No          . |
+ 572. |        0          0         No          . |
+ 602. |        0          0         No          . |
+ 605. |        0          0         No          . |
+ 609. |        0          0         No          . |
+      |-------------------------------------------|
+ 642. |        0          0         No          . |
+ 665. |        0          0         No          . |
+ 693. |        0          0         No          . |
+ 704. |        0          0         No          . |
+ 736. |        0          0         No          . |
+      |-------------------------------------------|
+ 752. |        0          0         No          . |
+ 785. |        0          0         No          . |
+ 819. |        0          0         No          . |
+ 866. |        0          0         No          . |
+ 886. |        0          0         No          . |
+      |-------------------------------------------|
+ 974. |        0          0         No          . |
+1008. |        0          0         No          . |
+1046. |        0          0         No          . |
+1066. |        0          0         No          . |
+1078. |        0          0         No          . |
+      |-------------------------------------------|
+1127. |        0          0         No          . |
+1132. |        0          0         No          . |
+1222. |        0          0         No          . |
+1234. |        0          0         No          . |
+1244. |        0          0         No          . |
+      |-------------------------------------------|
+1284. |        0          0         No          . |
+1301. |        0          0         No          . |
+1303. |        0          0         No          . |
+1323. |        0          0         No          . |
+1332. |        0          0         No          . |
+      |-------------------------------------------|
+1357. |        0          0         No          . |
+1364. |        0          0         No          . |
+1367. |        0          0         No          . |
+1396. |        0          0         No          . |
+1407. |        0          0         No          . |
+      |-------------------------------------------|
+1421. |        0          0         No          . |
+      +-------------------------------------------+
+Year is 06
+Year is 18
+
+.                 
+. **********
+. ///     
+> **********      
+. local demog   "age age10 cohort cohort10 born educ ed_gths degree female"
+
+. local demog   "`demog' race south size white born income region  marital wrkst
+> at"
+
+.  
+. local meta    "ballot version issp formwt sampcode sample oversamp"
+
+. local meta    "`meta' phase wtss wtssnr wtssall vstrat vpsu"
+
+.  
+.  order _all, alpha      
+
+.  order year id form cond* vig*, first
+
+.  order `meta', last     
+
+.  order `demog', before(ballot)
+
+.  order imp* must*, before(shld_dangroth)
+
+. 
+. 
+. ****************************************************************
+.  // #3 Saving data here and doing further 
+.  //    examinations on a different dataset below
+. ****************************************************************
+.                 
+.         save "Data/mls-data03-contact_recode", replace  
+file Data/mls-data03-contact_recode.dta saved
+
+. /*      
+> ****************************************************************
+>  // #2
+> ****************************************************************
+> 
+>          **----------------------------------------------**
+>          ** Because the ballots are wonky, and questions **
+>          ** about contact are not asked consistently     **
+>          ** in 2006, I'm looking into patterns of                **
+>          ** contact w/ mental illness for self and other **
+>          ** in other parts of the 2006 data. This allows **
+>          ** us to estimate how many people with mental   **
+>          ** illness we are missing in the sample bc it   **
+>          ** was not asked.                                                    
+>            **
+>          **----------------------------------------------**
+> 
+>         local meta    "year id ballot vigversn version form issp formwt cohort
+>  sampcode"
+>         local meta    "`meta' sample oversamp phase wtss wtssnr wtssall vstrat
+>  vpsu"
+>         local demog   "marital wrkstat age educ degree sex race born income re
+> gion"
+>         local contact "evmhp mhp* mhtreat* diagnosd mhtrtoth mhtrtot2 mhtrtslf
+>  mhtreatd"
+>         local contact "`contact' knwpatnt knwmhosp knwnproz  disabld5 mhdiagno
+>  hlthmntl"
+> 
+>         local vars    "`meta' `demog' `contact'"
+>         
+>         use `vars' if year == 2006 using "Data/GSS7218_R1", clear
+> 
+>         fre disabld5 mhtrtot2 mhtrtslf if mhtrtot2!=.i
+>         
+>         tab mhtrtot2 disabld5 if mhtrtot2!=.i, col row
+>                 * ~84% of people with a mental illness also know someone with 
+> a mental illness
+>                 * only 15 people, ~16% of those with a mental illness and ~1% 
+> of the total sample
+>                 * know have a mental illness but don't know anyone with a ment
+> al illness
+>                 
+>         tab mhtrtot2 mhtrtslf if mhtrtot2!=.i, col row
+>                 * Of those who've received treatment for a mental illness, 90%
+>  know someone
+>                 * with a mental illness. Only 21 people, ~1.4% of total have r
+> eceived treatment, 
+>                 * but don't know someone who's received treatment.
+>                 
+>         tab disabld5 mhtrtslf if mhtrtot2!=.i, col row
+>                 * Of those who report having an emotional or mental disability
+> , ~74% report
+>                 * having had treatment for their mental illess. Of those who'v
+> e received
+>                 * treatment, ~11% reported not having an emotional or mental d
+> isability 
+>                 * this may be attributal to recovery (i.e., they no longer hav
+> e) or 
+>                 * identity, they don't identify as having a "disability" - mor
+> e research
+>                 * would be needed to sort out these differences.
+> 
+> log close
+> exit    
+>         
+>         
+
+end of do-file
+
+. do "/var/folders/_y/_t377x351g5dsv7yy2v76gbr0000gq/T//SD96294.000000"
+
+. capture log close

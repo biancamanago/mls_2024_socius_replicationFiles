@@ -1,0 +1,1430 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/ML
+> S_MatchingLabelingStigma/work_socius_2024_09_corrected/mls-do01-regressions.lo
+> g
+  log type:  text
+ opened on:  26 Sep 2024, 17:12:35
+
+.  
+.  
+. **********
+. /// #0 Setup    
+> **********      
+.  
+.  version 15.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+
+. 
+.  
+.  local pgm   mls-do01-regressions.do
+
+.  local dte   2023-12-26
+
+.  local who   bianca manago - trent mize
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+.  di "`tag'"
+mls-do01-regressions.do.do bianca manago - trent mize 2023-12-26
+
+.  
+. ****************************************************************
+. //#1 Load Data
+. **************************************************************** 
+.  
+.  use "Data/mls-data07-mice-cont", clear 
+(MLS - GSS Data | Matching Labeling Stigma | Multiple Imputation CE | mls-data07
+> -)
+
+.  
+.  codebook if year==1996, compact
+
+Variable       Obs Unique      Mean    Min       Max  Label
+--------------------------------------------------------------------------------
+year          1401      1      1996   1996      1996  gss year for this respo...
+id            1401   1401  1469.049      2      2904  respondent id number
+form          1401      2  1.493933      1         2  form of split questionn...
+cond          1401      5  3.018558      1         5  Vig: Illness (all years)
+cond06           0      0         .      .         .  2006 vig illness
+cond18           0      0         .      .         .  2018 vig illness
+cond96        1401      5  3.018558      1         5  1996 vig illness
+vig_female    1401      2  .4154176      0         1  Female Vignette Character?
+vig_gths      1401      1         0      0         0  Vignette Ed > High School?
+vig_white     1401      2  .3361884      0         1  White Vignette Character?
+vig_y06       1401      1         0      0         0  Vignette Year is 2006
+vig_y18       1401      1         0      0         0  Vignette Year is 2018
+vig_y96       1401      1         1      1         1  Vignette Year is 1996
+vigalc        1401      2   .194147      0         1  Vig: Alcohol
+vigdep        1401      2  .2084226      0         1  Vig: Depression
+vigdrug       1401      2  .2041399      0         1  Vig: Drug Problem
+vignorm       1401      2  .1877231      0         1  Vig: Daily Troubles
+vigschiz      1401      2  .2055675      0         1  Vig: Schizophrenia
+vigversn      1401     90  45.35475      1        90  Vignette Version #
+L_mentlill    1339      4  2.601942      1         4  how likely x is experie...
+L_mentlillB   1339      2  .5489171      0         1  Very Likely/Likely Ment...
+a_breakdwn    1352      4   2.41716      1         4  how likely x is experie...
+a_breakdwnR   1352      2  .5488166      0         1  Bin: how likely x is ex...
+a_breakdwnRV  1352      2  .1841716      0         1  Bin: how likely x is ex...
+a_charactr    1359      4  2.584989      1         4  how likely x s situatio...
+a_charactrR   1359      2  .4591611      0         1  Bin: how likely x s sit...
+a_charactrRV  1359      2  .1736571      0         1  Bin: how likely x s sit...
+a_genetics    1335      4   2.59176      1         4  how likely x s situatio...
+a_geneticsR   1335      2  .4913858      0         1  Bin: how likely x s sit...
+a_geneticsRV  1335      2  .1153558      0         1  Bin: how likely x s sit...
+a_godswill    1345      4  3.407435      1         4  how likely x s situatio...
+a_godswillR   1345      2  .1479554      0         1  Bin: how likely x s sit...
+a_godswillRV  1345      2  .0498141      0         1  Bin: how likely x s sit...
+a_imbalnce    1312      4  2.307165      1         4  how likely x s situatio...
+a_imbalnceR   1312      2  .6227134      0         1  Bin: how likely x s sit...
+a_imbalnceRV  1312      2  .2202744      0         1  Bin: how likely x s sit...
+a_physill     1343      4  2.483991      1         4  how likely x is experie...
+a_physillR    1343      2  .5264334      0         1  Bin: how likely x is ex...
+a_physillRV   1343      2  .1504095      0         1  Bin: how likely x is ex...
+a_stresses    1370      4  1.777372      1         4  how likely x s situatio...
+a_stressesR   1370      2  .8861314      0         1  Bin: how likely x s sit...
+a_stressesRV  1370      2  .3773723      0         1  Bin: how likely x s sit...
+a_upsdowns    1382      4  2.206223      1         4  how likely x is experie...
+a_upsdownsR   1382      2  .6345876      0         1  Bin: how likely x is ex...
+a_upsdownsRV  1382      2  .3060781      0         1  Bin: how likely x is ex...
+a_wayraise    1349      4  2.553002      1         4  how likely x s situatio...
+a_wayraiseR   1349      2  .5144552      0         1  Bin: how likely x s sit...
+a_wayraiseRV  1349      2  .1097109      0         1  Bin: how likely x s sit...
+ageQ          1400      4  2.319286      1         4  Age Quartiles
+anychild      1395      2  .7075269      0         1  Any Children
+c_brkddur      210      8  3.766667      1         8  duration, severity of n...
+c_brkdlong     210      2  .5047619      0         1  Length Breakdown 1=Long
+c_brkdsev     1401      2  .1092077      0         1  Severity Breakdown 1=se...
+c_diagnosd       0      0         .      .         .  r ever diagnosed with m...
+c_effectR        0      0         .      .         .  Relationship Consequenc...
+c_effectY        0      0         .      .         .  Personal Distress from ...
+c_evbrkdwn    1385      2   1.73213      1         2  ever felt going to have...
+c_evmhp       1020      2  1.928431      1         2  ever had mental health ...
+c_knwmhosp     699      2   1.48784      1         2  know anyone who was in ...
+c_knwpatnt     641      2  1.408736      1         2  known anyone seeing a p...
+c_mhdiagno       0      0         .      .         .  r knows someone who has...
+c_mhothrel       0      0         .      .         .  result of mental health...
+c_mhothyou       0      0         .      .         .  how much distress his m...
+c_mhtreatd       0      0         .      .         .  r ever treated for mh p...
+c_mhtrtot2       0      0         .      .         .  r knows someone who rec...
+c_mhtrtoth       0      0         .      .         .  r personally has known ...
+c_mhtrtslf       0      0         .      .         .  r have ever personally ...
+childs        1395      9  1.842294      0         8  number of children
+cntct_any06      0      0         .      .         .  Contact w/ Slf&/Othr 06
+cntct_any18      0      0         .      .         .  Contact w/ Slf&/Othr 18
+cntct_any96   1236      2  .4967638      0         1  Contact w/ Slf&/Othr 96
+cntct_oth06      0      0         .      .         .  Contact w/ Other 06
+cntct_oth18      0      0         .      .         .  Contact w/ Other 18
+cntct_oth96    703      2  .6941679      0         1  Contact w/ Other 96
+cntct_slf06      0      0         .      .         .  No 06 measure of self i...
+cntct_slf18      0      0         .      .         .  Contact w/ Self 18
+cntct_slf96   1401      2  .1613133      0         1  Contact w/ Self 96
+cntct_so06       0      0         .      .         .  No 06 measure of self i...
+cntct_so18       0      0         .      .         .  Contact w/ Slf&/Othr 18
+cntct_so3     1236      3  .5906149      0         2  Contact with self or ot...
+cntct_so4     1236      4   .671521      0         3  Contact with self or ot...
+cntct_so96     703      4  1.553343      0         3  Contact w/ Slf&/Othr 96
+cntct_tot     1236      2  .4967638      0         1  Contact: Self and/or Other
+cntct_val3    1236      2  .4967638      0         1  Contact with valence
+cntct_val4    1236      2  .4967638      0         1  Contact with valence
+coninc        1238     21  46.42321   .561   121.461  income in 1000s
+conincQ       1238      4  2.447496      1         4  Income Quartiles
+d_advantage      0      0         .      .         .  there have been occasio...
+d_diffideas      0      0         .      .         .  i have never been irked...
+d_forgive        0      0         .      .         .  i sometimes try to get ...
+d_gossip         0      0         .      .         .  i like to gossip at times
+d_hurt           0      0         .      .         .  i have never deliberate...
+d_mistake        0      0         .      .         .  i�m always willing to a...
+d_myway          0      0         .      .         .  at times i have really ...
+dangroth      1373      2  1.073562      1         2  x should be admitted to...
+dangrslf      1365      2  1.111355      1         2  x should be admitted to...
+hurtoth       1321      4  2.425435      1         4  how likely x violent to...
+hurtself      1346      4  2.044577      1         4  how likely x violent to...
+income06         0      0         .      .         .  Total Family Income (2006)
+income16         0      0         .      .         .  Total Family Income (2018)
+income91      1238     21  15.09208      1        21  Total Family Income (1991)
+meddoc        1354      2   1.25997      1         2  x should go to general ...
+mentldoc      1317      2  1.284738      1         2  x should go to psychiat...
+mentlhos      1263      2  1.653207      1         2  x should check into a m...
+mentlill      1339      4  2.398058      1         4  how likely x is experie...
+metro         1401      2  .2341185      0         1  Metropolitan Area?
+myprobs1         0      0         .      .         .  how much person 1's men...
+myprobs2         0      0         .      .         .  how much person 2's men...
+myprobs3         0      0         .      .         .  how much person 3's men...
+myprobs4         0      0         .      .         .  how much person 4's men...
+myprobs5         0      0         .      .         .  how much person 5's men...
+numchild      1395      9  1.842294      0         8  Children Count
+otcmed        1344      2  1.918899      1         2  x should take non-presc...
+polviews      1328      7  4.221386      1         7  think of self as libera...
+region4       1401      4  2.592434      1         4  Region of US
+rxmed         1287      2  1.391608      1         2  x should take prescript...
+s_friends     1375      4  2.264727      1         4  how willing r would mak...
+s_friendsB    1398      2   .323319      0         1  Bin: how willing r woul...
+s_grphome     1343      4  2.358153      1         4  how willing r would hav...
+s_grphomeB    1396      2  .3638968      0         1  Bin: how willing r woul...
+s_marry       1319      4  3.009098      1         4  how willing r would hav...
+s_marryB      1396      2  .6497135      0         1  Bin: how willing r woul...
+s_nextdoor    1370      4  2.345255      1         4  how willing r would hav...
+s_nextdoorB   1400      2  .3757143      0         1  Bin: how willing r woul...
+s_social      1387      4  2.517664      1         4  how willing r would spe...
+s_socialB     1400      2  .4535714      0         1  Bin: how willing r woul...
+s_work        1356      4  2.777286      1         4  how willing r would wor...
+s_workB       1400      2  .5642857      0         1  Bin: how willing r woul...
+selfhelp      1354      2  1.135155      1         2  x should join a self-gr...
+imp_own       1378      4  3.098694      1         4  how likely x s situatio...
+imp_trt       1367      4  1.608632      1         4  how likely x s situatio...
+must_doc      1326      2  1.628205      1         2  x should be forced to b...
+must_hosp     1325      2  1.627925      1         2  x should be admitted to...
+must_med      1324      2  1.722054      1         2  x should be forced to t...
+shld_dangr~h  1373      2  1.073562      1         2  
+shld_dang~hR  1394      2  .9124821      0         1  Bin: x should be admitt...
+shld_dangr~f  1365      2  1.111355      1         2  
+shld_dang~fR  1394      2  .8701578      0         1  Bin: x should be admitt...
+shld_meddoc   1354      2   1.25997      1         2  
+shld_meddocR  1391      2  .7203451      0         1  Bin: x should go to gen...
+shld_mentl~c  1317      2  1.284738      1         2  
+shld_ment~cR  1385      2  .6801444      0         1  Bin: x should go to psy...
+shld_mentl~s  1263      2  1.653207      1         2  
+shld_ment~sR  1384      2   .316474      0         1  Bin: x should check int...
+shld_otcmed   1344      2  1.918899      1         2  
+shld_otcmedR  1386      2  .0786436      0         1  Bin: x should take non-...
+shld_rxmed    1287      2  1.391608      1         2  
+shld_rxmedR   1384      2  .5657514      0         1  Bin: x should take pres...
+shld_selfh~p  1354      2  1.135155      1         2  
+shld_selfh~R  1388      2  .8436599      0         1  Bin: x should join a se...
+srcbelt       1401      6  3.954318      1         6  src beltcode
+violent_oth   1321      4  2.574565      1         4  how likely x violent to...
+violent_othR  1398      2  .5114449      0         1  Bin: x should join a se...
+violent_self  1346      4  2.955423      1         4  how likely x violent to...
+violent_se~R  1398      2  .7067239      0         1  Bin: x should join a se...
+xnorcsiz      1401     10  4.018558      1        10  Size of MSA/County
+age           1400     72    44.575     18        89  age in years
+age10         1400      6  3.164286      1         6  Age Ordinal 18/28 - 68+
+cohort        1400     72  1951.425   1907      1978  year of birth
+cohort10      1400      7     4.035      1         7  Cohort Ordinal
+born          1393      2  1.075377      1         2  was r born in this country
+educ          1398     19  13.33977      0        20  Years Education
+ed_gths       1397      2  .3078024      0         1  R ed > HS
+degree        1397      5  1.463851      0         4  r's highest degree
+female        1401      2   .551035      0         1  Female? (vs. male)
+race          1401      3   1.24197      1         3  race of respondent
+south         1401      2  .2576731      0         1  Lives in South?
+size          1401    142  384.6995      0      7323  size of place in 1000s
+white         1401      2  .8101356      0         1  White? (vs non-white)
+income        1238     12  10.71244      1        12  Total Family Income
+region        1401      9  5.018558      1         9  region of interview
+marital       1401      5  2.416845      1         5  marital status
+wrkstat       1401      8  2.638829      1         8  labor force status
+ballot        1401      3  1.983583      1         3  ballot used for interview
+version       1401      3  4.983583      4         6  version of questionnaire
+issp          1401      2   1.06995      1         2  filter for issp cases
+formwt        1401      1         1      1         1  weight deal with experi...
+sampcode      1401    100  42.29051      1       100  sampling error code
+sample        1401      1         8      8         8  sampling frame and method
+oversamp      1401      1         1      1         1  weights for black overs...
+phase            0      0         .      .         .  subsampling: two-phase ...
+wtss          1401      1         1      1         1  weight variable
+wtssnr        1401      1         1      1         1  weight variable
+wtssall       1401      6   .999537  .5432    3.2591  weight variable
+vstrat        1401    104  1608.886   1458      2457  variance stratum
+vpsu          1401      2   1.47823      1         2  variance primary sampli...
+_mi_miss      1401      2  .2912206      0         1  Incomplete observation
+SD_miss       1401      4  .1827266      0         3  
+s_nextdoor~0  1400      5     2.295      0         4  DK=0
+s_socialDK0   1400      5  2.494286      0         4  DK=0
+s_friendsDK0  1398      5  2.227468      0         4  DK=0
+s_workDK0     1400      5      2.69      0         4  DK=0
+s_marryDK0    1396      5  2.843123      0         4  DK=0
+s_grphomeDK0  1396      5  2.268625      0         4  DK=0
+s_nextdoor~1  1400      4  2.316429      1         4  DK=1
+s_socialDK1   1400      4  2.503571      1         4  DK=1
+s_friendsDK1  1398      4   2.24392      1         4  DK=1
+s_workDK1     1400      4  2.721429      1         4  DK=1
+s_marryDK1    1396      4  2.898281      1         4  DK=1
+s_grphomeDK1  1396      4   2.30659      1         4  DK=1
+s_nextdoor~2  1400      4  2.337857      1         4  DK=2
+s_socialDK2   1400      4  2.512857      1         4  DK=2
+s_friendsDK2  1398      4  2.260372      1         4  DK=2
+s_workDK2     1400      4  2.752857      1         4  DK=2
+s_marryDK2    1396      4  2.953438      1         4  DK=2
+s_grphomeDK2  1396      4  2.344556      1         4  DK=2
+s_nextdoor~3  1400      4  2.359286      1         4  DK=3
+s_socialDK3   1400      4  2.522143      1         4  DK=3
+s_friendsDK3  1398      4  2.276824      1         4  DK=3
+s_workDK3     1400      4  2.784286      1         4  DK=3
+s_marryDK3    1396      4  3.008596      1         4  DK=3
+s_grphomeDK3  1396      4  2.382521      1         4  DK=3
+s_nextdoor~4  1400      4  2.380714      1         4  DK=4
+s_socialDK4   1400      4  2.531429      1         4  DK=4
+s_friendsDK4  1398      4  2.293276      1         4  DK=4
+s_workDK4     1400      4  2.815714      1         4  DK=4
+s_marryDK4    1396      4  3.063754      1         4  DK=4
+s_grphomeDK4  1396      4  2.420487      1         4  DK=4
+socdist_scl   1401     36  2.539674      1         4  
+socdist_tot   1401     20  14.96146      5        24  
+socdistSS     1401     36  2.539674      1         4  Social distance sum scale
+socdesSS         0      0         .      .         .  Social Desirability: Scale
+_1_age        1401     72  44.56174     18        89  
+_2_age        1401     72  44.56388     18        89  
+_3_age        1401     72  44.55889     18        89  
+_4_age        1401     72  44.58101     18        89  
+_5_age        1401     72  44.57959     18        89  
+_6_age        1401     72  44.57673     18        89  
+_7_age        1401     72  44.57388     18        89  
+_8_age        1401     72   44.5753     18        89  
+_9_age        1401     72  44.56103     18        89  
+_10_age       1401     72  44.56031     18        89  
+_11_age       1401     72  44.57031     18        89  
+_12_age       1401     72  44.58315     18        89  
+_13_age       1401     72  44.57316     18        89  
+_14_age       1401     72  44.56388     18        89  
+_15_age       1401     72  44.57602     18        89  
+_16_age       1401     72   44.5853     18        89  
+_17_age       1401     72   44.5646     18        89  
+_18_age       1401     72  44.56959     18        89  
+_19_age       1401     72  44.58173     18        89  
+_20_age       1401     72  44.56602     18        89  
+_1_degree     1401      5  1.463954      0         4  
+_2_degree     1401      5  1.462527      0         4  
+_3_degree     1401      5  1.463241      0         4  
+_4_degree     1401      5  1.461813      0         4  
+_5_degree     1401      5  1.466809      0         4  
+_6_degree     1401      5  1.462527      0         4  
+_7_degree     1401      5  1.461813      0         4  
+_8_degree     1401      5  1.461813      0         4  
+_9_degree     1401      5  1.466096      0         4  
+_10_degree    1401      5  1.461813      0         4  
+_11_degree    1401      5  1.462527      0         4  
+_12_degree    1401      5  1.464668      0         4  
+_13_degree    1401      5  1.462527      0         4  
+_14_degree    1401      5  1.462527      0         4  
+_15_degree    1401      5  1.461813      0         4  
+_16_degree    1401      5  1.461813      0         4  
+_17_degree    1401      5  1.463954      0         4  
+_18_degree    1401      5  1.463954      0         4  
+_19_degree    1401      5  1.463954      0         4  
+_20_degree    1401      5  1.463241      0         4  
+_1_L_mentl~B  1401      2  .5581727      0         1  
+_2_L_mentl~B  1401      2  .5553176      0         1  
+_3_L_mentl~B  1401      2  .5460385      0         1  
+_4_L_mentl~B  1401      2  .5538901      0         1  
+_5_L_mentl~B  1401      2  .5488936      0         1  
+_6_L_mentl~B  1401      2  .5503212      0         1  
+_7_L_mentl~B  1401      2   .551035      0         1  
+_8_L_mentl~B  1401      2  .5538901      0         1  
+_9_L_mentl~B  1401      2  .5531763      0         1  
+_10_L_ment~B  1401      2  .5531763      0         1  
+_11_L_ment~B  1401      2  .5538901      0         1  
+_12_L_ment~B  1401      2  .5460385      0         1  
+_13_L_ment~B  1401      2  .5517488      0         1  
+_14_L_ment~B  1401      2  .5496074      0         1  
+_15_L_ment~B  1401      2  .5467523      0         1  
+_16_L_ment~B  1401      2  .5524625      0         1  
+_17_L_ment~B  1401      2  .5531763      0         1  
+_18_L_ment~B  1401      2  .5524625      0         1  
+_19_L_ment~B  1401      2  .5517488      0         1  
+_20_L_ment~B  1401      2  .5496074      0         1  
+_1_cntct_tot  1401      2  .5060671      0         1  
+_2_cntct_tot  1401      2  .5117773      0         1  
+_3_cntct_tot  1401      2   .503212      0         1  
+_4_cntct_tot  1401      2  .5039258      0         1  
+_5_cntct_tot  1401      2  .5003569      0         1  
+_6_cntct_tot  1401      2  .5074946      0         1  
+_7_cntct_tot  1401      2  .5017844      0         1  
+_8_cntct_tot  1401      2   .503212      0         1  
+_9_cntct_tot  1401      2  .5067809      0         1  
+_10_cntct_~t  1401      2  .5039258      0         1  
+_11_cntct_~t  1401      2  .5060671      0         1  
+_12_cntct_~t  1401      2  .5110635      0         1  
+_13_cntct_~t  1401      2  .4975018      0         1  
+_14_cntct_~t  1401      2  .5060671      0         1  
+_15_cntct_~t  1401      2  .5189151      0         1  
+_16_cntct_~t  1401      2  .5046395      0         1  
+_17_cntct_~t  1401      2  .5074946      0         1  
+_18_cntct_~t  1401      2  .5067809      0         1  
+_19_cntct_~t  1401      2  .5074946      0         1  
+_20_cntct_~t  1401      2  .5024982      0         1  
+_1_cntct_so4  1401      4  .6873662      0         3  
+_2_cntct_so4  1401      4  .6666667      0         3  
+_3_cntct_so4  1401      4  .6837973      0         3  
+_4_cntct_so4  1401      4  .6780871      0         3  
+_5_cntct_so4  1401      4  .6745182      0         3  
+_6_cntct_so4  1401      4  .6788009      0         3  
+_7_cntct_so4  1401      4  .6730906      0         3  
+_8_cntct_so4  1401      4  .6823697      0         3  
+_9_cntct_so4  1401      4  .6788009      0         3  
+_10_cntct~o4  1401      4  .6709493      0         3  
+_11_cntct~o4  1401      4  .6759458      0         3  
+_12_cntct~o4  1401      4  .6823697      0         3  
+_13_cntct~o4  1401      4  .6880799      0         3  
+_14_cntct~o4  1401      4  .6809422      0         3  
+_15_cntct~o4  1401      4  .6709493      0         3  
+_16_cntct~o4  1401      4  .6887937      0         3  
+_17_cntct~o4  1401      4  .6923626      0         3  
+_18_cntct~o4  1401      4  .7044968      0         3  
+_19_cntct~o4  1401      4  .6738044      0         3  
+_20_cntct~o4  1401      4  .6830835      0         3  
+_1_cntct_v~4  1401      4  .5438972      0         3  
+_2_cntct_v~4  1401      4  .5524625      0         3  
+_3_cntct_v~4  1401      4  .5481799      0         3  
+_4_cntct_v~4  1401      4  .5538901      0         3  
+_5_cntct_v~4  1401      4  .5396146      0         3  
+_6_cntct_v~4  1401      4  .5367595      0         3  
+_7_cntct_v~4  1401      4  .5367595      0         3  
+_8_cntct_v~4  1401      4  .5396146      0         3  
+_9_cntct_v~4  1401      4  .5503212      0         3  
+_10_cntct~l4  1401      4  .5453248      0         3  
+_11_cntct~l4  1401      4  .5239115      0         3  
+_12_cntct~l4  1401      4  .5367595      0         3  
+_13_cntct~l4  1401      4  .5681656      0         3  
+_14_cntct~l4  1401      4  .5417559      0         3  
+_15_cntct~l4  1401      4  .5246253      0         3  
+_16_cntct~l4  1401      4  .5553176      0         3  
+_17_cntct~l4  1401      4   .557459      0         3  
+_18_cntct~l4  1401      4  .5588865      0         3  
+_19_cntct~l4  1401      4   .538187      0         3  
+_20_cntct~l4  1401      4  .5488936      0         3  
+_1_cntct_so3  1401      3  .5952891      0         2  
+_2_cntct_so3  1401      3  .6102784      0         2  
+_3_cntct_so3  1401      3  .6031406      0         2  
+_4_cntct_so3  1401      3  .6045682      0         2  
+_5_cntct_so3  1401      3  .5867238      0         2  
+_6_cntct_so3  1401      3  .6002855      0         2  
+_7_cntct_so3  1401      3  .6002855      0         2  
+_8_cntct_so3  1401      3  .6174161      0         2  
+_9_cntct_so3  1401      3  .5995717      0         2  
+_10_cntct~o3  1401      3  .5945753      0         2  
+_11_cntct~o3  1401      3  .6038544      0         2  
+_12_cntct~o3  1401      3  .6045682      0         2  
+_13_cntct~o3  1401      3  .5931478      0         2  
+_14_cntct~o3  1401      3  .6024268      0         2  
+_15_cntct~o3  1401      3  .6024268      0         2  
+_16_cntct~o3  1401      3  .6017131      0         2  
+_17_cntct~o3  1401      3  .5967166      0         2  
+_18_cntct~o3  1401      3  .6074233      0         2  
+_19_cntct~o3  1401      3  .6045682      0         2  
+_20_cntct~o3  1401      3  .6052819      0         2  
+_1_cntct_v~3  1401      3   .525339      0         2  
+_2_cntct_v~3  1401      3  .5339044      0         2  
+_3_cntct_v~3  1401      3  .5367595      0         2  
+_4_cntct_v~3  1401      3  .5431834      0         2  
+_5_cntct_v~3  1401      3  .5417559      0         2  
+_6_cntct_v~3  1401      3   .544611      0         2  
+_7_cntct_v~3  1401      3  .5331906      0         2  
+_8_cntct_v~3  1401      3  .5289079      0         2  
+_9_cntct_v~3  1401      3  .5339044      0         2  
+_10_cntct~l3  1401      3  .5246253      0         2  
+_11_cntct~l3  1401      3  .5217702      0         2  
+_12_cntct~l3  1401      3  .5189151      0         2  
+_13_cntct~l3  1401      3  .5217702      0         2  
+_14_cntct~l3  1401      3   .551035      0         2  
+_15_cntct~l3  1401      3  .5274804      0         2  
+_16_cntct~l3  1401      3  .5389008      0         2  
+_17_cntct~l3  1401      3  .5417559      0         2  
+_18_cntct~l3  1401      3  .5331906      0         2  
+_19_cntct~l3  1401      3   .544611      0         2  
+_20_cntct~l3  1401      3   .531763      0         2  
+_1_coninc     1401     61  45.77686  .3505  158.2018  
+_2_coninc     1401     60  45.88449   .561   178.266  
+_3_coninc     1401     61  46.00122   .561  158.2018  
+_4_coninc     1401     55  45.93599   .561   178.266  
+_5_coninc     1401     59  45.70317  .3505   178.266  
+_6_coninc     1401     58  46.34491  .3505   178.266  
+_7_coninc     1401     60  45.66327  .3505   178.266  
+_8_coninc     1401     61   45.7917  .3505   178.266  
+_9_coninc     1401     60  46.02302   .561   178.266  
+_10_coninc    1401     65  45.56723  .3505   178.266  
+_11_coninc    1401     61  45.98162  .3505  158.2018  
+_12_coninc    1401     55  45.90378  .3505  158.2018  
+_13_coninc    1401     62  46.22407   .561   178.266  
+_14_coninc    1401     60  46.22706   .441   178.266  
+_15_coninc    1401     61  46.13416  .3505   178.266  
+_16_coninc    1401     61  45.62164  .3505   178.266  
+_17_coninc    1401     61  45.88705  .3505   178.266  
+_18_coninc    1401     59  45.66595   .441   178.266  
+_19_coninc    1401     62  45.83041   .561   178.266  
+_20_coninc    1401     62  45.55586  .3505  158.2018  
+_1_a_imbal~R  1312      2  .6227134      0         1  
+_2_a_imbal~R  1312      2  .6227134      0         1  
+_3_a_imbal~R  1312      2  .6227134      0         1  
+_4_a_imbal~R  1312      2  .6227134      0         1  
+_5_a_imbal~R  1312      2  .6227134      0         1  
+_6_a_imbal~R  1312      2  .6227134      0         1  
+_7_a_imbal~R  1312      2  .6227134      0         1  
+_8_a_imbal~R  1312      2  .6227134      0         1  
+_9_a_imbal~R  1312      2  .6227134      0         1  
+_10_a_imba~R  1312      2  .6227134      0         1  
+_11_a_imba~R  1312      2  .6227134      0         1  
+_12_a_imba~R  1312      2  .6227134      0         1  
+_13_a_imba~R  1312      2  .6227134      0         1  
+_14_a_imba~R  1312      2  .6227134      0         1  
+_15_a_imba~R  1312      2  .6227134      0         1  
+_16_a_imba~R  1312      2  .6227134      0         1  
+_17_a_imba~R  1312      2  .6227134      0         1  
+_18_a_imba~R  1312      2  .6227134      0         1  
+_19_a_imba~R  1312      2  .6227134      0         1  
+_20_a_imba~R  1312      2  .6227134      0         1  
+--------------------------------------------------------------------------------
+
+.  sum socdist_tot if year==1996
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+ socdist_tot |      1,401    14.96146    4.503326          5         24
+
+.  
+. 
+. local att   "a_imbalnceR a_geneticsR a_stressesR a_wayraiseR a_charactrR a_god
+> swillR"
+
+. local demog  "age i.female i.white i.south xnorcsiz coninc educ"
+
+. local cond "vignorm vigdrug vigalc vigschiz vigdep"
+
+. 
+. 
+. sum     socdist_tot socdistSS L_mentlill violent_oth ///
+>                 cntct_tot cntct_so4 cntct_val4 `cond' `att' `demog'
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+ socdist_tot |      3,920    14.47985    4.310375          5         24
+   socdistSS |      3,920    2.444043    .7198477          1          4
+  L_mentlill |      3,815    2.704063    .9721997          1          4
+ violent_oth |      3,753    2.503064    .8843304          1          4
+   cntct_tot |      3,726    .5697799    .4951733          0          1
+-------------+---------------------------------------------------------
+   cntct_so4 |      3,726    .7259796    .8098761          0          3
+  cntct_val4 |      3,726    .9213634    1.001738          0          3
+     vignorm |      3,920    .2079082    .4058625          0          1
+     vigdrug |      3,920    .1288265    .3350506          0          1
+      vigalc |      3,920    .2191327    .4137115          0          1
+-------------+---------------------------------------------------------
+    vigschiz |      3,920     .215051    .4109102          0          1
+      vigdep |      3,920    .2290816    .4202955          0          1
+ a_imbalnceR |      3,756    .7087327    .4544069          0          1
+ a_geneticsR |      3,800    .5771053     .494084          0          1
+ a_stressesR |      3,869    .8875678    .3159382          0          1
+-------------+---------------------------------------------------------
+ a_wayraiseR |      3,821    .5032714    .5000547          0          1
+ a_charactrR |      3,847    .4390434    .4963349          0          1
+ a_godswillR |      3,828    .1387147    .3456938          0          1
+         age |      3,917    46.66735    17.39997         18         89
+-------------+---------------------------------------------------------
+             |
+      female |
+     female  |      3,920    .5454082    .4979974          0          1
+     1.white |      3,920    .7640306    .4246573          0          1
+             |
+       south |
+      South  |      3,920    .2721939     .445146          0          1
+-------------+---------------------------------------------------------
+    xnorcsiz |      3,920    4.145408    2.707249          1         10
+      coninc |      3,493    49.21765    40.09406      .3505    178.266
+        educ |      3,915    13.60281    2.887225          0         20
+
+. 
+. 
+. ****************************************************************
+. //#2 Regression analyses that mirror matching analyses
+. ****************************************************************
+. *NOTE: Using MI est b/c lots of missing data. Not using svy weights b/c
+. *       we can't with the matching analyses and we want those analyses to be
+. *       as comparable as possible to these
+. 
+. local dv "socdistSS" 
+
+. local iv "i.L_mentlillB" 
+
+. local cvs "c.age##c.age i.female i.race i.region i.metro coninc i.degree"
+
+. local evs "i.vigdrug i.vigalc i.vigschiz i.vigdep i.year"
+
+. 
+. *Table B1
+. 
+. *Sig main effect of labels pooling across all vignetes.
+. mi est:                 reg     `dv' `iv' i.cntct_tot `cvs' `evs'
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0066
+                                                Largest FMI       =     0.1028
+                                                Complete DF       =       3892
+DF adjustment:   Small sample                   DF:     min       =   1,202.95
+                                                        avg       =   3,738.44
+                                                        max       =   3,887.74
+Model F test:       Equal FMI                   F(  27, 3888.6)   =      39.69
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |    .072719   .0241441     3.01   0.003     .0253793    .1200588
+              |
+    cntct_tot |
+contact wi..  |   -.095031   .0216191    -4.40   0.000    -.1374181   -.0526438
+          age |    -.00984   .0033456    -2.94   0.003    -.0163994   -.0032806
+              |
+  c.age#c.age |    .000129   .0000329     3.92   0.000     .0000645    .0001935
+              |
+       female |
+      female  |    -.01512   .0208387    -0.73   0.468    -.0559759    .0257358
+              |
+         race |
+       black  |   .0388926   .0306913     1.27   0.205    -.0212801    .0990652
+  other race  |  -.0064841   .0387173    -0.17   0.867    -.0823923    .0694241
+              |
+       region |
+middle atl..  |   .0956587   .0563808     1.70   0.090      -.01488    .2061973
+e. nor. ce..  |   .0299295    .053958     0.55   0.579    -.0758591    .1357181
+w. nor. ce..  |  -.0485636     .06332    -0.77   0.443    -.1727071      .07558
+south atla..  |   .0101459   .0533231     0.19   0.849     -.094398    .1146899
+e. sou. ce..  |  -.0127754   .0626163    -0.20   0.838    -.1355393    .1099886
+w. sou. ce..  |   .0811482   .0576457     1.41   0.159    -.0318705    .1941668
+    mountain  |  -.0452806   .0612126    -0.74   0.460    -.1652926    .0747313
+     pacific  |  -.0005734   .0552612    -0.01   0.992    -.1089171    .1077703
+              |
+        metro |
+   MetroArea  |   .0514604     .02579     2.00   0.046     .0008971    .1020237
+       coninc |   .0009656   .0003058     3.16   0.002     .0003656    .0015655
+              |
+       degree |
+ high school  |   -.020117   .0330528    -0.61   0.543    -.0849194    .0446854
+junior col..  |  -.0845452   .0474219    -1.78   0.075    -.1775195    .0084291
+    bachelor  |  -.0484464     .04036    -1.20   0.230    -.1275755    .0306827
+    graduate  |  -.0712437   .0472254    -1.51   0.131    -.1638332    .0213458
+              |
+      vigdrug |
+        Drug  |   .8964866   .0376711    23.80   0.000     .8226295    .9703438
+              |
+       vigalc |
+     Alcohol  |   .6641106   .0321555    20.65   0.000     .6010673    .7271539
+              |
+     vigschiz |
+Schizophre~a  |   .5604628   .0351732    15.93   0.000     .4915027     .629423
+              |
+       vigdep |
+  Depression  |   .1953099   .0329864     5.92   0.000     .1306374    .2599823
+              |
+         year |
+        2006  |  -.0338623   .0256282    -1.32   0.186    -.0841084    .0163837
+        2018  |  -.1555744   .0262182    -5.93   0.000    -.2069772   -.1041716
+              |
+        _cons |   2.182044   .0960043    22.73   0.000      1.99382    2.370267
+-------------------------------------------------------------------------------
+
+. 
+. *Only effect of labeling is on vignorm
+. foreach v of varlist vignorm vigdrug vigalc vigschiz vigdep {
+  2.         di _newline(1)
+  3.         di in red "Vignette is: `v'"
+  4.         mi est: reg `dv' `iv' i.cntct_tot `cvs' i.year if `v'
+  5.         }
+
+
+Vignette is: vignorm
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =        815
+                                                Average RVI       =     0.0095
+                                                Largest FMI       =     0.1005
+                                                Complete DF       =        791
+DF adjustment:   Small sample                   DF:     min       =     519.25
+                                                        avg       =     767.47
+                                                        max       =     788.57
+Model F test:       Equal FMI                   F(  23,  788.8)   =       1.79
+Within VCE type:          OLS                   Prob > F          =     0.0130
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |   .1865552   .0509672     3.66   0.000     .0864998    .2866106
+              |
+    cntct_tot |
+contact wi..  |  -.1201371   .0466279    -2.58   0.010    -.2117024   -.0285718
+          age |   .0002453   .0069478     0.04   0.972    -.0133931    .0138837
+              |
+  c.age#c.age |   .0000209   .0000676     0.31   0.757    -.0001117    .0001535
+              |
+       female |
+      female  |   .0241071   .0448842     0.54   0.591    -.0639997     .112214
+              |
+         race |
+       black  |   .0283854    .065108     0.44   0.663    -.0994206    .1561913
+  other race  |  -.1528816   .0816123    -1.87   0.061    -.3130849    .0073218
+              |
+       region |
+middle atl..  |  -.0301546   .1239828    -0.24   0.808    -.2735302     .213221
+e. nor. ce..  |   .0494231   .1180755     0.42   0.676    -.1823563    .2812026
+w. nor. ce..  |   .1739351   .1413187     1.23   0.219    -.1034703    .4513405
+south atla..  |   .0215327   .1169738     0.18   0.854    -.2080844    .2511497
+e. sou. ce..  |   -.062433   .1385575    -0.45   0.652    -.3344182    .2095522
+w. sou. ce..  |   -.020264   .1257976    -0.16   0.872     -.267202     .226674
+    mountain  |  -.0102208   .1347044    -0.08   0.940    -.2746426     .254201
+     pacific  |   .0200279   .1205867     0.17   0.868    -.2166811    .2567369
+              |
+        metro |
+   MetroArea  |   .0370765   .0559337     0.66   0.508    -.0727201    .1468731
+       coninc |   .0000997   .0006585     0.15   0.880    -.0011938    .0013933
+              |
+       degree |
+ high school  |   .0069617   .0698598     0.10   0.921    -.1301718    .1440953
+junior col..  |  -.0343792   .1009416    -0.34   0.734    -.2325258    .1637674
+    bachelor  |  -.0894915   .0887088    -1.01   0.313    -.2636276    .0846445
+    graduate  |  -.1023939   .0990153    -1.03   0.301    -.2967625    .0919747
+              |
+         year |
+        2006  |   .0629807   .0518353     1.22   0.225    -.0387712    .1647325
+        2018  |   .0331065   .0595162     0.56   0.578    -.0837226    .1499356
+              |
+        _cons |   1.908096    .202958     9.40   0.000     1.509694    2.306499
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigdrug
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =        505
+                                                Average RVI       =     0.0112
+                                                Largest FMI       =     0.1327
+                                                Complete DF       =        482
+DF adjustment:   Small sample                   DF:     min       =     303.60
+                                                        avg       =     467.04
+                                                        max       =     479.76
+Model F test:       Equal FMI                   F(  22,  479.9)   =       3.35
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |  -.0009001   .0610323    -0.01   0.988    -.1208472    .1190471
+              |
+    cntct_tot |
+contact wi..  |   -.056946   .0605407    -0.94   0.347    -.1759404    .0620483
+          age |  -.0015702   .0099387    -0.16   0.875    -.0210992    .0179588
+              |
+  c.age#c.age |   .0000391   .0000986     0.40   0.692    -.0001548    .0002329
+              |
+       female |
+      female  |    .092929   .0592418     1.57   0.117    -.0234765    .2093345
+              |
+         race |
+       black  |   .0553109   .0871154     0.63   0.526    -.1158666    .2264884
+  other race  |  -.0080065   .1110139    -0.07   0.943    -.2261412    .2101281
+              |
+       region |
+middle atl..  |   .2362559   .1627758     1.45   0.147    -.0835865    .5560982
+e. nor. ce..  |   .1201685   .1586134     0.76   0.449     -.191495    .4318321
+w. nor. ce..  |  -.0188251    .188626    -0.10   0.921    -.3894604    .3518101
+south atla..  |  -.0350995   .1571747    -0.22   0.823    -.3439359    .2737368
+e. sou. ce..  |   .0206097   .1842544     0.11   0.911    -.3414359    .3826553
+w. sou. ce..  |    .138604   .1693992     0.82   0.414    -.1942525    .4714605
+    mountain  |  -.0130408   .1854724    -0.07   0.944    -.3774794    .3513978
+     pacific  |  -.0029661   .1598823    -0.02   0.985    -.3171228    .3111906
+              |
+        metro |
+   MetroArea  |  -.0578931   .0736969    -0.79   0.433    -.2027019    .0869158
+       coninc |    .001162   .0009268     1.25   0.211    -.0006617    .0029856
+              |
+       degree |
+ high school  |  -.1509718    .096079    -1.57   0.117    -.3397605     .037817
+junior col..  |   -.201884   .1329559    -1.52   0.130    -.4631338    .0593658
+    bachelor  |  -.0087799   .1172401    -0.07   0.940    -.2391538    .2215939
+    graduate  |  -.1764724   .1410257    -1.25   0.211    -.4535894    .1006446
+              |
+         year |
+        2018  |  -.4028021   .0610504    -6.60   0.000    -.5227616   -.2828427
+              |
+        _cons |    3.03087   .2744693    11.04   0.000     2.491558    3.570183
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigalc
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =        859
+                                                Average RVI       =     0.0046
+                                                Largest FMI       =     0.0452
+                                                Complete DF       =        835
+DF adjustment:   Small sample                   DF:     min       =     733.62
+                                                        avg       =     823.78
+                                                        max       =     832.87
+Model F test:       Equal FMI                   F(  23,  833.0)   =       2.33
+Within VCE type:          OLS                   Prob > F          =     0.0004
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |   .0471343   .0451748     1.04   0.297    -.0415529    .1358216
+              |
+    cntct_tot |
+contact wi..  |  -.0592929   .0457137    -1.30   0.195    -.1490232    .0304375
+          age |  -.0062865     .00711    -0.88   0.377    -.0202422    .0076691
+              |
+  c.age#c.age |   .0001145   .0000701     1.63   0.103    -.0000232    .0002521
+              |
+       female |
+      female  |   .0151247   .0441314     0.34   0.732    -.0714973    .1017468
+              |
+         race |
+       black  |  -.0036195   .0635333    -0.06   0.955    -.1283239    .1210849
+  other race  |  -.0581422   .0801075    -0.73   0.468    -.2153785    .0990942
+              |
+       region |
+middle atl..  |   .2364557   .1172116     2.02   0.044     .0063908    .4665205
+e. nor. ce..  |   .0233038   .1116508     0.21   0.835    -.1958462    .2424539
+w. nor. ce..  |   .0190678    .132735     0.14   0.886    -.2414666    .2796023
+south atla..  |   .0578778   .1096482     0.53   0.598    -.1573416    .2730972
+e. sou. ce..  |   .1506851   .1301191     1.16   0.247     -.104715    .4060851
+w. sou. ce..  |   .1829446   .1186878     1.54   0.124    -.0500178     .415907
+    mountain  |   .0286274   .1252921     0.23   0.819     -.217298    .2745529
+     pacific  |   .0658467   .1158724     0.57   0.570    -.1615895    .2932829
+              |
+        metro |
+   MetroArea  |   .0633845   .0529983     1.20   0.232    -.0406416    .1674105
+       coninc |   .0005273   .0005849     0.90   0.368    -.0006209    .0016756
+              |
+       degree |
+ high school  |  -.1412459   .0696568    -2.03   0.043    -.2779695   -.0045224
+junior col..  |  -.1537729   .0983801    -1.56   0.118    -.3468752    .0393293
+    bachelor  |  -.1618619   .0826106    -1.96   0.050    -.3240119    .0002881
+    graduate  |  -.0820187   .0978272    -0.84   0.402    -.2740364     .109999
+              |
+         year |
+        2006  |  -.0623931   .0519157    -1.20   0.230    -.1642942     .039508
+        2018  |  -.1035151   .0570506    -1.81   0.070    -.2154951     .008465
+              |
+        _cons |   2.742971   .1924777    14.25   0.000     2.365172    3.120769
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigschiz
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =        843
+                                                Average RVI       =     0.0070
+                                                Largest FMI       =     0.0674
+                                                Complete DF       =        819
+DF adjustment:   Small sample                   DF:     min       =     646.54
+                                                        avg       =     801.74
+                                                        max       =     816.54
+Model F test:       Equal FMI                   F(  23,  816.9)   =       1.53
+Within VCE type:          OLS                   Prob > F          =     0.0532
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |   .1527592   .0857974     1.78   0.075    -.0156674    .3211857
+              |
+    cntct_tot |
+contact wi..  |  -.0753673   .0507471    -1.49   0.138    -.1749962    .0242616
+          age |  -.0150967   .0078986    -1.91   0.056    -.0306009    .0004075
+              |
+  c.age#c.age |   .0001741   .0000783     2.22   0.026     .0000205    .0003277
+              |
+       female |
+      female  |  -.0531962    .047346    -1.12   0.262    -.1461305    .0397382
+              |
+         race |
+       black  |   .1263718   .0722492     1.75   0.081    -.0154442    .2681879
+  other race  |  -.0412586   .0848139    -0.49   0.627    -.2077382     .125221
+              |
+       region |
+middle atl..  |   .0663969   .1209222     0.55   0.583    -.1709582     .303752
+e. nor. ce..  |   .0818532   .1137147     0.72   0.472    -.1413545    .3050608
+w. nor. ce..  |  -.0647474   .1368405    -0.47   0.636    -.3333481    .2038534
+south atla..  |   .0519996   .1126555     0.46   0.645    -.1691292    .2731284
+e. sou. ce..  |   -.054695   .1369344    -0.40   0.690    -.3234802    .2140903
+w. sou. ce..  |  -.0003098   .1240131    -0.00   0.998    -.2437319    .2431122
+    mountain  |  -.0013085   .1314475    -0.01   0.992    -.2593232    .2567063
+     pacific  |  -.0362029   .1169358    -0.31   0.757    -.2657332    .1933274
+              |
+        metro |
+   MetroArea  |    .071148   .0591105     1.20   0.229    -.0448786    .1871747
+       coninc |   .0016532   .0007096     2.33   0.020     .0002598    .0030466
+              |
+       degree |
+ high school  |   .0670727   .0755749     0.89   0.375    -.0812717     .215417
+junior col..  |  -.0281385   .1072305    -0.26   0.793    -.2386189    .1823419
+    bachelor  |   .0829455   .0926868     0.89   0.371    -.0989892    .2648801
+    graduate  |   .0272352   .1100392     0.25   0.805    -.1887609    .2432314
+              |
+         year |
+        2006  |   .0563166   .0559206     1.01   0.314    -.0534489     .166082
+        2018  |   .0066642   .0609093     0.11   0.913    -.1128934    .1262217
+              |
+        _cons |   2.605258   .2206327    11.81   0.000     2.172183    3.038334
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigdep
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =        898
+                                                Average RVI       =     0.0083
+                                                Largest FMI       =     0.0967
+                                                Complete DF       =        874
+DF adjustment:   Small sample                   DF:     min       =     571.81
+                                                        avg       =     850.26
+                                                        max       =     871.38
+Model F test:       Equal FMI                   F(  23,  871.8)   =       4.22
+Within VCE type:          OLS                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |   .0255632   .0489028     0.52   0.601    -.0704292    .1215557
+              |
+    cntct_tot |
+contact wi..  |  -.1293715    .045534    -2.84   0.005    -.2187525   -.0399904
+          age |  -.0171064   .0066359    -2.58   0.010    -.0301306   -.0040822
+              |
+  c.age#c.age |    .000209   .0000652     3.20   0.001      .000081     .000337
+              |
+       female |
+      female  |  -.0910959   .0432396    -2.11   0.035    -.1759621   -.0062297
+              |
+         race |
+       black  |   -.027035   .0630929    -0.43   0.668    -.1508675    .0967975
+  other race  |   .2186545   .0848898     2.58   0.010     .0520417    .3852673
+              |
+       region |
+middle atl..  |   .0264996    .120879     0.22   0.827    -.2107486    .2637478
+e. nor. ce..  |  -.0236422    .115904    -0.20   0.838     -.251126    .2038415
+w. nor. ce..  |  -.2404631   .1290552    -1.86   0.063    -.4937586    .0128323
+south atla..  |  -.0470412   .1152279    -0.41   0.683    -.2731979    .1791155
+e. sou. ce..  |  -.0589949   .1294714    -0.46   0.649    -.3131074    .1951177
+w. sou. ce..  |    .105866   .1226497     0.86   0.388    -.1348575    .3465895
+    mountain  |  -.1647085   .1283501    -1.28   0.200    -.4166203    .0872033
+     pacific  |  -.0468846   .1185543    -0.40   0.693      -.27957    .1858009
+              |
+        metro |
+   MetroArea  |   .0840162   .0534073     1.57   0.116    -.0208059    .1888384
+       coninc |   .0013988   .0006233     2.24   0.025     .0001746     .002623
+              |
+       degree |
+ high school  |   .0769266   .0670013     1.15   0.251    -.0545773    .2084306
+junior col..  |  -.0421447   .1003962    -0.42   0.675    -.2391923    .1549028
+    bachelor  |   .0028364    .083117     0.03   0.973    -.1603008    .1659736
+    graduate  |  -.0390382    .096028    -0.41   0.684     -.227516    .1494397
+              |
+         year |
+        2006  |  -.0614719   .0508145    -1.21   0.227    -.1612051    .0382613
+        2018  |  -.2916035    .056814    -5.13   0.000    -.4031117   -.1800952
+              |
+        _cons |   2.621609   .1950741    13.44   0.000     2.238737     3.00448
+-------------------------------------------------------------------------------
+
+. 
+. 
+. *Any issues with non-normal errors? (no)
+. * cannot use MI data for these tests
+. reg     `dv' `iv' i.cntct_tot `cvs' `evs'
+
+      Source |       SS           df       MS      Number of obs   =     3,245
+-------------+----------------------------------   F(27, 3217)     =     32.66
+       Model |  350.503733        27  12.9816197   Prob > F        =    0.0000
+    Residual |  1278.69226     3,217  .397479721   R-squared       =    0.2151
+-------------+----------------------------------   Adj R-squared   =    0.2086
+       Total |    1629.196     3,244  .502218248   Root MSE        =    .63046
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |   .0679681   .0262021     2.59   0.010     .0165937    .1193426
+              |
+    cntct_tot |
+contact wi..  |  -.1053521   .0233818    -4.51   0.000    -.1511968   -.0595075
+          age |  -.0079077   .0037089    -2.13   0.033    -.0151798   -.0006356
+              |
+  c.age#c.age |   .0001072   .0000365     2.93   0.003     .0000356    .0001789
+              |
+       female |
+      female  |   -.018992   .0225417    -0.84   0.400    -.0631896    .0252055
+              |
+         race |
+       black  |   .0228748   .0334784     0.68   0.494    -.0427664    .0885161
+  other race  |   .0069619   .0420251     0.17   0.868    -.0754368    .0893606
+              |
+       region |
+middle atl..  |   .0624413   .0613651     1.02   0.309    -.0578773    .1827598
+e. nor. ce..  |  -.0136997    .058397    -0.23   0.815    -.1281988    .1007994
+w. nor. ce..  |  -.1001245    .067874    -1.48   0.140    -.2332053    .0329562
+south atla..  |  -.0229103   .0579785    -0.40   0.693    -.1365887    .0907682
+e. sou. ce..  |  -.0586208   .0683936    -0.86   0.391    -.1927202    .0754786
+w. sou. ce..  |   .0028158   .0625594     0.05   0.964    -.1198446    .1254763
+    mountain  |  -.0769371    .065966    -1.17   0.244    -.2062768    .0524026
+     pacific  |  -.0289807   .0598721    -0.48   0.628     -.146372    .0884107
+              |
+        metro |
+   MetroArea  |   .0582861   .0281907     2.07   0.039     .0030125    .1135597
+       coninc |   .0010047   .0003117     3.22   0.001     .0003935    .0016158
+              |
+       degree |
+ high school  |  -.0275583   .0377061    -0.73   0.465    -.1014887     .046372
+junior col..  |  -.1119536   .0520255    -2.15   0.031    -.2139602    -.009947
+    bachelor  |  -.0602257   .0447947    -1.34   0.179    -.1480548    .0276034
+    graduate  |   -.110209   .0518364    -2.13   0.034    -.2118448   -.0085732
+              |
+      vigdrug |
+        Drug  |   .8802757   .0414323    21.25   0.000     .7990394     .961512
+              |
+       vigalc |
+     Alcohol  |   .6478415   .0349725    18.52   0.000     .5792708    .7164121
+              |
+     vigschiz |
+Schizophre~a  |   .5742497   .0384173    14.95   0.000     .4989249    .6495746
+              |
+       vigdep |
+  Depression  |   .2005743   .0359755     5.58   0.000      .130037    .2711116
+              |
+         year |
+        2006  |  -.0341456   .0283141    -1.21   0.228    -.0896612    .0213699
+        2018  |  -.1525832   .0287122    -5.31   0.000    -.2088793   -.0962872
+              |
+        _cons |   2.205551   .1064977    20.71   0.000     1.996741    2.414361
+-------------------------------------------------------------------------------
+
+. estat hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of socdistSS
+
+H0: Constant variance
+
+    chi2(1) =   8.00
+Prob > chi2 = 0.0047
+
+.  
+. predict res_sc, res
+(675 missing values generated)
+
+. lab var res_sc "Residuals from stigma regression"
+
+. kdensity res_sc, normal title("Distribution of residuals from pooled linear re
+> gression model") ///
+>         subtitle("Normal distribution included in blue for comparison") ///
+>         xtitle("Residuals from pooled regression model") ///
+>         legend(order(1 "Distribution of residuals" ///
+>                 2 "Normal distribution" "(for comparison)") pos(6) row(1))
+
+. 
+.         graph export "Graphs/A05-kdensity_residuals.png", replace
+file
+    /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/MLS_Match
+    > ingLabelingStigma/work_socius_2024_09_corrected/Graphs/A05-kdensity_resi
+    > duals.png saved as PNG format
+
+. *       graph export "Graphs/A05-kdensity_residuals.emf", replace
+.         
+. 
+. // Sensitivty analysis with robust SEs //
+. 
+. *Sig main effect of labels pooling across all vignetes.
+. mi est:                 reg     `dv' `iv' i.cntct_tot `cvs' `evs', robust
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =      3,920
+                                                Average RVI       =     0.0066
+                                                Largest FMI       =     0.1020
+                                                Complete DF       =       3892
+DF adjustment:   Small sample                   DF:     min       =   1,215.20
+                                                        avg       =   3,740.09
+                                                        max       =   3,887.78
+Model F test:       Equal FMI                   F(  27, 3888.6)   =      42.23
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |    .072719   .0242169     3.00   0.003     .0252366    .1202015
+              |
+    cntct_tot |
+contact wi..  |   -.095031    .021797    -4.36   0.000    -.1377669    -.052295
+          age |    -.00984    .003357    -2.93   0.003    -.0164216   -.0032584
+              |
+  c.age#c.age |    .000129   .0000331     3.89   0.000      .000064    .0001939
+              |
+       female |
+      female  |    -.01512   .0210543    -0.72   0.473    -.0563985    .0261584
+              |
+         race |
+       black  |   .0388926    .031215     1.25   0.213    -.0223069     .100092
+  other race  |  -.0064841   .0392533    -0.17   0.869     -.083443    .0704749
+              |
+       region |
+middle atl..  |   .0956587   .0577278     1.66   0.098    -.0175209    .2088383
+e. nor. ce..  |   .0299295   .0557041     0.54   0.591    -.0792827    .1391416
+w. nor. ce..  |  -.0485636   .0643544    -0.75   0.451    -.1747351     .077608
+south atla..  |   .0101459   .0544373     0.19   0.852    -.0965825    .1168743
+e. sou. ce..  |  -.0127754   .0636933    -0.20   0.841    -.1376509    .1121002
+w. sou. ce..  |   .0811482   .0597848     1.36   0.175    -.0360644    .1983607
+    mountain  |  -.0452806    .060673    -0.75   0.456    -.1642345    .0736732
+     pacific  |  -.0005734    .056222    -0.01   0.992    -.1108009    .1096541
+              |
+        metro |
+   MetroArea  |   .0514604   .0262124     1.96   0.050      .000069    .1028518
+       coninc |   .0009656   .0003069     3.15   0.002     .0003634    .0015677
+              |
+       degree |
+ high school  |   -.020117    .036096    -0.56   0.577    -.0908858    .0506518
+junior col..  |  -.0845452   .0476819    -1.77   0.076    -.1780291    .0089387
+    bachelor  |  -.0484464   .0416373    -1.16   0.245    -.1300798    .0331869
+    graduate  |  -.0712437    .048069    -1.48   0.138    -.1654871    .0229998
+              |
+      vigdrug |
+        Drug  |   .8964866   .0378395    23.69   0.000     .8222995    .9706738
+              |
+       vigalc |
+     Alcohol  |   .6641106   .0316508    20.98   0.000     .6020567    .7261645
+              |
+     vigschiz |
+Schizophre~a  |   .5604628   .0356538    15.72   0.000     .4905606    .6303651
+              |
+       vigdep |
+  Depression  |   .1953099   .0328479     5.95   0.000     .1309088     .259711
+              |
+         year |
+        2006  |  -.0338623   .0257875    -1.31   0.189    -.0844207     .016696
+        2018  |  -.1555744   .0264579    -5.88   0.000    -.2074472   -.1037017
+              |
+        _cons |   2.182044   .0979721    22.27   0.000     1.989962    2.374125
+-------------------------------------------------------------------------------
+
+. 
+. 
+. *Only effect of labeling is on vignorm
+. foreach v of varlist vignorm vigdrug vigalc vigschiz vigdep {
+  2.         di _newline(1)
+  3.         di in red "Vignette is: `v'"
+  4.         mi est: reg `dv' `iv' i.cntct_tot `cvs' i.year if `v', robust
+  5.         }
+
+
+Vignette is: vignorm
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =        815
+                                                Average RVI       =     0.0098
+                                                Largest FMI       =     0.0969
+                                                Complete DF       =        791
+DF adjustment:   Small sample                   DF:     min       =     530.76
+                                                        avg       =     768.54
+                                                        max       =     788.55
+Model F test:       Equal FMI                   F(  23,  788.8)   =       1.73
+Within VCE type:       Robust                   Prob > F          =     0.0184
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |   .1865552   .0512282     3.64   0.000     .0859875    .2871229
+              |
+    cntct_tot |
+contact wi..  |  -.1201371   .0477344    -2.52   0.012    -.2138723   -.0264019
+          age |   .0002453   .0068559     0.04   0.971    -.0132127    .0137033
+              |
+  c.age#c.age |   .0000209   .0000667     0.31   0.754      -.00011    .0001518
+              |
+       female |
+      female  |   .0241071   .0448946     0.54   0.591    -.0640201    .1122344
+              |
+         race |
+       black  |   .0283854   .0656879     0.43   0.666     -.100559    .1573297
+  other race  |  -.1528816   .0842471    -1.81   0.070     -.318257    .0124939
+              |
+       region |
+middle atl..  |  -.0301546   .1202476    -0.25   0.802    -.2661982    .2058889
+e. nor. ce..  |   .0494231   .1143345     0.43   0.666    -.1750128    .2738591
+w. nor. ce..  |   .1739351   .1376572     1.26   0.207    -.0962828     .444153
+south atla..  |   .0215327   .1118997     0.19   0.847    -.1981239    .2411893
+e. sou. ce..  |   -.062433   .1339009    -0.47   0.641    -.3252775    .2004115
+w. sou. ce..  |   -.020264   .1276082    -0.16   0.874    -.2707561    .2302281
+    mountain  |  -.0102208   .1259998    -0.08   0.935    -.2575557    .2371142
+     pacific  |   .0200279   .1158889     0.17   0.863    -.2074593    .2475151
+              |
+        metro |
+   MetroArea  |   .0370765   .0586398     0.63   0.527     -.078032     .152185
+       coninc |   .0000997   .0006705     0.15   0.882    -.0012174    .0014169
+              |
+       degree |
+ high school  |   .0069617   .0812158     0.09   0.932    -.1524632    .1663867
+junior col..  |  -.0343792   .1063065    -0.32   0.746    -.2430569    .1742985
+    bachelor  |  -.0894915   .0940064    -0.95   0.341    -.2740265    .0950434
+    graduate  |  -.1023939   .1059477    -0.97   0.334    -.3103704    .1055826
+              |
+         year |
+        2006  |   .0629807   .0531714     1.18   0.237    -.0413939    .1673552
+        2018  |   .0331065   .0592746     0.56   0.577    -.0832483    .1494613
+              |
+        _cons |   1.908096     .20627     9.25   0.000     1.503192       2.313
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigdrug
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =        505
+                                                Average RVI       =     0.0129
+                                                Largest FMI       =     0.1458
+                                                Complete DF       =        482
+DF adjustment:   Small sample                   DF:     min       =     284.59
+                                                        avg       =     466.24
+                                                        max       =     479.81
+Model F test:       Equal FMI                   F(  22,  479.9)   =       3.63
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |  -.0009001   .0611958    -0.01   0.988    -.1211684    .1193683
+              |
+    cntct_tot |
+contact wi..  |   -.056946   .0604906    -0.94   0.347     -.175842    .0619499
+          age |  -.0015702   .0104057    -0.15   0.880    -.0220169    .0188765
+              |
+  c.age#c.age |   .0000391   .0001034     0.38   0.706     -.000164    .0002421
+              |
+       female |
+      female  |    .092929   .0591793     1.57   0.117    -.0233536    .2092117
+              |
+         race |
+       black  |   .0553109   .0840727     0.66   0.511    -.1098881      .22051
+  other race  |  -.0080065   .1036618    -0.08   0.938    -.2116951     .195682
+              |
+       region |
+middle atl..  |   .2362559   .1981873     1.19   0.234    -.1531671    .6256788
+e. nor. ce..  |   .1201685   .1978813     0.61   0.544    -.2686529    .5089899
+w. nor. ce..  |  -.0188251   .2094554    -0.09   0.928    -.4303885    .3927382
+south atla..  |  -.0350995   .1933832    -0.18   0.856    -.4150824    .3448833
+e. sou. ce..  |   .0206097    .219867     0.09   0.925    -.4114116     .452631
+w. sou. ce..  |    .138604   .2043194     0.68   0.498    -.2628677    .5400757
+    mountain  |  -.0130408   .2055172    -0.06   0.949    -.4168658    .3907842
+     pacific  |  -.0029661   .1956126    -0.02   0.988    -.3873297    .3813975
+              |
+        metro |
+   MetroArea  |  -.0578931   .0763928    -0.76   0.449    -.2079991    .0922129
+       coninc |    .001162   .0008845     1.31   0.190     -.000579    .0029029
+              |
+       degree |
+ high school  |  -.1509718   .0997796    -1.51   0.131    -.3470319    .0450884
+junior col..  |   -.201884   .1451386    -1.39   0.165    -.4870716    .0833036
+    bachelor  |  -.0087799   .1081732    -0.08   0.935    -.2213389    .2037791
+    graduate  |  -.1764724   .1381186    -1.28   0.202    -.4478776    .0949328
+              |
+         year |
+        2018  |  -.4028021   .0599985    -6.71   0.000    -.5206945   -.2849097
+              |
+        _cons |    3.03087   .3084461     9.83   0.000     2.424796    3.636944
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigalc
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =        859
+                                                Average RVI       =     0.0048
+                                                Largest FMI       =     0.0452
+                                                Complete DF       =        835
+DF adjustment:   Small sample                   DF:     min       =     733.86
+                                                        avg       =     823.99
+                                                        max       =     832.87
+Model F test:       Equal FMI                   F(  23,  832.9)   =       2.85
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |   .0471343   .0452105     1.04   0.297     -.041623    .1358917
+              |
+    cntct_tot |
+contact wi..  |  -.0592929   .0450675    -1.32   0.189     -.147755    .0291692
+          age |  -.0062865   .0069495    -0.90   0.366    -.0199272    .0073542
+              |
+  c.age#c.age |   .0001145   .0000679     1.69   0.092    -.0000188    .0002478
+              |
+       female |
+      female  |   .0151247   .0443187     0.34   0.733    -.0718648    .1021143
+              |
+         race |
+       black  |  -.0036195   .0677033    -0.05   0.957    -.1365088    .1292698
+  other race  |  -.0581422   .0804818    -0.72   0.470    -.2161133    .0998289
+              |
+       region |
+middle atl..  |   .2364557   .1145933     2.06   0.039     .0115299    .4613814
+e. nor. ce..  |   .0233038   .1147862     0.20   0.839    -.2020005    .2486081
+w. nor. ce..  |   .0190678   .1336816     0.14   0.887    -.2433248    .2814604
+south atla..  |   .0578778   .1113661     0.52   0.603    -.1607134     .276469
+e. sou. ce..  |   .1506851   .1312073     1.15   0.251    -.1068509     .408221
+w. sou. ce..  |   .1829446   .1206727     1.52   0.130    -.0539138     .419803
+    mountain  |   .0286274   .1233883     0.23   0.817    -.2135612     .270816
+     pacific  |   .0658467   .1137604     0.58   0.563     -.157444    .2891374
+              |
+        metro |
+   MetroArea  |   .0633845   .0538964     1.18   0.240    -.0424044    .1691733
+       coninc |   .0005273   .0005969     0.88   0.377    -.0006445    .0016991
+              |
+       degree |
+ high school  |  -.1412459   .0729133    -1.94   0.053    -.2843614    .0018695
+junior col..  |  -.1537729   .0962191    -1.60   0.110    -.3426336    .0350877
+    bachelor  |  -.1618619   .0840885    -1.92   0.055    -.3269126    .0031888
+    graduate  |  -.0820187   .0985882    -0.83   0.406      -.27553    .1114926
+              |
+         year |
+        2006  |  -.0623931    .051414    -1.21   0.225    -.1633094    .0385232
+        2018  |  -.1035151   .0580715    -1.78   0.075    -.2174989    .0104688
+              |
+        _cons |   2.742971   .1932051    14.20   0.000     2.363744    3.122197
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigschiz
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =        843
+                                                Average RVI       =     0.0075
+                                                Largest FMI       =     0.0701
+                                                Complete DF       =        819
+DF adjustment:   Small sample                   DF:     min       =     637.33
+                                                        avg       =     801.49
+                                                        max       =     816.46
+Model F test:       Equal FMI                   F(  23,  816.9)   =       1.59
+Within VCE type:       Robust                   Prob > F          =     0.0401
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |   .1527592   .0853928     1.79   0.074    -.0148735    .3203918
+              |
+    cntct_tot |
+contact wi..  |  -.0753673    .051478    -1.46   0.144    -.1764303    .0256957
+          age |  -.0150967   .0079331    -1.90   0.057    -.0306685    .0004752
+              |
+  c.age#c.age |   .0001741   .0000782     2.23   0.026     .0000205    .0003276
+              |
+       female |
+      female  |  -.0531962   .0479156    -1.11   0.267    -.1472486    .0408563
+              |
+         race |
+       black  |   .1263718   .0724993     1.74   0.082    -.0159351    .2686787
+  other race  |  -.0412586   .0874575    -0.47   0.637    -.2129272    .1304101
+              |
+       region |
+middle atl..  |   .0663969   .1152103     0.58   0.565    -.1597464    .2925402
+e. nor. ce..  |   .0818532   .1069317     0.77   0.444    -.1280403    .2917467
+w. nor. ce..  |  -.0647474   .1261254    -0.51   0.608    -.3123156    .1828209
+south atla..  |   .0519996   .1044244     0.50   0.619    -.1529727    .2569718
+e. sou. ce..  |   -.054695   .1339928    -0.41   0.683    -.3177061    .2083162
+w. sou. ce..  |  -.0003098   .1180545    -0.00   0.998    -.2320361    .2314164
+    mountain  |  -.0013085   .1214871    -0.01   0.991    -.2397723    .2371554
+     pacific  |  -.0362029   .1108605    -0.33   0.744    -.2538083    .1814024
+              |
+        metro |
+   MetroArea  |    .071148   .0561813     1.27   0.206    -.0391289     .181425
+       coninc |   .0016532   .0006962     2.37   0.018     .0002861    .0030203
+              |
+       degree |
+ high school  |   .0670727   .0801512     0.84   0.403    -.0902544    .2243998
+junior col..  |  -.0281385   .1046067    -0.27   0.788    -.2334687    .1771917
+    bachelor  |   .0829455   .0948742     0.87   0.382    -.1032826    .2691736
+    graduate  |   .0272352    .113378     0.24   0.810    -.1953142    .2497847
+              |
+         year |
+        2006  |   .0563166   .0554428     1.02   0.310    -.0525111    .1651442
+        2018  |   .0066642   .0610664     0.11   0.913    -.1132017    .1265301
+              |
+        _cons |   2.605258   .2133722    12.21   0.000     2.186434    3.024082
+-------------------------------------------------------------------------------
+
+
+Vignette is: vigdep
+
+Multiple-imputation estimates                   Imputations       =         20
+Linear regression                               Number of obs     =        898
+                                                Average RVI       =     0.0081
+                                                Largest FMI       =     0.0889
+                                                Complete DF       =        874
+DF adjustment:   Small sample                   DF:     min       =     600.83
+                                                        avg       =     852.32
+                                                        max       =     871.54
+Model F test:       Equal FMI                   F(  23,  871.8)   =       3.92
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+-------------------------------------------------------------------------------
+    socdistSS | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+  L_mentlillB |
+Lab MntlIl..  |   .0255632   .0504059     0.51   0.612    -.0733787    .1245052
+              |
+    cntct_tot |
+contact wi..  |  -.1293715     .04664    -2.77   0.006    -.2209225   -.0378204
+          age |  -.0171064   .0070682    -2.42   0.016    -.0309791   -.0032337
+              |
+  c.age#c.age |    .000209   .0000716     2.92   0.004     .0000685    .0003495
+              |
+       female |
+      female  |  -.0910959    .043787    -2.08   0.038    -.1770365   -.0051553
+              |
+         race |
+       black  |   -.027035   .0648542    -0.42   0.677    -.1543245    .1002545
+  other race  |   .2186545   .0796938     2.74   0.006     .0622396    .3750693
+              |
+       region |
+middle atl..  |   .0264996   .1412241     0.19   0.851    -.2506796    .3036788
+e. nor. ce..  |  -.0236422   .1388955    -0.17   0.865     -.296251    .2489666
+w. nor. ce..  |  -.2404631   .1525955    -1.58   0.115    -.5399607    .0590344
+south atla..  |  -.0470412   .1376405    -0.34   0.733    -.3171868    .2231044
+e. sou. ce..  |  -.0589949   .1462772    -0.40   0.687    -.3460918    .2281021
+w. sou. ce..  |    .105866   .1433037     0.74   0.460    -.1753948    .3871268
+    mountain  |  -.1647085   .1466216    -1.12   0.262    -.4524816    .1230646
+     pacific  |  -.0468846   .1377594    -0.34   0.734    -.3172634    .2234943
+              |
+        metro |
+   MetroArea  |   .0840162   .0550429     1.53   0.127    -.0240161    .1920486
+       coninc |   .0013988   .0006498     2.15   0.032     .0001227     .002675
+              |
+       degree |
+ high school  |   .0769266   .0750001     1.03   0.305    -.0702762    .2241295
+junior col..  |  -.0421447   .0993255    -0.42   0.671     -.237091    .1528015
+    bachelor  |   .0028364   .0880465     0.03   0.974    -.1699754    .1756482
+    graduate  |  -.0390382   .0978455    -0.40   0.690    -.2310832    .1530068
+              |
+         year |
+        2006  |  -.0614719   .0522539    -1.18   0.240    -.1640302    .0410864
+        2018  |  -.2916035   .0569744    -5.12   0.000    -.4034266   -.1797803
+              |
+        _cons |   2.621609   .2247172    11.67   0.000     2.180557     3.06266
+-------------------------------------------------------------------------------
+
+.         
+. // close out
+. log close
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/ML
+> S_MatchingLabelingStigma/work_socius_2024_09_corrected/mls-do01-regressions.lo
+> g
+  log type:  text
+ closed on:  26 Sep 2024, 17:12:46
+--------------------------------------------------------------------------------

@@ -1,0 +1,2000 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/ML
+> S_MatchingLabelingStigma/work_socius_2024_09_other_imputed/mls-data05-missing.
+> log
+  log type:  text
+ opened on:  26 Sep 2024, 10:21:53
+
+.  
+.  
+. **********
+. /// #0 Setup    
+> **********      
+.  
+.  version 15.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+
+. 
+.  
+.  local pgm   mls-data05-missing.do
+
+.  local dte   2021-01-08 
+
+.  local who   bianca manago
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+.  di "`tag'"
+mls-data05-missing.do.do bianca manago 2021-01-08
+
+.  
+. ****************************************************************
+.  // #1 Load Data
+. **************************************************************** 
+.  local data "Data/mls-data04-sort_order"
+
+.  
+. **************************************************************** 
+. // Examine Missingness
+. **************************************************************** 
+.  
+. ******
+. // 1996
+. ****** 
+.  use `data', clear
+
+.  count
+  4,140
+
+.  
+.  // drop variables not in 1996
+.  drop *06 *18 phase d_* c_mh* c_diagnosd income16 c_effectR c_effectY
+
+.  
+.  keep if year==1996
+(2,696 observations deleted)
+
+.  
+.         missings report, percent
+
+Checking missings in all variables:
+1444 observations with missing values
+
+  +----------------------------------------+
+  |                  # missing   % missing |
+  |----------------------------------------|
+  |     L_mentlill          88        6.09 |
+  |    L_mentlillB          88        6.09 |
+  |     a_breakdwn          76        5.26 |
+  |    a_breakdwnR          76        5.26 |
+  |   a_breakdwnRV          76        5.26 |
+  |----------------------------------------|
+  |     a_charactr          67        4.64 |
+  |    a_charactrR          67        4.64 |
+  |   a_charactrRV          67        4.64 |
+  |     a_genetics          94        6.51 |
+  |    a_geneticsR          94        6.51 |
+  |----------------------------------------|
+  |   a_geneticsRV          94        6.51 |
+  |     a_godswill          82        5.68 |
+  |    a_godswillR          82        5.68 |
+  |   a_godswillRV          82        5.68 |
+  |     a_imbalnce         115        7.96 |
+  |----------------------------------------|
+  |    a_imbalnceR         115        7.96 |
+  |   a_imbalnceRV         115        7.96 |
+  |      a_physill          84        5.82 |
+  |     a_physillR          84        5.82 |
+  |    a_physillRV          84        5.82 |
+  |----------------------------------------|
+  |     a_stresses          56        3.88 |
+  |    a_stressesR          56        3.88 |
+  |   a_stressesRV          56        3.88 |
+  |     a_upsdowns          41        2.84 |
+  |    a_upsdownsR          41        2.84 |
+  |----------------------------------------|
+  |   a_upsdownsRV          41        2.84 |
+  |     a_wayraise          78        5.40 |
+  |    a_wayraiseR          78        5.40 |
+  |   a_wayraiseRV          78        5.40 |
+  |           ageQ           1        0.07 |
+  |----------------------------------------|
+  |       anychild           8        0.55 |
+  |      c_brkddur        1233       85.39 |
+  |     c_brkdlong        1233       85.39 |
+  |     c_evbrkdwn          21        1.45 |
+  |        c_evmhp         391       27.08 |
+  |----------------------------------------|
+  |     c_knwmhosp         723       50.07 |
+  |     c_knwpatnt         785       54.36 |
+  |         childs           8        0.55 |
+  |    cntct_any96         176       12.19 |
+  |    cntct_oth96         719       49.79 |
+  |----------------------------------------|
+  |      cntct_so3         176       12.19 |
+  |      cntct_so4         176       12.19 |
+  |     cntct_so96         719       49.79 |
+  |      cntct_tot         176       12.19 |
+  |     cntct_val3         176       12.19 |
+  |----------------------------------------|
+  |     cntct_val4         176       12.19 |
+  |         coninc         178       12.33 |
+  |        conincQ         178       12.33 |
+  |       dangroth          51        3.53 |
+  |       dangrslf          59        4.09 |
+  |----------------------------------------|
+  |        hurtoth         112        7.76 |
+  |       hurtself          84        5.82 |
+  |       income91         178       12.33 |
+  |         meddoc          70        4.85 |
+  |       mentldoc         111        7.69 |
+  |----------------------------------------|
+  |       mentlhos         167       11.57 |
+  |       mentlill          88        6.09 |
+  |       myprobs1        1444      100.00 |
+  |       myprobs2        1444      100.00 |
+  |       myprobs3        1444      100.00 |
+  |----------------------------------------|
+  |       myprobs4        1444      100.00 |
+  |       myprobs5        1444      100.00 |
+  |       numchild           8        0.55 |
+  |         otcmed          84        5.82 |
+  |       polviews          85        5.89 |
+  |----------------------------------------|
+  |          rxmed         143        9.90 |
+  |      s_friends          69        4.78 |
+  |     s_friendsB          24        1.66 |
+  |      s_grphome         100        6.93 |
+  |     s_grphomeB          26        1.80 |
+  |----------------------------------------|
+  |        s_marry         123        8.52 |
+  |       s_marryB          26        1.80 |
+  |     s_nextdoor          72        4.99 |
+  |    s_nextdoorB          21        1.45 |
+  |       s_social          53        3.67 |
+  |----------------------------------------|
+  |      s_socialB          22        1.52 |
+  |         s_work          88        6.09 |
+  |        s_workB          22        1.52 |
+  |       selfhelp          71        4.92 |
+  |        imp_own          48        3.32 |
+  |----------------------------------------|
+  |        imp_trt          61        4.22 |
+  |       must_doc          97        6.72 |
+  |      must_hosp         103        7.13 |
+  |       must_med         102        7.06 |
+  |  shld_dangroth          51        3.53 |
+  |----------------------------------------|
+  | shld_dangrothR          21        1.45 |
+  |  shld_dangrslf          59        4.09 |
+  | shld_dangrslfR          21        1.45 |
+  |    shld_meddoc          70        4.85 |
+  |   shld_meddocR          27        1.87 |
+  |----------------------------------------|
+  |  shld_mentldoc         111        7.69 |
+  | shld_mentldocR          34        2.35 |
+  |  shld_mentlhos         167       11.57 |
+  | shld_mentlhosR          35        2.42 |
+  |    shld_otcmed          84        5.82 |
+  |----------------------------------------|
+  |   shld_otcmedR          32        2.22 |
+  |     shld_rxmed         143        9.90 |
+  |    shld_rxmedR          34        2.35 |
+  |  shld_selfhelp          71        4.92 |
+  | shld_selfhelpR          31        2.15 |
+  |----------------------------------------|
+  |    violent_oth         112        7.76 |
+  |   violent_othR          21        1.45 |
+  |   violent_self          84        5.82 |
+  |  violent_selfR          17        1.18 |
+  |            age           1        0.07 |
+  |----------------------------------------|
+  |          age10           1        0.07 |
+  |         cohort           1        0.07 |
+  |       cohort10           1        0.07 |
+  |           born           9        0.62 |
+  |           educ           4        0.28 |
+  |----------------------------------------|
+  |        ed_gths           5        0.35 |
+  |         degree           5        0.35 |
+  |         income         178       12.33 |
+  +----------------------------------------+
+
+.         missings table
+
+Checking missings in all variables:
+1444 observations with missing values
+
+       # of |
+    missing |
+     values |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          6 |         59        4.09        4.09
+          7 |        237       16.41       20.50
+          8 |         75        5.19       25.69
+          9 |         42        2.91       28.60
+         10 |         82        5.68       34.28
+         11 |        322       22.30       56.58
+         12 |         61        4.22       60.80
+         13 |         64        4.43       65.24
+         14 |         75        5.19       70.43
+         15 |         55        3.81       74.24
+         16 |         45        3.12       77.35
+         17 |         29        2.01       79.36
+         18 |         72        4.99       84.35
+         19 |         26        1.80       86.15
+         20 |         27        1.87       88.02
+         21 |         14        0.97       88.99
+         22 |         18        1.25       90.24
+         23 |         26        1.80       92.04
+         24 |          9        0.62       92.66
+         25 |          7        0.48       93.14
+         26 |          9        0.62       93.77
+         27 |          8        0.55       94.32
+         28 |          8        0.55       94.88
+         29 |          5        0.35       95.22
+         30 |          7        0.48       95.71
+         31 |          5        0.35       96.05
+         32 |          4        0.28       96.33
+         33 |          2        0.14       96.47
+         34 |          1        0.07       96.54
+         35 |          4        0.28       96.81
+         37 |          1        0.07       96.88
+         38 |          1        0.07       96.95
+         39 |          3        0.21       97.16
+         40 |          1        0.07       97.23
+         42 |          2        0.14       97.37
+         43 |          2        0.14       97.51
+         44 |          3        0.21       97.71
+         45 |          1        0.07       97.78
+         47 |          2        0.14       97.92
+         51 |          1        0.07       97.99
+         53 |          2        0.14       98.13
+         54 |          1        0.07       98.20
+         56 |          3        0.21       98.41
+         59 |          1        0.07       98.48
+         60 |          1        0.07       98.55
+         62 |          1        0.07       98.61
+         68 |          1        0.07       98.68
+         71 |          1        0.07       98.75
+         73 |          1        0.07       98.82
+         76 |          1        0.07       98.89
+         79 |          1        0.07       98.96
+         80 |          2        0.14       99.10
+         82 |          1        0.07       99.17
+         86 |          1        0.07       99.24
+         87 |          1        0.07       99.31
+         88 |          2        0.14       99.45
+         89 |          2        0.14       99.58
+         95 |          1        0.07       99.65
+         96 |          1        0.07       99.72
+         99 |          1        0.07       99.79
+        100 |          2        0.14       99.93
+        101 |          1        0.07      100.00
+------------+-----------------------------------
+      Total |      1,444      100.00
+
+.         
+.         mi  set wide  
+
+.         
+.         mi  misstab patterns
+
+                 Missing-value patterns
+                   (1 means complete)
+
+              |   Pattern
+    Percent   |  1  2  3  4    5  6  7  8    9 10 11 12
+  ------------+-----------------------------------------
+       77%    |  1  1  1  1    1  1  1  1    1  1  1  1
+              |
+       11     |  1  1  1  1    1  1  1  1    1  1  0  0
+       10     |  1  1  1  1    1  0  0  0    0  0  1  1
+        1     |  1  1  1  1    1  0  0  0    0  0  0  0
+       <1     |  1  1  1  1    0  0  0  0    0  0  0  0
+       <1     |  1  1  1  0    1  1  1  1    1  1  1  1
+       <1     |  1  1  1  1    0  0  0  0    0  0  1  1
+       <1     |  0  0  0  1    1  1  1  1    1  1  1  1
+  ------------+-----------------------------------------
+      100%    |
+
+  Variables are  (1) age10  (2) ageQ  (3) cohort10  (4) ed_gths
+                 (5) cntct_so96  (6) cntct_so3  (7) cntct_so4  (8) cntct_tot
+                 (9) cntct_val3  (10) cntct_val4  (11) coninc  (12) conincQ
+
+.         
+. ******
+. // 2006
+. ****** 
+.  use `data', clear
+
+.  
+.  // drop variables not in 2006
+.  drop *96 *18 d_*  income16 issp cntct_slf06 cntct_so06 income91 ///
+>       c_mhtreatd c_mhtrtot2 c_mhtrtslf  c_knwmhosp ///
+>           c_knwpatnt c_mhdiagno c_brk* c_ev* 
+
+.                                             
+.  keep if year==2006                      
+(2,617 observations deleted)
+
+.                                       
+.         missings report, percent             
+
+Checking missings in all variables:
+1523 observations with missing values
+
+  +----------------------------------------+
+  |                  # missing   % missing |
+  |----------------------------------------|
+  |     L_mentlill         145        9.52 |
+  |    L_mentlillB         145        9.52 |
+  |     a_breakdwn         152        9.98 |
+  |    a_breakdwnR         152        9.98 |
+  |   a_breakdwnRV         152        9.98 |
+  |----------------------------------------|
+  |     a_charactr         139        9.13 |
+  |    a_charactrR         139        9.13 |
+  |   a_charactrRV         139        9.13 |
+  |     a_genetics         158       10.37 |
+  |    a_geneticsR         158       10.37 |
+  |----------------------------------------|
+  |   a_geneticsRV         158       10.37 |
+  |     a_godswill         142        9.32 |
+  |    a_godswillR         142        9.32 |
+  |   a_godswillRV         142        9.32 |
+  |     a_imbalnce         162       10.64 |
+  |----------------------------------------|
+  |    a_imbalnceR         162       10.64 |
+  |   a_imbalnceRV         162       10.64 |
+  |      a_physill         151        9.91 |
+  |     a_physillR         151        9.91 |
+  |    a_physillRV         151        9.91 |
+  |----------------------------------------|
+  |     a_stresses         131        8.60 |
+  |    a_stressesR         131        8.60 |
+  |   a_stressesRV         131        8.60 |
+  |     a_upsdowns         135        8.86 |
+  |    a_upsdownsR         135        8.86 |
+  |----------------------------------------|
+  |   a_upsdownsRV         135        8.86 |
+  |     a_wayraise         151        9.91 |
+  |    a_wayraiseR         151        9.91 |
+  |   a_wayraiseRV         151        9.91 |
+  |           ageQ           3        0.20 |
+  |----------------------------------------|
+  |       anychild           2        0.13 |
+  |     c_diagnosd        1523      100.00 |
+  |      c_effectR          13        0.85 |
+  |      c_effectY          15        0.98 |
+  |     c_mhothrel         627       41.17 |
+  |----------------------------------------|
+  |     c_mhothyou         623       40.91 |
+  |     c_mhtrtoth         110        7.22 |
+  |         childs           2        0.13 |
+  |    cntct_any06         110        7.22 |
+  |    cntct_oth06         110        7.22 |
+  |----------------------------------------|
+  |      cntct_so3         110        7.22 |
+  |      cntct_so4         110        7.22 |
+  |      cntct_tot         110        7.22 |
+  |     cntct_val3         110        7.22 |
+  |     cntct_val4         110        7.22 |
+  |----------------------------------------|
+  |         coninc         201       13.20 |
+  |        conincQ         201       13.20 |
+  |       dangroth         130        8.54 |
+  |       dangrslf         134        8.80 |
+  |        hurtoth         177       11.62 |
+  |----------------------------------------|
+  |       hurtself         173       11.36 |
+  |       income06         201       13.20 |
+  |         meddoc         133        8.73 |
+  |       mentldoc         147        9.65 |
+  |       mentlhos         179       11.75 |
+  |----------------------------------------|
+  |       mentlill         145        9.52 |
+  |       myprobs1        1523      100.00 |
+  |       myprobs2        1523      100.00 |
+  |       myprobs3        1523      100.00 |
+  |       myprobs4        1523      100.00 |
+  |----------------------------------------|
+  |       myprobs5        1523      100.00 |
+  |       numchild           2        0.13 |
+  |         otcmed         149        9.78 |
+  |       polviews          52        3.41 |
+  |          rxmed         164       10.77 |
+  |----------------------------------------|
+  |      s_friends         141        9.26 |
+  |     s_friendsB         103        6.76 |
+  |      s_grphome         156       10.24 |
+  |     s_grphomeB         103        6.76 |
+  |        s_marry         176       11.56 |
+  |----------------------------------------|
+  |       s_marryB         102        6.70 |
+  |     s_nextdoor         146        9.59 |
+  |    s_nextdoorB         101        6.63 |
+  |       s_social         139        9.13 |
+  |      s_socialB         101        6.63 |
+  |----------------------------------------|
+  |         s_work         151        9.91 |
+  |        s_workB         101        6.63 |
+  |       selfhelp         148        9.72 |
+  |        imp_own         150        9.85 |
+  |        imp_trt         155       10.18 |
+  |----------------------------------------|
+  |       must_doc         154       10.11 |
+  |      must_hosp         151        9.91 |
+  |       must_med         153       10.05 |
+  |  shld_dangroth         130        8.54 |
+  | shld_dangrothR         103        6.76 |
+  |----------------------------------------|
+  |  shld_dangrslf         134        8.80 |
+  | shld_dangrslfR         103        6.76 |
+  |    shld_meddoc         133        8.73 |
+  |   shld_meddocR         100        6.57 |
+  |  shld_mentldoc         147        9.65 |
+  |----------------------------------------|
+  | shld_mentldocR         100        6.57 |
+  |  shld_mentlhos         179       11.75 |
+  | shld_mentlhosR         103        6.76 |
+  |    shld_otcmed         149        9.78 |
+  |   shld_otcmedR         103        6.76 |
+  |----------------------------------------|
+  |     shld_rxmed         164       10.77 |
+  |    shld_rxmedR         102        6.70 |
+  |  shld_selfhelp         148        9.72 |
+  | shld_selfhelpR         102        6.70 |
+  |    violent_oth         177       11.62 |
+  |----------------------------------------|
+  |   violent_othR         101        6.63 |
+  |   violent_self         173       11.36 |
+  |  violent_selfR         101        6.63 |
+  |            age           3        0.20 |
+  |          age10           3        0.20 |
+  |----------------------------------------|
+  |         cohort           3        0.20 |
+  |       cohort10           3        0.20 |
+  |           educ           1        0.07 |
+  |         income         201       13.20 |
+  |        wrkstat           1        0.07 |
+  +----------------------------------------+
+
+.         missings table                       
+
+Checking missings in all variables:
+1523 observations with missing values
+
+       # of |
+    missing |
+     values |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          6 |        648       42.55       42.55
+          7 |         31        2.04       44.58
+          8 |        353       23.18       67.76
+          9 |         50        3.28       71.04
+         10 |         87        5.71       76.76
+         11 |         28        1.84       78.59
+         12 |         66        4.33       82.93
+         13 |         21        1.38       84.31
+         14 |         20        1.31       85.62
+         15 |         10        0.66       86.28
+         16 |         12        0.79       87.07
+         17 |          4        0.26       87.33
+         18 |         12        0.79       88.12
+         19 |         12        0.79       88.90
+         20 |          3        0.20       89.10
+         21 |          2        0.13       89.23
+         22 |          3        0.20       89.43
+         23 |          4        0.26       89.69
+         24 |          3        0.20       89.89
+         25 |          3        0.20       90.09
+         26 |          3        0.20       90.28
+         27 |          1        0.07       90.35
+         28 |          3        0.20       90.54
+         29 |          1        0.07       90.61
+         30 |          1        0.07       90.68
+         31 |          1        0.07       90.74
+         32 |          2        0.13       90.87
+         33 |          1        0.07       90.94
+         34 |          2        0.13       91.07
+         35 |          1        0.07       91.14
+         37 |          2        0.13       91.27
+         38 |          1        0.07       91.33
+         39 |          2        0.13       91.46
+         42 |          2        0.13       91.60
+         43 |          3        0.20       91.79
+         46 |          1        0.07       91.86
+         47 |          1        0.07       91.92
+         50 |          1        0.07       91.99
+         51 |          1        0.07       92.06
+         52 |          2        0.13       92.19
+         53 |          2        0.13       92.32
+         54 |          1        0.07       92.38
+         57 |          1        0.07       92.45
+         58 |          1        0.07       92.51
+         59 |          1        0.07       92.58
+         63 |          1        0.07       92.65
+         64 |          1        0.07       92.71
+         67 |          1        0.07       92.78
+         69 |          4        0.26       93.04
+         71 |          1        0.07       93.11
+         74 |          1        0.07       93.17
+         77 |          4        0.26       93.43
+         83 |          1        0.07       93.50
+         86 |          1        0.07       93.57
+         87 |          2        0.13       93.70
+         93 |         69        4.53       98.23
+         94 |          7        0.46       98.69
+         95 |          9        0.59       99.28
+         97 |         10        0.66       99.93
+         99 |          1        0.07      100.00
+------------+-----------------------------------
+      Total |      1,523      100.00
+
+.         
+.         mi  set wide  
+
+.         
+.         mi  misstab patterns    
+
+              Missing-value patterns
+                (1 means complete)
+
+              |   Pattern
+    Percent   |  1  2  3  4    5  6  7  8    9 10
+  ------------+-----------------------------------
+       81%    |  1  1  1  1    1  1  1  1    1  1
+              |
+       12     |  1  1  1  1    1  1  1  1    0  0
+        6     |  1  1  1  0    0  0  0  0    1  1
+        1     |  1  1  1  0    0  0  0  0    0  0
+       <1     |  0  0  0  1    1  1  1  1    0  0
+       <1     |  0  0  0  1    1  1  1  1    1  1
+  ------------+-----------------------------------
+      100%    |
+
+  Variables are  (1) age10  (2) ageQ  (3) cohort10  (4) cntct_so3
+                 (5) cntct_so4  (6) cntct_tot  (7) cntct_val3  (8) cntct_val4
+                 (9) coninc  (10) conincQ
+
+.         
+. ******
+. // 2018
+. ****** 
+.  use `data', clear
+
+.  
+.  drop *96 *06 income91 c_effectR c_effectY c_brk* c_ev*  c_knwmhosp ///
+>           c_knwpatnt c_mhtrtot2 c_mhtrtoth c_mhtrtslf c_mhothrel c_mhothyou
+
+.  
+.  // drop variables not in 2018
+.  keep if year==2018
+(2,967 observations deleted)
+
+.  
+.         missings report, percent
+
+Checking missings in all variables:
+1138 observations with missing values
+
+  +----------------------------------------+
+  |                  # missing   % missing |
+  |----------------------------------------|
+  |     L_mentlill          52        4.43 |
+  |    L_mentlillB          52        4.43 |
+  |     a_breakdwn          57        4.86 |
+  |    a_breakdwnR          57        4.86 |
+  |   a_breakdwnRV          57        4.86 |
+  |----------------------------------------|
+  |     a_charactr          45        3.84 |
+  |    a_charactrR          45        3.84 |
+  |   a_charactrRV          45        3.84 |
+  |     a_genetics          57        4.86 |
+  |    a_geneticsR          57        4.86 |
+  |----------------------------------------|
+  |   a_geneticsRV          57        4.86 |
+  |     a_godswill          52        4.43 |
+  |    a_godswillR          52        4.43 |
+  |   a_godswillRV          52        4.43 |
+  |     a_imbalnce          69        5.88 |
+  |----------------------------------------|
+  |    a_imbalnceR          69        5.88 |
+  |   a_imbalnceRV          69        5.88 |
+  |      a_physill          60        5.12 |
+  |     a_physillR          60        5.12 |
+  |    a_physillRV          60        5.12 |
+  |----------------------------------------|
+  |     a_stresses          45        3.84 |
+  |    a_stressesR          45        3.84 |
+  |   a_stressesRV          45        3.84 |
+  |     a_upsdowns          43        3.67 |
+  |    a_upsdownsR          43        3.67 |
+  |----------------------------------------|
+  |   a_upsdownsRV          43        3.67 |
+  |     a_wayraise          53        4.52 |
+  |    a_wayraiseR          53        4.52 |
+  |   a_wayraiseRV          53        4.52 |
+  |           ageQ           2        0.17 |
+  |----------------------------------------|
+  |       anychild           1        0.09 |
+  |     c_diagnosd          40        3.41 |
+  |     c_mhdiagno          43        3.67 |
+  |     c_mhtreatd         976       83.21 |
+  |         childs           1        0.09 |
+  |----------------------------------------|
+  |    cntct_any18          51        4.35 |
+  |    cntct_oth18          43        3.67 |
+  |    cntct_slf18          40        3.41 |
+  |     cntct_so18          51        4.35 |
+  |      cntct_so3          51        4.35 |
+  |----------------------------------------|
+  |      cntct_so4          51        4.35 |
+  |      cntct_tot          51        4.35 |
+  |     cntct_val3          51        4.35 |
+  |     cntct_val4          51        4.35 |
+  |         coninc          98        8.35 |
+  |----------------------------------------|
+  |        conincQ          98        8.35 |
+  |    d_advantage          33        2.81 |
+  |    d_diffideas          32        2.73 |
+  |      d_forgive          31        2.64 |
+  |       d_gossip          31        2.64 |
+  |----------------------------------------|
+  |         d_hurt          31        2.64 |
+  |      d_mistake          27        2.30 |
+  |        d_myway          31        2.64 |
+  |       dangroth          44        3.75 |
+  |       dangrslf          44        3.75 |
+  |----------------------------------------|
+  |        hurtoth          76        6.48 |
+  |       hurtself          74        6.31 |
+  |       income16          98        8.35 |
+  |         meddoc          39        3.32 |
+  |       mentldoc          51        4.35 |
+  |----------------------------------------|
+  |       mentlhos          82        6.99 |
+  |       mentlill          52        4.43 |
+  |       myprobs1         580       49.45 |
+  |       myprobs2         815       69.48 |
+  |       myprobs3         926       78.94 |
+  |----------------------------------------|
+  |       myprobs4        1025       87.38 |
+  |       myprobs5        1078       91.90 |
+  |       numchild           1        0.09 |
+  |         otcmed          59        5.03 |
+  |       polviews          53        4.52 |
+  |----------------------------------------|
+  |          rxmed          69        5.88 |
+  |      s_friends          48        4.09 |
+  |     s_friendsB          29        2.47 |
+  |      s_grphome          56        4.77 |
+  |     s_grphomeB          31        2.64 |
+  |----------------------------------------|
+  |        s_marry          73        6.22 |
+  |       s_marryB          35        2.98 |
+  |     s_nextdoor          63        5.37 |
+  |    s_nextdoorB          33        2.81 |
+  |       s_social          47        4.01 |
+  |----------------------------------------|
+  |      s_socialB          31        2.64 |
+  |         s_work          58        4.94 |
+  |        s_workB          31        2.64 |
+  |       selfhelp          50        4.26 |
+  |        imp_own          50        4.26 |
+  |----------------------------------------|
+  |        imp_trt          48        4.09 |
+  |       must_doc          58        4.94 |
+  |      must_hosp          68        5.80 |
+  |       must_med          60        5.12 |
+  |  shld_dangroth          44        3.75 |
+  |----------------------------------------|
+  | shld_dangrothR          29        2.47 |
+  |  shld_dangrslf          44        3.75 |
+  | shld_dangrslfR          29        2.47 |
+  |    shld_meddoc          39        3.32 |
+  |   shld_meddocR          28        2.39 |
+  |----------------------------------------|
+  |  shld_mentldoc          51        4.35 |
+  | shld_mentldocR          29        2.47 |
+  |  shld_mentlhos          82        6.99 |
+  | shld_mentlhosR          27        2.30 |
+  |    shld_otcmed          59        5.03 |
+  |----------------------------------------|
+  |   shld_otcmedR          29        2.47 |
+  |     shld_rxmed          69        5.88 |
+  |    shld_rxmedR          29        2.47 |
+  |  shld_selfhelp          50        4.26 |
+  | shld_selfhelpR          28        2.39 |
+  |----------------------------------------|
+  |    violent_oth          76        6.48 |
+  |   violent_othR          30        2.56 |
+  |   violent_self          74        6.31 |
+  |  violent_selfR          30        2.56 |
+  |            age           2        0.17 |
+  |----------------------------------------|
+  |          age10           2        0.17 |
+  |         cohort           2        0.17 |
+  |       cohort10           2        0.17 |
+  |           educ           2        0.17 |
+  |         income         188       16.03 |
+  |----------------------------------------|
+  |        marital           1        0.09 |
+  |        wrkstat           1        0.09 |
+  +----------------------------------------+
+
+.         missings table
+
+Checking missings in all variables:
+1138 observations with missing values
+
+       # of |
+    missing |
+     values |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |         35        2.98        2.98
+          1 |         60        5.12        8.10
+          2 |         48        4.09       12.19
+          3 |         74        6.31       18.50
+          4 |        110        9.38       27.88
+          5 |        181       15.43       43.31
+          6 |        340       28.99       72.29
+          7 |         79        6.73       79.03
+          8 |         31        2.64       81.67
+          9 |         24        2.05       83.72
+         10 |         50        4.26       87.98
+         11 |         12        1.02       89.00
+         12 |          8        0.68       89.68
+         13 |         10        0.85       90.54
+         14 |         11        0.94       91.47
+         15 |         16        1.36       92.84
+         16 |          3        0.26       93.09
+         17 |          5        0.43       93.52
+         18 |          4        0.34       93.86
+         19 |          4        0.34       94.20
+         20 |          3        0.26       94.46
+         21 |          3        0.26       94.71
+         22 |          3        0.26       94.97
+         23 |          1        0.09       95.06
+         24 |          5        0.43       95.48
+         25 |          1        0.09       95.57
+         26 |          4        0.34       95.91
+         28 |          1        0.09       95.99
+         30 |          1        0.09       96.08
+         32 |          1        0.09       96.16
+         36 |          1        0.09       96.25
+         39 |          1        0.09       96.33
+         40 |          1        0.09       96.42
+         43 |          1        0.09       96.50
+         44 |          1        0.09       96.59
+         46 |          1        0.09       96.68
+         47 |          2        0.17       96.85
+         49 |          2        0.17       97.02
+         67 |          2        0.17       97.19
+         72 |          1        0.09       97.27
+         77 |          1        0.09       97.36
+         78 |          1        0.09       97.44
+         80 |          2        0.17       97.61
+         83 |          2        0.17       97.78
+         84 |          1        0.09       97.87
+         87 |          1        0.09       97.95
+         94 |          1        0.09       98.04
+         95 |          1        0.09       98.12
+         96 |          1        0.09       98.21
+         97 |          1        0.09       98.29
+        101 |         15        1.28       99.57
+        102 |          4        0.34       99.91
+        106 |          1        0.09      100.00
+------------+-----------------------------------
+      Total |      1,173      100.00
+
+.         
+.         mi  set wide  
+
+.         
+.         mi  misstab patterns
+
+              Missing-value patterns
+                (1 means complete)
+
+              |   Pattern
+    Percent   |  1  2  3  4    5  6  7  8    9 10
+  ------------+-----------------------------------
+       88%    |  1  1  1  1    1  1  1  1    1  1
+              |
+        8     |  1  1  1  1    1  1  1  1    0  0
+        3     |  1  1  1  0    0  0  0  0    1  1
+       <1     |  1  1  1  0    0  0  0  0    0  0
+       <1     |  0  0  0  1    1  1  1  1    1  1
+  ------------+-----------------------------------
+      100%    |
+
+  Variables are  (1) age10  (2) ageQ  (3) cohort10  (4) cntct_so3
+                 (5) cntct_so4  (6) cntct_tot  (7) cntct_val3  (8) cntct_val4
+                 (9) coninc  (10) conincQ
+
+.         
+.         
+. **************************************************************** 
+. // Examine overall missingness for planned variables in analysis
+. ****************************************************************        
+. 
+.  use `data', clear
+
+.  count
+  4,140
+
+.  
+. ******
+. // If we were to look at each scale variable separately
+. ****** 
+. 
+.  local vars "L_mentlillB cntct_tot vigdrug vigalc vigschiz vigdep vig_*"
+
+.  local vars "`vars' age ageQ female race region metro coninc degree"
+
+.  local sdvars " s_nextdoor s_social s_friends s_work s_marry s_grphome"
+
+.  
+.         missings report `vars' `sdvars', percent
+
+Checking missings in L_mentlillB cntct_tot vigdrug vigalc vigschiz vigdep
+    vig_female vig_gths vig_white vig_y06 vig_y18 vig_y96 age ageQ female race
+    region metro coninc degree s_nextdoor s_social s_friends s_work s_marry
+    s_grphome:
+1130 observations with missing values
+
+  +-------------------------------------+
+  |               # missing   % missing |
+  |-------------------------------------|
+  | L_mentlillB         285        6.88 |
+  |   cntct_tot         337        8.14 |
+  |         age           6        0.14 |
+  |        ageQ           6        0.14 |
+  |      coninc         477       11.52 |
+  |-------------------------------------|
+  |      degree           5        0.12 |
+  |  s_nextdoor         281        6.79 |
+  |    s_social         239        5.77 |
+  |   s_friends         258        6.23 |
+  |      s_work         297        7.17 |
+  |-------------------------------------|
+  |     s_marry         372        8.99 |
+  |   s_grphome         312        7.54 |
+  +-------------------------------------+
+
+.         missings table  `vars' `sdvars'
+
+Checking missings in L_mentlillB cntct_tot vigdrug vigalc vigschiz vigdep
+    vig_female vig_gths vig_white vig_y06 vig_y18 vig_y96 age ageQ female race
+    region metro coninc degree s_nextdoor s_social s_friends s_work s_marry
+    s_grphome:
+1130 observations with missing values
+
+       # of |
+    missing |
+     values |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      3,010       72.71       72.71
+          1 |        695       16.79       89.49
+          2 |        135        3.26       92.75
+          3 |         62        1.50       94.25
+          4 |         24        0.58       94.83
+          5 |         12        0.29       95.12
+          6 |         18        0.43       95.56
+          7 |         33        0.80       96.35
+          8 |        130        3.14       99.49
+          9 |         21        0.51      100.00
+------------+-----------------------------------
+      Total |      4,140      100.00
+
+.         
+.         mi  set wide  
+
+.         
+.         mi  misstab patterns `vars' `sdvars'
+
+   Missing-value patterns
+     (1 means complete)
+
+              |   Pattern
+    Percent   |  1  2  3
+  ------------+-------------
+       81%    |  1  1  1
+              |
+       10     |  1  1  0
+        7     |  1  0  1
+        1     |  1  0  0
+       <1     |  0  1  1
+       <1     |  0  1  0
+  ------------+-------------
+      100%    |
+
+  Variables are  (1) ageQ  (2) cntct_tot  (3) coninc
+
+.         
+. **************************************************************** 
+. // DROP MISSING ON SCALE ITEMS
+. ****************************************************************
+. 
+.   egen SD_miss = rowmiss(s_nextdoor s_social s_friends s_work s_marry s_grphom
+> e)
+
+.  
+.   fre SD_miss
+
+SD_miss
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       3572      86.28      86.28      86.28
+        1     |        238       5.75       5.75      92.03
+        2     |         81       1.96       1.96      93.99
+        3     |         30       0.72       0.72      94.71
+        4     |         17       0.41       0.41      95.12
+        5     |         11       0.27       0.27      95.39
+        6     |        191       4.61       4.61     100.00
+        Total |       4140     100.00     100.00           
+-----------------------------------------------------------
+
+.  
+.  // BNM: Is it appropriate to drop 86 individuals who were 
+.  // missing (inapplicable) on all socdist items and consider them as incomplet
+> e?
+.  // TDM: I would exclude anyone missing on half or more of the items.
+.  *      doing so in the data07-sample_selection.do
+.  
+. *       drop if SD_miss >= 4 & SD_miss < .
+.         fre s_*
+
+s_friends -- how willing r would make friends with x
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        786      18.99      20.25      20.25
+        2  probably willing     |       1958      47.29      50.44      70.69
+        3  probably unwilling   |        762      18.41      19.63      90.31
+        4  definitely unwilling |        376       9.08       9.69     100.00
+        Total                   |       3882      93.77     100.00           
+Missing .d DONT KNOW            |        102       2.46                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         70       1.69                      
+        Total                   |        258       6.23                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_friendsB -- Bin: how willing r would make friends with x
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       2846      68.74      71.44      71.44
+        1     |       1138      27.49      28.56     100.00
+        Total |       3984      96.23     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         70       1.69                      
+        Total |        156       3.77                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+s_grphome -- how willing r would have a group home for x
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        808      19.52      21.11      21.11
+        2  probably willing     |       1664      40.19      43.47      64.58
+        3  probably unwilling   |        808      19.52      21.11      85.68
+        4  definitely unwilling |        548      13.24      14.32     100.00
+        Total                   |       3828      92.46     100.00           
+Missing .d DONT KNOW            |        152       3.67                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         74       1.79                      
+        Total                   |        312       7.54                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_grphomeB -- Bin: how willing r would have a group home for x
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       2624      63.38      65.93      65.93
+        1     |       1356      32.75      34.07     100.00
+        Total |       3980      96.14     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         74       1.79                      
+        Total |        160       3.86                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+s_marry -- how willing r would have x marry in r's family
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        350       8.45       9.29       9.29
+        2  probably willing     |       1047      25.29      27.79      37.08
+        3  probably unwilling   |       1188      28.70      31.53      68.60
+        4  definitely unwilling |       1183      28.57      31.40     100.00
+        Total                   |       3768      91.01     100.00           
+Missing .d DONT KNOW            |        209       5.05                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         77       1.86                      
+        Total                   |        372       8.99                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_marryB -- Bin: how willing r would have x marry in r's family
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       1606      38.79      40.38      40.38
+        1     |       2371      57.27      59.62     100.00
+        Total |       3977      96.06     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         77       1.86                      
+        Total |        163       3.94                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+s_nextdoor -- how willing r would have x as a neighbor
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        722      17.44      18.71      18.71
+        2  probably willing     |       1841      44.47      47.71      66.42
+        3  probably unwilling   |        830      20.05      21.51      87.92
+        4  definitely unwilling |        466      11.26      12.08     100.00
+        Total                   |       3859      93.21     100.00           
+Missing .d DONT KNOW            |        126       3.04                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         69       1.67                      
+        Total                   |        281       6.79                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_nextdoorB -- Bin: how willing r would have x as a neighbor
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       2689      64.95      67.48      67.48
+        1     |       1296      31.30      32.52     100.00
+        Total |       3985      96.26     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         69       1.67                      
+        Total |        155       3.74                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+s_social -- how willing r would spend time socializing with x
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        653      15.77      16.74      16.74
+        2  probably willing     |       1657      40.02      42.48      59.22
+        3  probably unwilling   |        972      23.48      24.92      84.13
+        4  definitely unwilling |        619      14.95      15.87     100.00
+        Total                   |       3901      94.23     100.00           
+Missing .d DONT KNOW            |         85       2.05                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         68       1.64                      
+        Total                   |        239       5.77                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_socialB -- Bin: how willing r would spend time socializing with x
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       2395      57.85      60.09      60.09
+        1     |       1591      38.43      39.91     100.00
+        Total |       3986      96.28     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         68       1.64                      
+        Total |        154       3.72                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+s_work -- how willing r would work closely with x on a job
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        445      10.75      11.58      11.58
+        2  probably willing     |       1267      30.60      32.97      44.55
+        3  probably unwilling   |       1179      28.48      30.68      75.23
+        4  definitely unwilling |        952      23.00      24.77     100.00
+        Total                   |       3843      92.83     100.00           
+Missing .d DONT KNOW            |        143       3.45                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         68       1.64                      
+        Total                   |        297       7.17                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_workB -- Bin: how willing r would work closely with x on a job
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |       1855      44.81      46.54      46.54
+        1     |       2131      51.47      53.46     100.00
+        Total |       3986      96.28     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         68       1.64                      
+        Total |        154       3.72                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+.         
+.         count
+  4,140
+
+.         
+.  // Examine 221 individuals missing on some socdist items (incomplete)  
+.         
+.         local vars "L_mentlillB cntct_tot a_charactr a_genetics a_godswill a_i
+> mbalnce"
+
+.         local vars "`vars' a_stresses a_wayraise shld_dangroth shld_dangrslf"
+
+.         local vars "`vars' shld_meddoc shld_mentldoc shld_mentlhos shld_otcmed
+> "
+
+.         local vars "`vars' shld_rxmed shld_selfhelp violent_oth violent_self"
+
+.  
+.         missings report `vars' if SD_miss != 0, percent
+
+Checking missings in L_mentlillB cntct_tot a_charactr a_genetics a_godswill
+    a_imbalnce a_stresses a_wayraise shld_dangroth shld_dangrslf shld_meddoc
+    shld_mentldoc shld_mentlhos shld_otcmed shld_rxmed shld_selfhelp violent_oth
+    violent_self:
+438 observations with missing values
+
+  +---------------------------------------+
+  |                 # missing   % missing |
+  |---------------------------------------|
+  |   L_mentlillB         220       38.73 |
+  |     cntct_tot         171       30.11 |
+  |    a_charactr         207       36.44 |
+  |    a_genetics         237       41.73 |
+  |    a_godswill         213       37.50 |
+  |---------------------------------------|
+  |    a_imbalnce         235       41.37 |
+  |    a_stresses         206       36.27 |
+  |    a_wayraise         227       39.96 |
+  | shld_dangroth         194       34.15 |
+  | shld_dangrslf         199       35.04 |
+  |---------------------------------------|
+  |   shld_meddoc         204       35.92 |
+  | shld_mentldoc         234       41.20 |
+  | shld_mentlhos         255       44.89 |
+  |   shld_otcmed         211       37.15 |
+  |    shld_rxmed         248       43.66 |
+  |---------------------------------------|
+  | shld_selfhelp         219       38.56 |
+  |   violent_oth         275       48.42 |
+  |  violent_self         257       45.25 |
+  +---------------------------------------+
+
+.         missings table  `vars' if SD_miss != 0
+
+Checking missings in L_mentlillB cntct_tot a_charactr a_genetics a_godswill
+    a_imbalnce a_stresses a_wayraise shld_dangroth shld_dangrslf shld_meddoc
+    shld_mentldoc shld_mentlhos shld_otcmed shld_rxmed shld_selfhelp violent_oth
+    violent_self:
+438 observations with missing values
+
+       # of |
+    missing |
+     values |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        130       22.89       22.89
+          1 |         76       13.38       36.27
+          2 |         45        7.92       44.19
+          3 |         44        7.75       51.94
+          4 |         26        4.58       56.51
+          5 |         17        2.99       59.51
+          6 |         16        2.82       62.32
+          7 |          9        1.58       63.91
+          8 |          8        1.41       65.32
+          9 |          6        1.06       66.37
+         10 |          6        1.06       67.43
+         11 |          4        0.70       68.13
+         12 |          6        1.06       69.19
+         13 |          4        0.70       69.89
+         14 |          3        0.53       70.42
+         15 |          6        1.06       71.48
+         16 |          1        0.18       71.65
+         17 |         26        4.58       76.23
+         18 |        135       23.77      100.00
+------------+-----------------------------------
+      Total |        568      100.00
+
+.  
+.         mi  misstab patterns `vars' if SD_miss != 0
+
+   Missing-value patterns
+     (1 means complete)
+
+              |   Pattern
+    Percent   |  1
+  ------------+-------------
+       70%    |  1
+              |
+       30     |  0
+  ------------+-------------
+      100%    |
+
+  Variables are  (1) cntct_tot
+
+.         
+.         count
+  4,140
+
+. 
+. /* TDM: Ok to impute for these 221 as most are only missing on a few vars */
+.         
+. **************************************************************** 
+. // EXAMINE POSSIBLE SCALE PRORATION
+. ****************************************************************        
+.  
+.  count if SD_miss<=3
+  3,921
+
+.  
+.  local vars "L_mentlillB cntct_tot vigdrug vigalc vigschiz vigdep vig_*"
+
+.  local vars "`vars' age ageQ female race region metro coninc degree"
+
+.  
+.         missings report `vars' if SD_miss<=3, percent
+
+Checking missings in L_mentlillB cntct_tot vigdrug vigalc vigschiz vigdep
+    vig_female vig_gths vig_white vig_y06 vig_y18 vig_y96 age ageQ female race
+    region metro coninc degree:
+676 observations with missing values
+
+  +-------------------------------------+
+  |               # missing   % missing |
+  |-------------------------------------|
+  | L_mentlillB         105        2.68 |
+  |   cntct_tot         194        4.95 |
+  |         age           4        0.10 |
+  |        ageQ           4        0.10 |
+  |      coninc         428       10.92 |
+  |-------------------------------------|
+  |      degree           4        0.10 |
+  +-------------------------------------+
+
+.         missings table  `vars' if SD_miss<=3
+
+Checking missings in L_mentlillB cntct_tot vigdrug vigalc vigschiz vigdep
+    vig_female vig_gths vig_white vig_y06 vig_y18 vig_y96 age ageQ female race
+    region metro coninc degree:
+676 observations with missing values
+
+       # of |
+    missing |
+     values |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      3,245       82.76       82.76
+          1 |        617       15.74       98.50
+          2 |         55        1.40       99.90
+          3 |          4        0.10      100.00
+------------+-----------------------------------
+      Total |      3,921      100.00
+
+.  
+.         mi  misstab patterns `vars' if SD_miss<=3
+
+   Missing-value patterns
+     (1 means complete)
+
+              |   Pattern
+    Percent   |  1  2  3
+  ------------+-------------
+       85%    |  1  1  1
+              |
+       10     |  1  1  0
+        4     |  1  0  1
+       <1     |  1  0  0
+       <1     |  0  1  1
+       <1     |  0  1  0
+  ------------+-------------
+      100%    |
+
+  Variables are  (1) ageQ  (2) cntct_tot  (3) coninc
+
+.         count
+  4,140
+
+. **************************************************************** 
+. // Create DK version of variables to mirror previous papers
+. // and for alternative and/or sensitivity analyses
+. ****************************************************************
+.         
+. // Doing the following to mirror Martin 2000 JHSB \\
+.  
+.         local socdist "s_nextdoor s_social s_friends s_work s_marry s_grphome"
+
+.         local att     "a_imbalnceR a_geneticsR a_stressesR a_wayraiseR a_chara
+> ctrR a_godswillR"
+
+.         local demog   "age female white income educ south size"
+
+.         
+.         *local vars "`socdist' `att' `demog'"
+.         
+.         fre `socdist'
+
+s_nextdoor -- how willing r would have x as a neighbor
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        722      17.44      18.71      18.71
+        2  probably willing     |       1841      44.47      47.71      66.42
+        3  probably unwilling   |        830      20.05      21.51      87.92
+        4  definitely unwilling |        466      11.26      12.08     100.00
+        Total                   |       3859      93.21     100.00           
+Missing .d DONT KNOW            |        126       3.04                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         69       1.67                      
+        Total                   |        281       6.79                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_social -- how willing r would spend time socializing with x
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        653      15.77      16.74      16.74
+        2  probably willing     |       1657      40.02      42.48      59.22
+        3  probably unwilling   |        972      23.48      24.92      84.13
+        4  definitely unwilling |        619      14.95      15.87     100.00
+        Total                   |       3901      94.23     100.00           
+Missing .d DONT KNOW            |         85       2.05                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         68       1.64                      
+        Total                   |        239       5.77                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_friends -- how willing r would make friends with x
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        786      18.99      20.25      20.25
+        2  probably willing     |       1958      47.29      50.44      70.69
+        3  probably unwilling   |        762      18.41      19.63      90.31
+        4  definitely unwilling |        376       9.08       9.69     100.00
+        Total                   |       3882      93.77     100.00           
+Missing .d DONT KNOW            |        102       2.46                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         70       1.69                      
+        Total                   |        258       6.23                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_work -- how willing r would work closely with x on a job
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        445      10.75      11.58      11.58
+        2  probably willing     |       1267      30.60      32.97      44.55
+        3  probably unwilling   |       1179      28.48      30.68      75.23
+        4  definitely unwilling |        952      23.00      24.77     100.00
+        Total                   |       3843      92.83     100.00           
+Missing .d DONT KNOW            |        143       3.45                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         68       1.64                      
+        Total                   |        297       7.17                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_marry -- how willing r would have x marry in r's family
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        350       8.45       9.29       9.29
+        2  probably willing     |       1047      25.29      27.79      37.08
+        3  probably unwilling   |       1188      28.70      31.53      68.60
+        4  definitely unwilling |       1183      28.57      31.40     100.00
+        Total                   |       3768      91.01     100.00           
+Missing .d DONT KNOW            |        209       5.05                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         77       1.86                      
+        Total                   |        372       8.99                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+s_grphome -- how willing r would have a group home for x
+-----------------------------------------------------------------------------
+                                |      Freq.    Percent      Valid       Cum.
+--------------------------------+--------------------------------------------
+Valid   1  definitely willing   |        808      19.52      21.11      21.11
+        2  probably willing     |       1664      40.19      43.47      64.58
+        3  probably unwilling   |        808      19.52      21.11      85.68
+        4  definitely unwilling |        548      13.24      14.32     100.00
+        Total                   |       3828      92.46     100.00           
+Missing .d DONT KNOW            |        152       3.67                      
+        .i IAP                  |         86       2.08                      
+        .n NA                   |         74       1.79                      
+        Total                   |        312       7.54                      
+Total                           |       4140     100.00                      
+-----------------------------------------------------------------------------
+
+.         
+.         foreach v in `socdist' {
+  2.                 gen     `v'DK0 = `v'
+  3.                 replace `v'DK0=0 if `v'==.d
+  4.                 la var `v'DK0 "DK=0"
+  5.                 }
+(281 missing values generated)
+(126 real changes made)
+(239 missing values generated)
+(85 real changes made)
+(258 missing values generated)
+(102 real changes made)
+(297 missing values generated)
+(143 real changes made)
+(372 missing values generated)
+(209 real changes made)
+(312 missing values generated)
+(152 real changes made)
+
+. 
+.         fre s_*DK0
+
+s_nextdoorDK0 -- DK=0
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        126       3.04       3.16       3.16
+        1     |        722      17.44      18.12      21.28
+        2     |       1841      44.47      46.20      67.48
+        3     |        830      20.05      20.83      88.31
+        4     |        466      11.26      11.69     100.00
+        Total |       3985      96.26     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         69       1.67                      
+        Total |        155       3.74                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+s_socialDK0 -- DK=0
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |         85       2.05       2.13       2.13
+        1     |        653      15.77      16.38      18.51
+        2     |       1657      40.02      41.57      60.09
+        3     |        972      23.48      24.39      84.47
+        4     |        619      14.95      15.53     100.00
+        Total |       3986      96.28     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         68       1.64                      
+        Total |        154       3.72                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+s_friendsDK0 -- DK=0
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        102       2.46       2.56       2.56
+        1     |        786      18.99      19.73      22.29
+        2     |       1958      47.29      49.15      71.44
+        3     |        762      18.41      19.13      90.56
+        4     |        376       9.08       9.44     100.00
+        Total |       3984      96.23     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         70       1.69                      
+        Total |        156       3.77                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+s_workDK0 -- DK=0
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        143       3.45       3.59       3.59
+        1     |        445      10.75      11.16      14.75
+        2     |       1267      30.60      31.79      46.54
+        3     |       1179      28.48      29.58      76.12
+        4     |        952      23.00      23.88     100.00
+        Total |       3986      96.28     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         68       1.64                      
+        Total |        154       3.72                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+s_marryDK0 -- DK=0
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        209       5.05       5.26       5.26
+        1     |        350       8.45       8.80      14.06
+        2     |       1047      25.29      26.33      40.38
+        3     |       1188      28.70      29.87      70.25
+        4     |       1183      28.57      29.75     100.00
+        Total |       3977      96.06     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         77       1.86                      
+        Total |        163       3.94                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+s_grphomeDK0 -- DK=0
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   0     |        152       3.67       3.82       3.82
+        1     |        808      19.52      20.30      24.12
+        2     |       1664      40.19      41.81      65.93
+        3     |        808      19.52      20.30      86.23
+        4     |        548      13.24      13.77     100.00
+        Total |       3980      96.14     100.00           
+Missing .i    |         86       2.08                      
+        .n    |         74       1.79                      
+        Total |        160       3.86                      
+Total         |       4140     100.00                      
+-----------------------------------------------------------
+
+.         
+.         foreach v in `socdist' {
+  2.                 gen     `v'DK1 = `v'
+  3.                 replace `v'DK1=1 if `v'==.d
+  4.                 drop if `v'DK1==.i
+  5.                 la var `v'DK1 "DK=1"
+  6.                 }
+(281 missing values generated)
+(126 real changes made)
+(86 observations deleted)
+(153 missing values generated)
+(85 real changes made)
+(0 observations deleted)
+(172 missing values generated)
+(102 real changes made)
+(0 observations deleted)
+(211 missing values generated)
+(143 real changes made)
+(0 observations deleted)
+(286 missing values generated)
+(209 real changes made)
+(0 observations deleted)
+(226 missing values generated)
+(152 real changes made)
+(0 observations deleted)
+
+. 
+.         fre s_*DK1      
+
+s_nextdoorDK1 -- DK=1
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        848      20.92      21.28      21.28
+        2     |       1841      45.41      46.20      67.48
+        3     |        830      20.47      20.83      88.31
+        4     |        466      11.49      11.69     100.00
+        Total |       3985      98.30     100.00           
+Missing .n    |         69       1.70                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_socialDK1 -- DK=1
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        738      18.20      18.51      18.51
+        2     |       1657      40.87      41.57      60.09
+        3     |        972      23.98      24.39      84.47
+        4     |        619      15.27      15.53     100.00
+        Total |       3986      98.32     100.00           
+Missing .n    |         68       1.68                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_friendsDK1 -- DK=1
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        888      21.90      22.29      22.29
+        2     |       1958      48.30      49.15      71.44
+        3     |        762      18.80      19.13      90.56
+        4     |        376       9.27       9.44     100.00
+        Total |       3984      98.27     100.00           
+Missing .n    |         70       1.73                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_workDK1 -- DK=1
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        588      14.50      14.75      14.75
+        2     |       1267      31.25      31.79      46.54
+        3     |       1179      29.08      29.58      76.12
+        4     |        952      23.48      23.88     100.00
+        Total |       3986      98.32     100.00           
+Missing .n    |         68       1.68                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_marryDK1 -- DK=1
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        559      13.79      14.06      14.06
+        2     |       1047      25.83      26.33      40.38
+        3     |       1188      29.30      29.87      70.25
+        4     |       1183      29.18      29.75     100.00
+        Total |       3977      98.10     100.00           
+Missing .n    |         77       1.90                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_grphomeDK1 -- DK=1
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        960      23.68      24.12      24.12
+        2     |       1664      41.05      41.81      65.93
+        3     |        808      19.93      20.30      86.23
+        4     |        548      13.52      13.77     100.00
+        Total |       3980      98.17     100.00           
+Missing .n    |         74       1.83                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+.         
+.         foreach v in `socdist' {
+  2.                 gen     `v'DK2 = `v'
+  3.                 replace `v'DK2=2 if `v'==.d
+  4.                 drop if `v'DK2==.i
+  5.                 la var `v'DK2 "DK=2"
+  6.                 }
+(195 missing values generated)
+(126 real changes made)
+(0 observations deleted)
+(153 missing values generated)
+(85 real changes made)
+(0 observations deleted)
+(172 missing values generated)
+(102 real changes made)
+(0 observations deleted)
+(211 missing values generated)
+(143 real changes made)
+(0 observations deleted)
+(286 missing values generated)
+(209 real changes made)
+(0 observations deleted)
+(226 missing values generated)
+(152 real changes made)
+(0 observations deleted)
+
+. 
+.         fre s_*DK2      
+
+s_nextdoorDK2 -- DK=2
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        722      17.81      18.12      18.12
+        2     |       1967      48.52      49.36      67.48
+        3     |        830      20.47      20.83      88.31
+        4     |        466      11.49      11.69     100.00
+        Total |       3985      98.30     100.00           
+Missing .n    |         69       1.70                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_socialDK2 -- DK=2
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        653      16.11      16.38      16.38
+        2     |       1742      42.97      43.70      60.09
+        3     |        972      23.98      24.39      84.47
+        4     |        619      15.27      15.53     100.00
+        Total |       3986      98.32     100.00           
+Missing .n    |         68       1.68                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_friendsDK2 -- DK=2
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        786      19.39      19.73      19.73
+        2     |       2060      50.81      51.71      71.44
+        3     |        762      18.80      19.13      90.56
+        4     |        376       9.27       9.44     100.00
+        Total |       3984      98.27     100.00           
+Missing .n    |         70       1.73                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_workDK2 -- DK=2
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        445      10.98      11.16      11.16
+        2     |       1410      34.78      35.37      46.54
+        3     |       1179      29.08      29.58      76.12
+        4     |        952      23.48      23.88     100.00
+        Total |       3986      98.32     100.00           
+Missing .n    |         68       1.68                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_marryDK2 -- DK=2
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        350       8.63       8.80       8.80
+        2     |       1256      30.98      31.58      40.38
+        3     |       1188      29.30      29.87      70.25
+        4     |       1183      29.18      29.75     100.00
+        Total |       3977      98.10     100.00           
+Missing .n    |         77       1.90                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_grphomeDK2 -- DK=2
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        808      19.93      20.30      20.30
+        2     |       1816      44.80      45.63      65.93
+        3     |        808      19.93      20.30      86.23
+        4     |        548      13.52      13.77     100.00
+        Total |       3980      98.17     100.00           
+Missing .n    |         74       1.83                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+.         
+.         foreach v in `socdist' {
+  2.                 gen     `v'DK3 = `v'
+  3.                 replace `v'DK3=3 if `v'==.d
+  4.                 drop if `v'DK3==.i
+  5.                 la var `v'DK3 "DK=3"
+  6.                 }
+(195 missing values generated)
+(126 real changes made)
+(0 observations deleted)
+(153 missing values generated)
+(85 real changes made)
+(0 observations deleted)
+(172 missing values generated)
+(102 real changes made)
+(0 observations deleted)
+(211 missing values generated)
+(143 real changes made)
+(0 observations deleted)
+(286 missing values generated)
+(209 real changes made)
+(0 observations deleted)
+(226 missing values generated)
+(152 real changes made)
+(0 observations deleted)
+
+. 
+.         fre s_*DK3
+
+s_nextdoorDK3 -- DK=3
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        722      17.81      18.12      18.12
+        2     |       1841      45.41      46.20      64.32
+        3     |        956      23.58      23.99      88.31
+        4     |        466      11.49      11.69     100.00
+        Total |       3985      98.30     100.00           
+Missing .n    |         69       1.70                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_socialDK3 -- DK=3
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        653      16.11      16.38      16.38
+        2     |       1657      40.87      41.57      57.95
+        3     |       1057      26.07      26.52      84.47
+        4     |        619      15.27      15.53     100.00
+        Total |       3986      98.32     100.00           
+Missing .n    |         68       1.68                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_friendsDK3 -- DK=3
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        786      19.39      19.73      19.73
+        2     |       1958      48.30      49.15      68.88
+        3     |        864      21.31      21.69      90.56
+        4     |        376       9.27       9.44     100.00
+        Total |       3984      98.27     100.00           
+Missing .n    |         70       1.73                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_workDK3 -- DK=3
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        445      10.98      11.16      11.16
+        2     |       1267      31.25      31.79      42.95
+        3     |       1322      32.61      33.17      76.12
+        4     |        952      23.48      23.88     100.00
+        Total |       3986      98.32     100.00           
+Missing .n    |         68       1.68                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_marryDK3 -- DK=3
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        350       8.63       8.80       8.80
+        2     |       1047      25.83      26.33      35.13
+        3     |       1397      34.46      35.13      70.25
+        4     |       1183      29.18      29.75     100.00
+        Total |       3977      98.10     100.00           
+Missing .n    |         77       1.90                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_grphomeDK3 -- DK=3
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        808      19.93      20.30      20.30
+        2     |       1664      41.05      41.81      62.11
+        3     |        960      23.68      24.12      86.23
+        4     |        548      13.52      13.77     100.00
+        Total |       3980      98.17     100.00           
+Missing .n    |         74       1.83                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+.         
+.         
+.         foreach v in `socdist' {
+  2.                 gen     `v'DK4 = `v'
+  3.                 replace `v'DK4=4 if `v'==.d
+  4.                 drop if `v'DK4==.i
+  5.                 la var `v'DK4 "DK=4"
+  6.                 }
+(195 missing values generated)
+(126 real changes made)
+(0 observations deleted)
+(153 missing values generated)
+(85 real changes made)
+(0 observations deleted)
+(172 missing values generated)
+(102 real changes made)
+(0 observations deleted)
+(211 missing values generated)
+(143 real changes made)
+(0 observations deleted)
+(286 missing values generated)
+(209 real changes made)
+(0 observations deleted)
+(226 missing values generated)
+(152 real changes made)
+(0 observations deleted)
+
+. 
+.         fre s_*DK4
+
+s_nextdoorDK4 -- DK=4
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        722      17.81      18.12      18.12
+        2     |       1841      45.41      46.20      64.32
+        3     |        830      20.47      20.83      85.14
+        4     |        592      14.60      14.86     100.00
+        Total |       3985      98.30     100.00           
+Missing .n    |         69       1.70                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_socialDK4 -- DK=4
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        653      16.11      16.38      16.38
+        2     |       1657      40.87      41.57      57.95
+        3     |        972      23.98      24.39      82.34
+        4     |        704      17.37      17.66     100.00
+        Total |       3986      98.32     100.00           
+Missing .n    |         68       1.68                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_friendsDK4 -- DK=4
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        786      19.39      19.73      19.73
+        2     |       1958      48.30      49.15      68.88
+        3     |        762      18.80      19.13      88.00
+        4     |        478      11.79      12.00     100.00
+        Total |       3984      98.27     100.00           
+Missing .n    |         70       1.73                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_workDK4 -- DK=4
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        445      10.98      11.16      11.16
+        2     |       1267      31.25      31.79      42.95
+        3     |       1179      29.08      29.58      72.53
+        4     |       1095      27.01      27.47     100.00
+        Total |       3986      98.32     100.00           
+Missing .n    |         68       1.68                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_marryDK4 -- DK=4
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        350       8.63       8.80       8.80
+        2     |       1047      25.83      26.33      35.13
+        3     |       1188      29.30      29.87      65.00
+        4     |       1392      34.34      35.00     100.00
+        Total |       3977      98.10     100.00           
+Missing .n    |         77       1.90                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+s_grphomeDK4 -- DK=4
+-----------------------------------------------------------
+              |      Freq.    Percent      Valid       Cum.
+--------------+--------------------------------------------
+Valid   1     |        808      19.93      20.30      20.30
+        2     |       1664      41.05      41.81      62.11
+        3     |        808      19.93      20.30      82.41
+        4     |        700      17.27      17.59     100.00
+        Total |       3980      98.17     100.00           
+Missing .n    |         74       1.83                      
+Total         |       4054     100.00                      
+-----------------------------------------------------------
+
+.         
+.         
+. **************************************************************** 
+. // Close out
+. ****************************************************************        
+. count
+  4,054
+
+.         save "Data/mls-data05-missing", replace
+file Data/mls-data05-missing.dta saved
+
+. 
+.         log close
+      name:  <unnamed>
+       log:  /Users/bianca/Dropbox/_AcademicWork/Active/Research/-underReview/ML
+> S_MatchingLabelingStigma/work_socius_2024_09_other_imputed/mls-data05-missing.
+> log
+  log type:  text
+ closed on:  26 Sep 2024, 10:21:53
+--------------------------------------------------------------------------------
