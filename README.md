@@ -18,6 +18,8 @@ Here are all of the statistical replication files for the manuscript. Currently 
 Importantly, the data file from GSS was too large to upload. To start from the beginning, simply <br>
 use the [1972-2018 download from GSS](https://www.dropbox.com/scl/fi/gq5xi148dkrk1zykq1pqt/GSS7218_R1.DTA?rlkey=3eyv89m40digomzrk9wb9faq0&st=5p8wlfj7&dl=0). and place it in the /Data folder in the working directory.
 
+The mls__primary.do file provides detail about what script file created each of the figures and tables.
+
 
 &nbsp;&nbsp;&nbsp; [work.zip](https://github.com/biancamanago/mls_2024_socius_replicationFiles/blob/186f3a0149d6fc860f95a1fe4abbeac492aa8ce6/work_socius_2024_09.zip)
 
